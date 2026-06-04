@@ -22,16 +22,16 @@ export const SelectableCard = ({
     type="button"
     onClick={onClick}
     className={cn(
-      "relative w-full rounded-lg border text-left transition-all hover:border-primary/40 hover:shadow-sm",
+      "relative w-full rounded-xl border text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-soft",
       compact ? "p-2.5" : "p-4",
       selected
-        ? "border-primary ring-2 ring-primary/20 bg-primary/5"
+        ? "border-primary/70 bg-accent/60 shadow-gold ring-1 ring-primary/40"
         : "border-border bg-card",
     )}
   >
     {selected && (
       <div className={cn(
-        "absolute flex items-center justify-center rounded-full bg-primary text-primary-foreground",
+        "absolute flex items-center justify-center rounded-full bg-gradient-gold text-primary-foreground shadow-gold",
         compact ? "right-1.5 top-1.5 h-4 w-4" : "right-3 top-3 h-6 w-6",
       )}>
         <Check className={compact ? "h-2.5 w-2.5" : "h-4 w-4"} />

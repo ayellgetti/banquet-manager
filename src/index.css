@@ -8,41 +8,45 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Noir & Gold — warm cream paper with deep noir text and gold accents */
+    --background: 40 33% 97%;
+    --foreground: 220 18% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 18% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 18% 11%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 43 56% 47%;
+    --primary-foreground: 220 25% 8%;
+    --primary-glow: 43 75% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 40 25% 94%;
+    --secondary-foreground: 220 18% 14%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 40 22% 93%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 43 70% 92%;
+    --accent-foreground: 35 65% 22%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 40 18% 86%;
+    --input: 40 18% 86%;
+    --ring: 43 56% 47%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --brand: 280 65% 45%;
-    --brand-foreground: 0 0% 100%;
-    --brand-soft: 280 80% 96%;
-    --gradient-brand: linear-gradient(135deg, hsl(280 70% 50%), hsl(330 75% 55%));
-    --shadow-soft: 0 10px 30px -10px hsl(280 50% 40% / 0.15);
+    --brand: 43 56% 47%;
+    --brand-foreground: 220 25% 8%;
+    --brand-soft: 43 70% 95%;
+    --gradient-brand: linear-gradient(135deg, hsl(43 65% 52%), hsl(43 80% 68%));
+    --gradient-noir: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 18% 18%));
+    --shadow-soft: 0 10px 30px -12px hsl(43 50% 25% / 0.18);
+    --shadow-gold: 0 14px 40px -16px hsl(43 75% 50% / 0.45);
 
     --sidebar-background: 0 0% 98%;
 
@@ -62,33 +66,26 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 220 25% 7%;
+    --foreground: 40 30% 94%;
+    --card: 220 22% 10%;
+    --card-foreground: 40 30% 94%;
+    --popover: 220 22% 10%;
+    --popover-foreground: 40 30% 94%;
+    --primary: 43 70% 60%;
+    --primary-foreground: 220 25% 8%;
+    --primary-glow: 43 85% 72%;
+    --secondary: 220 18% 16%;
+    --secondary-foreground: 40 30% 94%;
+    --muted: 220 18% 14%;
+    --muted-foreground: 40 12% 65%;
+    --accent: 43 60% 22%;
+    --accent-foreground: 43 85% 80%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 16% 20%;
+    --input: 220 16% 20%;
+    --ring: 43 70% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -106,7 +103,42 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
+    letter-spacing: -0.015em;
+  }
+  .text-gradient-gold {
+    background-image: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-gradient-noir {
+    background-image: var(--gradient-noir);
+  }
+  .bg-gradient-gold {
+    background-image: var(--gradient-brand);
+  }
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  .ring-gold {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.4), 0 8px 24px -12px hsl(var(--primary) / 0.5);
   }
 }
 

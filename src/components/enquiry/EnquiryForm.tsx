@@ -231,14 +231,16 @@ export const EnquiryForm = () => {
     <div className="space-y-6">
       <Tabs value={tab} onValueChange={(v) => tryChangeTab(v as TabKey)}>
         <div className="no-print -mx-1 overflow-x-auto sm:mx-0">
-          <TabsList className="flex h-auto w-max min-w-full justify-start gap-1 bg-muted/60 p-1 sm:flex-wrap sm:w-full">
+          <TabsList className="flex h-auto w-max min-w-full justify-start gap-1 rounded-xl border border-border/70 bg-card p-1.5 shadow-soft sm:flex-wrap sm:w-full">
             {TAB_ORDER.map((k, i) => (
               <TabsTrigger
                 key={k}
                 value={k}
-                className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                className="group shrink-0 gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition-all data-[state=active]:bg-gradient-gold data-[state=active]:text-primary-foreground data-[state=active]:shadow-gold sm:text-sm"
               >
-                <span className="mr-1.5 text-muted-foreground">{i + 1}.</span>
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground group-data-[state=active]:bg-primary-foreground/20 group-data-[state=active]:text-primary-foreground">
+                  {i + 1}
+                </span>
                 {t(TAB_KEYS[k])}
               </TabsTrigger>
             ))}
@@ -686,21 +688,22 @@ export const EnquiryForm = () => {
 
               <SelectionsBreakdown state={state} />
 
-              <div className="rounded-lg border bg-primary/5 p-5">
+              <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-noir p-6 text-white shadow-gold [&_.text-muted-foreground]:text-white/70 [&_.tabular-nums]:text-white">
+                <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-gold opacity-20 blur-3xl" />
                 <Row label={t("summary.subtotal")} value={formatINR(totals.subtotal)} />
                 <div className="mt-1 flex items-center justify-between gap-3 py-1">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>{t("summary.discount").replace(" (%)", "")}</span>
-                    <div className="inline-flex overflow-hidden rounded-md border no-print">
+                    <div className="inline-flex overflow-hidden rounded-md border border-white/20 no-print">
                       <button
                         type="button"
                         onClick={() => update("discountType", "percent")}
-                        className={`h-7 px-2 text-xs ${state.discountType === "percent" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`}
+                        className={`h-7 px-2 text-xs font-semibold transition-colors ${state.discountType === "percent" ? "bg-gradient-gold text-primary-foreground" : "bg-white/5 text-white/80 hover:bg-white/10"}`}
                       >%</button>
                       <button
                         type="button"
                         onClick={() => update("discountType", "fixed")}
-                        className={`h-7 px-2 text-xs ${state.discountType === "fixed" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`}
+                        className={`h-7 px-2 text-xs font-semibold transition-colors ${state.discountType === "fixed" ? "bg-gradient-gold text-primary-foreground" : "bg-white/5 text-white/80 hover:bg-white/10"}`}
                       >₹</button>
                     </div>
                     {state.discountType === "percent" ? (
@@ -710,7 +713,7 @@ export const EnquiryForm = () => {
                         max={100}
                         value={state.discountPercent}
                         onChange={(e) => update("discountPercent", Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
-                        className="h-7 w-20 text-right no-print"
+                        className="h-7 w-20 border-white/20 bg-white/10 text-right text-white placeholder:text-white/40 focus-visible:ring-primary/50 no-print"
                       />
                     ) : (
                       <Input
@@ -718,15 +721,15 @@ export const EnquiryForm = () => {
                         min={0}
                         value={state.discountAmount}
                         onChange={(e) => update("discountAmount", Math.max(0, Number(e.target.value) || 0))}
-                        className="h-7 w-24 text-right no-print"
+                        className="h-7 w-24 border-white/20 bg-white/10 text-right text-white placeholder:text-white/40 focus-visible:ring-primary/50 no-print"
                       />
                     )}
                   </div>
-                  <span className="text-sm font-medium tabular-nums">- {formatINR(totals.discount)}</span>
+                  <span className="text-sm font-medium tabular-nums text-white/90">- {formatINR(totals.discount)}</span>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t pt-3">
-                  <span className="text-base font-semibold">{t("summary.grandTotal")}</span>
-                  <span className="text-2xl font-bold text-primary tabular-nums">
+                <div className="mt-3 flex items-center justify-between border-t border-white/15 pt-3">
+                  <span className="font-display text-base font-semibold uppercase tracking-wider text-white/80">{t("summary.grandTotal")}</span>
+                  <span className="font-display text-3xl font-bold text-gradient-gold tabular-nums">
                     {formatINR(totals.total)}
                   </span>
                 </div>
@@ -754,11 +757,11 @@ export const EnquiryForm = () => {
       </Tabs>
 
       {/* Nav controls */}
-      <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-soft">
         {state.platePackageId ? (
           <div className="text-sm">
             <span className="text-muted-foreground">{t("common.runningTotal")} </span>
-            <span className="font-semibold text-foreground">{formatINR(totals.total)}</span>
+            <span className="font-display text-lg font-bold text-gradient-gold">{formatINR(totals.total)}</span>
           </div>
         ) : <div />}
         <div className="flex gap-2">
@@ -766,11 +769,11 @@ export const EnquiryForm = () => {
             <ArrowLeft className="mr-1 h-4 w-4" /> {t("common.back")}
           </Button>
           {tab === "summary" ? (
-            <Button onClick={handleDownloadPdf}>
+            <Button onClick={handleDownloadPdf} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
               <Printer className="mr-1 h-4 w-4" /> {t("common.downloadPdf")}
             </Button>
           ) : (
-            <Button onClick={goNext}>
+            <Button onClick={goNext} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
               {t("common.next")} <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
           )}
