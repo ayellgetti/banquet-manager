@@ -19,14 +19,4 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
   },
-  build: {
-    rollupOptions: {
-      external: ["html2pdf.js"],
-      output: {
-        globals: {
-          "html2pdf.js": "html2pdf",
-        },
-      },
-    },
-  },
 }));

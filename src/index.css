@@ -152,36 +152,3 @@ body.printing .no-print { display: none !important; }
 .print-only { display: none; }
 @media print { .print-only { display: block !important; } }
 body.printing .print-only { display: block !important; }
-
-/* html2canvas cannot render background-clip:text gradients — replace with a solid gold colour */
-body.printing .text-gradient-gold {
-  background-image: none !important;
-  -webkit-background-clip: unset !important;
-  background-clip: unset !important;
-  color: hsl(43 80% 68%) !important;
-}
-/* Replace CSS-variable gradients with solid fallbacks for html2canvas */
-body.printing .bg-gradient-noir {
-  background-image: none !important;
-  background-color: hsl(220 25% 8%) !important;
-}
-body.printing .bg-gradient-gold {
-  background-image: none !important;
-  background-color: hsl(43 65% 52%) !important;
-}
-@media print {
-  .text-gradient-gold {
-    background-image: none !important;
-    -webkit-background-clip: unset !important;
-    background-clip: unset !important;
-    color: hsl(43 80% 68%) !important;
-  }
-  .bg-gradient-noir {
-    background-image: none !important;
-    background-color: hsl(220 25% 8%) !important;
-  }
-  .bg-gradient-gold {
-    background-image: none !important;
-    background-color: hsl(43 65% 52%) !important;
-  }
-}
