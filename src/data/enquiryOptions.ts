@@ -11,16 +11,22 @@ export type Package = {
   slots?: PackageSlot[];
 };
 
-export type MenuItem = { id: string; name: string; category: string; price: number };
+export type MenuItem = { id: string; name: string; category: string; subcategory?: string; price: number };
 export type MenuCategory =
   | "Welcome Drink"
-  | "Starter"
+  | "Salads"
   | "Farsan"
-  | "Main Course Bhaji"
-  | "Bread"
+  | "Starters"
+  | "Main Course"
+  | "Breakfast"
+  | "Kathiawadi"
+  | "Rajasthani"
+  | "Indian Breads"
+  | "Raita"
   | "Rice"
   | "Dal"
-  | "Sweet";
+  | "Sweets & Ice Cream"
+  | "Live Counters";
 
 export type PlatePackage = {
   id: string;
@@ -30,20 +36,24 @@ export type PlatePackage = {
   extras?: string[];
 };
 
-export type DecorOption = { id: string; name: string; price: number; description: string };
+export type DecorOption = { id: string; name: string; price: number; description: string; events?: string[] };
 export type ChairOption = { id: string; name: string; pricePerUnit: number };
 export type ExtraService = { id: string; name: string; price: number; unit: string };
 export type VenueOption = { id: string; name: string; pricePerHour: number; description: string };
 
 export const EVENT_TYPES = [
-  "Birthday",
-  "Wedding",
-  "Engagement",
-  "Silver Jubilee",
-  "Golden Jubilee",
-  "Platinum Jubilee",
-  "Corporate",
-  "Other",
+  "Wedding Ceremony & Reception",
+  "Engagement Ceremony",
+  "Birthday / Anniversary / Retirement Party",
+  "Naming Ceremony / Baby Shower / Bridal Shower",
+  "Corporate Event (Meeting, Conference, Gala)",
+  "Kitty Party / Karaoke Night",
+  "Garba / Dance Practice",
+  "Preschool / School Annual Day",
+  "AGM / Society Meeting / Re-Development Meeting",
+  "Charity / Fundraiser Event",
+  "Corporate Gala / Awards Dinner / Seminar",
+  "Sangeet / Mehendi / Haldi",
 ];
 
 export const SOURCES = [
@@ -78,7 +88,7 @@ const slotPkg = (
 ): Package => ({
   id,
   name,
-  tagline: `${label} · ${hours}h × ₹6,000/hr`,
+  tagline: `${label} · ${hours}h`,
   pricePerPlate: 0,
   minPax: 100,
   hourlyRate: 6000,
@@ -96,53 +106,300 @@ export const PACKAGES: Package[] = [
 // `price` = per-plate cost charged ONLY when this dish is selected beyond
 // the plate's allowed limit for its category. Within the limit it is included.
 export const MENU_ITEMS: MenuItem[] = [
-  // Welcome Drink
-  { id: "wd1", name: "Masala Soda", category: "Welcome Drink", price: 30 },
-  { id: "wd2", name: "Jaljeera", category: "Welcome Drink", price: 30 },
-  { id: "wd3", name: "Aam Panna", category: "Welcome Drink", price: 40 },
-  { id: "wd4", name: "Mocktail", category: "Welcome Drink", price: 60 },
+  // Welcome Drink — Basic
+  { id: "wd-b1", name: "Assorted Soft Drinks", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b2", name: "Masala Chaas", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b3", name: "Fresh Lime Juice", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b4", name: "Jal Jeera", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b5", name: "Litchi Squash", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b6", name: "Kiwi Squash", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b7", name: "Rose Sharbat", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b8", name: "Ice Tea", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b9", name: "Keri Panna", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b10", name: "Summer Cool", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b11", name: "Minty Kacchi Keri", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b12", name: "Kala Khatta", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b13", name: "Kokam Sharbat", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b14", name: "Lemon Ginger Mojito", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b15", name: "Lemon Litchi Fizz", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  { id: "wd-b16", name: "Blue Lagoon", category: "Welcome Drink", subcategory: "Basic", price: 0 },
+  // Welcome Drink — Fresh Fruit Juice
+  { id: "wd-f1", name: "Mosambi", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f2", name: "Pineapple", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f3", name: "Watermelon", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f4", name: "Orange (Seasonal)", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f5", name: "Peru Pineapple", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f6", name: "Orange Pineapple Ginger", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f7", name: "Special Cocktail Juice", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f8", name: "Special Boomerang (Pineapple, Orange & Peru)", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f9", name: "Special Tulsidhar (Pineapple, Chikku & Tulsi)", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f10", name: "Special Golden Punch (Pineapple & Orange)", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  { id: "wd-f11", name: "Special Raja Rani (Pineapple & Rose Syrup)", category: "Welcome Drink", subcategory: "Fresh Fruit Juice", price: 0 },
+  // Welcome Drink — Mocktails (+₹20 Extra)
+  { id: "wd-m1", name: "Special Fruit Punch", category: "Welcome Drink", subcategory: "Mocktails (+₹20 Extra)", price: 20 },
+  { id: "wd-m2", name: "Special Virgin Pina Colada", category: "Welcome Drink", subcategory: "Mocktails (+₹20 Extra)", price: 20 },
+  { id: "wd-m3", name: "Special Anar Peru Punch", category: "Welcome Drink", subcategory: "Mocktails (+₹20 Extra)", price: 20 },
+  { id: "wd-m4", name: "Special Thandai", category: "Welcome Drink", subcategory: "Mocktails (+₹20 Extra)", price: 20 },
+  { id: "wd-m5", name: "Special Mango Smoothie", category: "Welcome Drink", subcategory: "Mocktails (+₹20 Extra)", price: 20 },
+  { id: "wd-m6", name: "Special Peach Muskmelon", category: "Welcome Drink", subcategory: "Mocktails (+₹20 Extra)", price: 20 },
+  { id: "wd-m7", name: "Special Strawberry Colada", category: "Welcome Drink", subcategory: "Mocktails (+₹20 Extra)", price: 20 },
 
-  // Starter
-  { id: "st1", name: "Paneer Tikka", category: "Starter", price: 70 },
-  { id: "st2", name: "Veg Spring Rolls", category: "Starter", price: 60 },
-  { id: "st3", name: "Hara Bhara Kebab", category: "Starter", price: 60 },
-  { id: "st4", name: "Crispy Corn", category: "Starter", price: 60 },
-  { id: "st5", name: "Chicken Malai Tikka", category: "Starter", price: 120 },
+  // Salads
+  { id: "sa1", name: "Green Salad", category: "Salads", price: 0 },
+  { id: "sa2", name: "Chana Chaat Salad", category: "Salads", price: 0 },
+  { id: "sa3", name: "Corn Chaat", category: "Salads", price: 0 },
+  { id: "sa4", name: "Beetroot Salad", category: "Salads", price: 0 },
+  { id: "sa5", name: "Russian Salad", category: "Salads", price: 0 },
 
   // Farsan
-  { id: "fa1", name: "Khaman Dhokla", category: "Farsan", price: 40 },
-  { id: "fa2", name: "Khandvi", category: "Farsan", price: 50 },
-  { id: "fa3", name: "Patra", category: "Farsan", price: 40 },
-  { id: "fa4", name: "Methi Gota", category: "Farsan", price: 40 },
+  { id: "fa1", name: "Mini Samosa", category: "Farsan", price: 0 },
+  { id: "fa2", name: "Moong Dal Bhajia", category: "Farsan", price: 0 },
+  { id: "fa3", name: "Dal Wada", category: "Farsan", price: 0 },
+  { id: "fa4", name: "Veg Pakoda", category: "Farsan", price: 0 },
+  { id: "fa5", name: "Veg Cutlet", category: "Farsan", price: 0 },
+  { id: "fa6", name: "Vagari Idli", category: "Farsan", price: 0 },
+  { id: "fa7", name: "Masala Idli", category: "Farsan", price: 0 },
+  { id: "fa8", name: "Idli Podi", category: "Farsan", price: 0 },
+  { id: "fa9", name: "Khandvi", category: "Farsan", price: 0 },
+  { id: "fa10", name: "Patra", category: "Farsan", price: 0 },
+  { id: "fa11", name: "Dhokla", category: "Farsan", price: 0 },
+  { id: "fa12", name: "Sandwich Dhokla", category: "Farsan", price: 0 },
+  { id: "fa13", name: "Tiranga Dhokla", category: "Farsan", price: 0 },
+  { id: "fa14", name: "White Dhokla", category: "Farsan", price: 0 },
+  { id: "fa15", name: "Khaman", category: "Farsan", price: 0 },
+  { id: "fa16", name: "Dahiwada", category: "Farsan", price: 0 },
+  { id: "fa17", name: "Batata Wada", category: "Farsan", price: 0 },
+  { id: "fa18", name: "Mutter Pattis / Karanji", category: "Farsan", price: 0 },
+  { id: "fa19", name: "Corn Pattis", category: "Farsan", price: 0 },
+  { id: "fa20", name: "Kothmir Wadi", category: "Farsan", price: 0 },
 
-  // Main Course Bhaji
-  { id: "mc1", name: "Paneer Butter Masala", category: "Main Course Bhaji", price: 90 },
-  { id: "mc2", name: "Mix Veg", category: "Main Course Bhaji", price: 70 },
-  { id: "mc3", name: "Aloo Gobi", category: "Main Course Bhaji", price: 70 },
-  { id: "mc4", name: "Shahi Paneer", category: "Main Course Bhaji", price: 100 },
-  { id: "mc5", name: "Butter Chicken", category: "Main Course Bhaji", price: 150 },
+  // Veg Starter
+  { id: "vs1", name: "Papad Pudina Roll", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs2", name: "Veg Spring Roll", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs3", name: "Hara Bhara Kabab", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs4", name: "Veg Manchurian Dry", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs5", name: "Special Veg Potli", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs6", name: "Veg Gold Coin", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs7", name: "Cheese Corn Ball", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs8", name: "Cheese Chilly Toast", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs9", name: "Veg Timmili Kabab", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs10", name: "Corn Karari Tikki", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs11", name: "Kung Pao Potato", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs12", name: "Veg Crispy", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs13", name: "Veg Finger Schezwan", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs14", name: "American Roll", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs15", name: "Cheese Palak Roll", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs16", name: "Cigar Roll", category: "Starters", subcategory: "Veg Starter", price: 0 },
+  { id: "vs17", name: "Salsa Shots", category: "Starters", subcategory: "Veg Starter", price: 0 },
 
-  // Bread
-  { id: "br1", name: "Butter Roti", category: "Bread", price: 20 },
-  { id: "br2", name: "Tawa Roti", category: "Bread", price: 15 },
-  { id: "br3", name: "Butter Naan", category: "Bread", price: 30 },
-  { id: "br4", name: "Garlic Naan", category: "Bread", price: 40 },
+  // Paneer Starter
+  { id: "ps1", name: "Paneer Salt-N-Pepper", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps2", name: "Paneer Chilli Dry", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps3", name: "Paneer Lifafa", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps4", name: "Papad Paneer Roll", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps5", name: "Chupurstum Kabab", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps6", name: "Special Paneer Pahadi Tikka", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps7", name: "Special Paneer Kalimari", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps8", name: "Special Maladi Paneer Tikka Dry", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+  { id: "ps9", name: "Paneer Gold Coin", category: "Starters", subcategory: "Paneer Starter", price: 0 },
+
+  // Paneer Main Course
+  { id: "pm1", name: "Paneer Bhuna Masala", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm2", name: "Paneer Handi", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm3", name: "Paneer Tikka Masala", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm4", name: "Dhabe Wala Paneer", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm5", name: "Palak Paneer (Green)", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm6", name: "Paneer Lababdar", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm7", name: "Paneer Butter Masala", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm8", name: "Paneer Kadai", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm9", name: "Achari Paneer", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+  { id: "pm10", name: "Lasuni Corn Palak Paneer", category: "Main Course", subcategory: "Paneer Main Course", price: 0 },
+
+  // Veg Main Course
+  { id: "vm1", name: "Bhindi Fry Masala", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm2", name: "Kurkuri Bhindi", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm3", name: "Veg Makhanwala", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm4", name: "Veg Hangama", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm5", name: "Chana Masala", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm6", name: "Navratan Kurma", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm7", name: "Veg Kurma", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm8", name: "Veg Kofta", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm9", name: "Veg Tawa Mehfil", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm10", name: "Veg Amritsari", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm11", name: "Veg Diwani Handi", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm12", name: "Veg Handi", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm13", name: "Veg Kolhapuri", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm14", name: "Veg Pahadi", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm15", name: "Veg Hyderabadi (Green)", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm16", name: "Punjabi Saag", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm17", name: "Mix Vegetables", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm18", name: "Veg Kadai", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm19", name: "Dum Aloo Punjabi", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm20", name: "Veg Bhuna Masala", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm21", name: "Aloo Matar", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm22", name: "Aloo Flower / Gobi", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+  { id: "vm23", name: "Methi Matar Malai", category: "Main Course", subcategory: "Veg Main Course", price: 0 },
+
+  // Breakfast
+  { id: "bf1", name: "Upma", category: "Breakfast", price: 0 },
+  { id: "bf2", name: "Sheera", category: "Breakfast", price: 0 },
+  { id: "bf3", name: "Poha", category: "Breakfast", price: 0 },
+  { id: "bf4", name: "Khichadi", category: "Breakfast", price: 0 },
+  { id: "bf5", name: "Idli", category: "Breakfast", price: 0 },
+  { id: "bf6", name: "Medu Vada", category: "Breakfast", price: 0 },
+  { id: "bf7", name: "Chutney", category: "Breakfast", price: 0 },
+  { id: "bf8", name: "Sambhar", category: "Breakfast", price: 0 },
+  { id: "bf9", name: "Chai", category: "Breakfast", price: 0 },
+  { id: "bf10", name: "Coffee", category: "Breakfast", price: 0 },
+  { id: "bf11", name: "Batata Vada", category: "Breakfast", price: 0 },
+  { id: "bf12", name: "Sabudana Vada", category: "Breakfast", price: 0 },
+  { id: "bf13", name: "Sevaiya Upma", category: "Breakfast", price: 0 },
+
+  // Kathiawadi Items
+  { id: "kt1", name: "Dhokli Nu Shaak", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+  { id: "kt2", name: "Kathiawadi Undhiyu", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+  { id: "kt3", name: "Khichu", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+  { id: "kt4", name: "Dal Dhokli", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+  { id: "kt5", name: "Sev Tomato Nu Sak", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+  { id: "kt6", name: "Bharela Bhinda Nu Shaak", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+  { id: "kt7", name: "Green Gujrat", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+  { id: "kt8", name: "Ringan Batete Nu Shaak", category: "Main Course", subcategory: "Kathiawadi", price: 0 },
+
+  // Rajasthani
+  { id: "rj1", name: "Gatte Ki Sabzi", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+  { id: "rj2", name: "Rajasthani Mogar", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+  { id: "rj3", name: "Dal Bati Churma", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+  { id: "rj4", name: "Rajasthani Kadhi", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+  { id: "rj5", name: "Vadi Ki Sabzi", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+  { id: "rj6", name: "Rajasthani Bhindi", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+  { id: "rj7", name: "Gatte Ka Pulav", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+  { id: "rj8", name: "Hara Kanda Sabzi", category: "Main Course", subcategory: "Rajasthani", price: 0 },
+
+  // Indian Breads
+  { id: "br1", name: "Poori", category: "Indian Breads", price: 0 },
+  { id: "br2", name: "Fulka", category: "Indian Breads", price: 0 },
+  { id: "br3", name: "Roti (Live)", category: "Indian Breads", price: 0 },
+  { id: "br4", name: "Naan (Live)", category: "Indian Breads", price: 0 },
+  { id: "br5", name: "Kulcha (Live)", category: "Indian Breads", price: 0 },
+  { id: "br6", name: "Paratha (Live)", category: "Indian Breads", price: 0 },
+  { id: "br7", name: "Missi Roti (Live)", category: "Indian Breads", price: 0 },
+  { id: "br8", name: "Stuff Kulcha (Live)", category: "Indian Breads", price: 0 },
+
+  // Raita
+  { id: "ra1", name: "Boondi Raita", category: "Raita", price: 0 },
+  { id: "ra2", name: "Pineapple Raita", category: "Raita", price: 0 },
+  { id: "ra3", name: "Vegetable Raita", category: "Raita", price: 0 },
+  { id: "ra4", name: "Corn Salad", category: "Raita", price: 0 },
+  { id: "ra5", name: "Chana Salad", category: "Raita", price: 0 },
 
   // Rice
-  { id: "ri1", name: "Jeera Rice", category: "Rice", price: 50 },
-  { id: "ri2", name: "Veg Pulao", category: "Rice", price: 60 },
-  { id: "ri3", name: "Veg Biryani", category: "Rice", price: 90 },
+  { id: "ri1", name: "Steam Rice", category: "Rice", price: 0 },
+  { id: "ri2", name: "Jeera Rice", category: "Rice", price: 0 },
+  { id: "ri3", name: "Peas Pulav", category: "Rice", price: 0 },
+  { id: "ri4", name: "Tava Pulav", category: "Rice", price: 0 },
+  { id: "ri5", name: "Veg Biryani", category: "Rice", price: 0 },
+  { id: "ri6", name: "Gujarati Khichdi", category: "Rice", price: 0 },
 
   // Dal
-  { id: "dl1", name: "Dal Tadka", category: "Dal", price: 50 },
-  { id: "dl2", name: "Dal Fry", category: "Dal", price: 50 },
-  { id: "dl3", name: "Dal Makhani", category: "Dal", price: 80 },
+  { id: "dl1", name: "Dal Fry", category: "Dal", price: 0 },
+  { id: "dl2", name: "Dal Tadka", category: "Dal", price: 0 },
+  { id: "dl3", name: "Dal Makhani", category: "Dal", price: 0 },
+  { id: "dl4", name: "Gujarati Kadhi (Sweet/Spicy)", category: "Dal", price: 0 },
+  { id: "dl5", name: "Gujarati Dal (Sweet/Spicy)", category: "Dal", price: 0 },
+  { id: "dl6", name: "Punjabi Pakodi Kadhi", category: "Dal", price: 0 },
 
-  // Sweet
-  { id: "sw1", name: "Gulab Jamun", category: "Sweet", price: 40 },
-  { id: "sw2", name: "Rasmalai", category: "Sweet", price: 60 },
-  { id: "sw3", name: "Moong Dal Halwa", category: "Sweet", price: 70 },
-  { id: "sw4", name: "Ice Cream", category: "Sweet", price: 50 },
+  // Sweets
+  { id: "sw1", name: "Gulab Jamun", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw2", name: "Special Badam Moongdal Halwa", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw3", name: "Special Moongdal Halwa", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw4", name: "Fruit Salad", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw5", name: "Gajar Halwa (Seasonal)", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw6", name: "Dudhi Halwa", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw7", name: "Special Jalebi with Rabdi", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw8", name: "Jalebi", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw9", name: "Special Kesar Phirni", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw10", name: "Shrikhand / Amrakhand", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw11", name: "Aam Ras (Seasonal)", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw12", name: "Basundi (All Type)", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw13", name: "Rasgulla", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw14", name: "Kala Jamun", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw15", name: "Special Malai Sandwich", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw16", name: "Special Ras Malai", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw17", name: "Special Chum Chum", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw18", name: "Special Strawberry Cream", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw19", name: "Special Chocolate Mousse", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw20", name: "Special Shahi Tukda", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+  { id: "sw21", name: "Mohanthal", category: "Sweets & Ice Cream", subcategory: "Sweets", price: 0 },
+
+  // Ice Cream — Special (+₹25)
+  { id: "ic-s1", name: "Black Current", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s2", name: "Chocolate Chips", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s3", name: "Guava", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s4", name: "Anjeer Badam", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s5", name: "Almond", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s6", name: "Raj Bhog", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s7", name: "Kesar Pista", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s8", name: "Pan", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s9", name: "Rose Gulkand", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  { id: "ic-s10", name: "Kulfi Faluda", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Special (+₹25 Extra)", price: 25 },
+  // Ice Cream — Regular
+  { id: "ic-r1", name: "Vanilla", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Regular", price: 0 },
+  { id: "ic-r2", name: "Strawberry", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Regular", price: 0 },
+  { id: "ic-r3", name: "Butter Scotch", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Regular", price: 0 },
+  { id: "ic-r4", name: "Chocolate", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Regular", price: 0 },
+  { id: "ic-r5", name: "Vanilla with Choco Sauce", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Regular", price: 0 },
+  { id: "ic-r6", name: "Malai Kulfi", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Regular", price: 0 },
+  { id: "ic-r7", name: "Kulfi Sticky", category: "Sweets & Ice Cream", subcategory: "Ice Cream — Regular", price: 0 },
+
+  // Live Counters — Chaat
+  { id: "lc-c1", name: "Pani Puri", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c2", name: "Sev Puri", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c3", name: "Dahi Puri", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c4", name: "Papdi Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c5", name: "Bhel", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c6", name: "Ragda Pattice", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c7", name: "Cutori Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c8", name: "Basket Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c9", name: "Dahi Wada", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c10", name: "Aloo Tikki Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c11", name: "Dabeli", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c12", name: "Chole Tikki Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c13", name: "Raj Kachori", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c14", name: "Samosa Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c15", name: "Corn Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c16", name: "Cheese Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c17", name: "Palak Patta Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c18", name: "Delhi Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  { id: "lc-c19", name: "Mumbai Chaat", category: "Live Counters", subcategory: "Chaat Counter", price: 0 },
+  // Live Counters — Pasta
+  { id: "lc-p1", name: "Red Sauce Pasta", category: "Live Counters", subcategory: "Pasta Counter", price: 0 },
+  { id: "lc-p2", name: "White Sauce Pasta", category: "Live Counters", subcategory: "Pasta Counter", price: 0 },
+  { id: "lc-p3", name: "Pesto Sauce Pasta", category: "Live Counters", subcategory: "Pasta Counter", price: 0 },
+  // Live Counters — Pizza
+  { id: "lc-pz1", name: "Margherita", category: "Live Counters", subcategory: "Pizza", price: 0 },
+  { id: "lc-pz2", name: "Veg Farmyard Pizza", category: "Live Counters", subcategory: "Pizza", price: 0 },
+  { id: "lc-pz3", name: "Paneer Tikka Pizza", category: "Live Counters", subcategory: "Pizza", price: 0 },
+  { id: "lc-pz4", name: "Al Fungi Pizza", category: "Live Counters", subcategory: "Pizza", price: 0 },
+  // Live Counters — South Indian
+  { id: "lc-si1", name: "Assorted Dosa / Uttapam", category: "Live Counters", subcategory: "South Indian Counter", price: 0 },
+  // Live Counters — Chinese / Oriental
+  { id: "lc-ch1", name: "Veg Fried Rice", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch2", name: "Basil Rice", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch3", name: "Veg Combination Rice", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch4", name: "Veg Schezwan Fried Rice", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch5", name: "Veg Burnt Garlic Rice", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch6", name: "Veg Hakka Noodles", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch7", name: "Veg Chilly Garlic Sauce", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch8", name: "Veg Human Sauce", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch9", name: "Veg Manchurian Gravy", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch10", name: "Veg in Black Pepper Sauce", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  { id: "lc-ch11", name: "Veg Thai Curry (Red/Green)", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
+  // Live Counters — Additional
+  { id: "lc-a1", name: "Pav Bhaji Counter", category: "Live Counters", subcategory: "Additional Counters", price: 0 },
+  { id: "lc-a2", name: "Fruit Counter", category: "Live Counters", subcategory: "Additional Counters", price: 0 },
+  { id: "lc-a3", name: "Chole Bhature", category: "Live Counters", subcategory: "Additional Counters", price: 0 },
+  { id: "lc-a4", name: "Delhi Chaat", category: "Live Counters", subcategory: "Additional Counters", price: 0 },
+  { id: "lc-a5", name: "Soup", category: "Live Counters", subcategory: "Additional Counters", price: 0 },
 ];
 
 export const COMMON_PLATE_ITEMS = [
@@ -151,63 +408,67 @@ export const COMMON_PLATE_ITEMS = [
 
 export const PLATE_PACKAGES: PlatePackage[] = [
   {
-    id: "plate1",
-    name: "Plate Package #1",
+    id: "plate-600",
+    name: "Plate Package ₹600",
+    basePrice: 600,
+    limits: {
+      "Welcome Drink": 1,
+      "Starters": 1,
+      "Main Course": 1,
+      "Indian Breads": 1,
+      "Rice": 1,
+      "Dal": 1,
+      "Sweets & Ice Cream": 1,
+    },
+  },
+  {
+    id: "plate-750",
+    name: "Plate Package ₹750",
     basePrice: 750,
     limits: {
+      "Welcome Drink": 1,
+      "Farsan": 1,
+      "Starters": 2,
+      "Main Course": 2,
+      "Indian Breads": 1,
+      "Rice": 1,
+      "Dal": 1,
+      "Sweets & Ice Cream": 1,
+    },
+  },
+  {
+    id: "plate-950",
+    name: "Plate Package ₹950",
+    basePrice: 950,
+    limits: {
       "Welcome Drink": 2,
-      "Starter": 2,
+      "Salads": 1,
       "Farsan": 1,
-      "Main Course Bhaji": 2,
-      "Bread": 2,
+      "Starters": 2,
+      "Main Course": 2,
+      "Indian Breads": 2,
+      "Raita": 1,
       "Rice": 1,
       "Dal": 1,
-      "Sweet": 2,
-    },
-    extras: ["Includes 1 Ice Cream as a Sweet"],
-  },
-  {
-    id: "plate2",
-    name: "Plate Package #2",
-    basePrice: 550,
-    limits: {
-      "Welcome Drink": 1,
-      "Starter": 1,
-      "Farsan": 1,
-      "Main Course Bhaji": 2,
-      "Bread": 1,
-      "Rice": 1,
-      "Dal": 1,
-      "Sweet": 1,
+      "Sweets & Ice Cream": 2,
     },
   },
   {
-    id: "plate3",
-    name: "Plate Package #3",
-    basePrice: 475,
+    id: "plate-1150",
+    name: "Plate Package ₹1150",
+    basePrice: 1150,
     limits: {
-      "Welcome Drink": 1,
-      "Starter": 1,
-      "Farsan": 1,
-      "Main Course Bhaji": 2,
-      "Bread": 1,
+      "Welcome Drink": 2,
+      "Salads": 1,
+      "Farsan": 2,
+      "Starters": 3,
+      "Main Course": 3,
+      "Indian Breads": 2,
+      "Raita": 1,
       "Rice": 1,
       "Dal": 1,
-      "Sweet": 1,
-    },
-  },
-  {
-    id: "plate4",
-    name: "Plate Package #4",
-    basePrice: 300,
-    limits: {
-      "Welcome Drink": 1,
-      "Starter": 1,
-      "Main Course Bhaji": 1,
-      "Bread": 1,
-      "Rice": 1,
-      "Dal": 1,
-      "Sweet": 1,
+      "Sweets & Ice Cream": 2,
+      "Live Counters": 1,
     },
   },
   {
@@ -219,16 +480,45 @@ export const PLATE_PACKAGES: PlatePackage[] = [
   },
 ];
 
+const WEDDING = "Wedding Ceremony & Reception";
+const ENGAGEMENT = "Engagement Ceremony";
+const BIRTHDAY = "Birthday / Anniversary / Retirement Party";
+const NAMING = "Naming Ceremony / Baby Shower / Bridal Shower";
+const CORPORATE = "Corporate Event (Meeting, Conference, Gala)";
+const KITTY = "Kitty Party / Karaoke Night";
+const GARBA = "Garba / Dance Practice";
+const SCHOOL = "Preschool / School Annual Day";
+const AGM = "AGM / Society Meeting / Re-Development Meeting";
+const CHARITY = "Charity / Fundraiser Event";
+const GALA = "Corporate Gala / Awards Dinner / Seminar";
+const SANGEET = "Sangeet / Mehendi / Haldi";
+
 export const DECOR_OPTIONS: DecorOption[] = [
-  { id: "d1", name: "Floral Entrance Arch", price: 8000, description: "Fresh flower entry gate" },
-  { id: "d2", name: "Fairy Light Canopy", price: 6000, description: "Warm fairy lights overhead" },
-  { id: "d3", name: "Balloon Décor", price: 4500, description: "Themed balloon arrangements" },
-  { id: "d4", name: "Centerpieces", price: 3500, description: "Table centerpiece per 10 tables" },
-  { id: "d5", name: "Theme Backdrop", price: 7000, description: "Custom photo backdrop" },
+  { id: "d1", name: "Floral Entrance Arch", price: 8000, description: "Fresh flower entry gate", events: [WEDDING, ENGAGEMENT, SANGEET, NAMING] },
+  { id: "d2", name: "Fairy Light Canopy", price: 6000, description: "Warm fairy lights overhead", events: [WEDDING, ENGAGEMENT, SANGEET, BIRTHDAY, KITTY] },
+  { id: "d3", name: "Balloon Décor", price: 4500, description: "Themed balloon arrangements", events: [BIRTHDAY, NAMING, SCHOOL, KITTY] },
+  { id: "d4", name: "Table Centerpieces", price: 3500, description: "Per 10 tables", events: [WEDDING, ENGAGEMENT, CORPORATE, GALA, CHARITY, NAMING, BIRTHDAY] },
+  { id: "d5", name: "Theme Backdrop", price: 7000, description: "Custom photo backdrop", events: [BIRTHDAY, NAMING, KITTY, SCHOOL, SANGEET] },
+  { id: "d6", name: "Mandap Floral Setup", price: 25000, description: "Traditional flower mandap", events: [WEDDING] },
+  { id: "d7", name: "Haldi Yellow Theme", price: 9000, description: "Marigold & yellow drapes", events: [SANGEET] },
+  { id: "d8", name: "Mehendi Green Theme", price: 9000, description: "Green florals & jhumkas", events: [SANGEET] },
+  { id: "d9", name: "Ring Ceremony Platter", price: 3000, description: "Decorated ring tray", events: [ENGAGEMENT] },
+  { id: "d10", name: "Cradle Decoration", price: 6500, description: "Floral cradle for baby", events: [NAMING] },
+  { id: "d11", name: "Baby Shower Drapes", price: 5500, description: "Pastel drapes & props", events: [NAMING] },
+  { id: "d12", name: "Corporate Branding Standee", price: 4000, description: "Logo standees & flags", events: [CORPORATE, GALA, AGM, CHARITY] },
+  { id: "d13", name: "Stage Podium & Banner", price: 5000, description: "Podium with branded banner", events: [CORPORATE, GALA, AGM, CHARITY, SCHOOL] },
+  { id: "d14", name: "Conference Table Setup", price: 3500, description: "Table linens & notepads", events: [CORPORATE, AGM] },
+  { id: "d15", name: "Awards Spotlight Setup", price: 12000, description: "Spotlight + red carpet", events: [GALA, CHARITY] },
+  { id: "d16", name: "Garba Dandiya Décor", price: 8500, description: "Traditional chaniya theme", events: [GARBA] },
+  { id: "d17", name: "LED Dance Floor", price: 18000, description: "Illuminated dance floor", events: [GARBA, SANGEET, WEDDING, BIRTHDAY] },
+  { id: "d18", name: "Karaoke Lounge Setup", price: 6000, description: "Mood lighting + props", events: [KITTY] },
+  { id: "d19", name: "Cake Table Décor", price: 2500, description: "Decorated cake table", events: [BIRTHDAY, NAMING, KITTY] },
+  { id: "d20", name: "School Theme Cutouts", price: 5500, description: "Cartoon/educational props", events: [SCHOOL] },
+  { id: "d21", name: "Charity Donor Wall", price: 7000, description: "Sponsor & donor display", events: [CHARITY] },
 ];
 
 export const STAGE_OPTIONS: DecorOption[] = [
-  { id: "s0", name: "Basic Stage Decoration", price: 10000, description: "Basic stage setup" },
+  { id: "s0", name: "Basic Stage Decoration", price: 0, description: "Basic stage setup" },
   { id: "s1", name: "Classic Floral Stage", price: 15000, description: "Roses + drapes" },
   { id: "s2", name: "Royal Mandap", price: 35000, description: "Traditional wedding mandap" },
   { id: "s3", name: "LED Wall Stage", price: 45000, description: "Full LED backdrop with visuals" },
@@ -246,7 +536,7 @@ export const CHAIR_OPTIONS: ChairOption[] = [
 export const EXTRA_SERVICES: ExtraService[] = [
   { id: "e1", name: "Photography", price: 25000, unit: "package" },
   { id: "e2", name: "Videography + Drone", price: 35000, unit: "package" },
-  { id: "e3", name: "DJ & Sound", price: 18000, unit: "event" },
+  { id: "e3", name: "DJ & Sound", price: 6000, unit: "event" },
   { id: "e4", name: "Live Band", price: 40000, unit: "event" },
   { id: "e5", name: "Valet Parking", price: 8000, unit: "event" },
   { id: "e6", name: "Anchor / MC", price: 12000, unit: "event" },
@@ -256,8 +546,4 @@ export const EXTRA_SERVICES: ExtraService[] = [
 
 export const VENUE_OPTIONS: VenueOption[] = [
   { id: "v1", name: "Main Banquet Hall", pricePerHour: 6000, description: "Indoor AC hall · up to 400 guests" },
-  { id: "v2", name: "Garden Lawn", pricePerHour: 4500, description: "Open-air lawn · up to 300 guests" },
-  { id: "v3", name: "Rooftop Terrace", pricePerHour: 5500, description: "Open rooftop · up to 200 guests" },
-  { id: "v4", name: "Poolside Deck", pricePerHour: 7500, description: "Premium poolside · up to 150 guests" },
-  { id: "v5", name: "Conference Room", pricePerHour: 2500, description: "Compact AC room · up to 60 guests" },
 ];

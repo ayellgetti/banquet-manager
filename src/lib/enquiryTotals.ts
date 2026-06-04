@@ -100,7 +100,11 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
 export function calcTotals(s: EnquiryState) {
   const items = buildLineItems(s);
   const subtotal = items.reduce((sum, i) => sum + i.amount, 0);
-  const discount = Math.round((subtotal * (s.discountPercent || 0)) / 100);
+  const rawDiscount =
+    s.discountType === "fixed"
+      ? s.discountAmount || 0
+      : Math.round((subtotal * (s.discountPercent || 0)) / 100);
+  const discount = Math.max(0, Math.min(subtotal, rawDiscount));
   const total = subtotal - discount;
   return { items, subtotal, discount, total };
 }

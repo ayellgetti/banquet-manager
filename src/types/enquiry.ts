@@ -19,6 +19,8 @@ export type EnquiryState = {
   extraIds: string[];
   venueId: string;
   discountPercent: number;
+  discountAmount: number;
+  discountType: "percent" | "fixed";
   notes: string;
 };
 
@@ -31,7 +33,7 @@ export const initialEnquiry: EnquiryState = {
     guestCount: 100,
     source: "",
   },
-  packageId: "",
+  packageId: "silver-morning",
   slotId: "",
   platePackageId: "",
   menuItemIds: [],
@@ -41,5 +43,7 @@ export const initialEnquiry: EnquiryState = {
   extraIds: [],
   venueId: "v1",
   discountPercent: 0,
+  discountAmount: 0,
+  discountType: "percent",
   notes: "",
 };
