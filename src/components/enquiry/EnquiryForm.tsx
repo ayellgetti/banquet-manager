@@ -18,7 +18,6 @@ import { calcTotals, formatINR } from "@/lib/enquiryTotals";
 import { ArrowLeft, ArrowRight, Printer, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
-import html2pdf from "html2pdf.js";
 
 const TAB_ORDER = [
   "basics", "venue", "package", "menu", "stage", "extras", "summary",
@@ -210,6 +209,8 @@ export const EnquiryForm = () => {
     const filename = ["Enquiry", safeName, safeEvent, timestamp].filter(Boolean).join("_") + ".pdf";
     try {
       document.body.classList.add("printing");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const html2pdf = (window as any).html2pdf;
       await html2pdf()
         .set({
           margin: 10,
