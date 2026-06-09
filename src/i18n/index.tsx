@@ -21,6 +21,9 @@ const en: Dict = {
   "home.open": "Open",
   "home.back": "Back to home",
 
+  "notFound.message": "This page doesn't exist. Check the link or return to the home screen.",
+  "notFound.home": "Back to Home",
+
   "module.enquiry.title": "Event Enquiry",
   "module.enquiry.subtitle": "Build a complete quote across packages, menu, decor and more.",
   "module.enquiry.desc": "Full event enquiry with venue, package, menu, stage, extras and PDF quote.",
@@ -189,6 +192,9 @@ const hi: Dict = {
   "home.open": "खोलें",
   "home.back": "होम पर वापस",
 
+  "notFound.message": "यह पेज मौजूद नहीं है। लिंक जाँचें या होम पर लौटें।",
+  "notFound.home": "होम पर जाएँ",
+
   "module.enquiry.title": "इवेंट पूछताछ",
   "module.enquiry.subtitle": "पैकेज, मेनू, सजावट और अधिक के साथ पूरा कोटेशन।",
   "module.enquiry.desc": "स्थान, पैकेज, मेनू, मंच, अतिरिक्त और PDF कोट के साथ पूर्ण पूछताछ।",
@@ -356,6 +362,9 @@ const mr: Dict = {
   "home.choose": "आज तुम्हाला काय करायचे आहे?",
   "home.open": "उघडा",
   "home.back": "मुख्यपृष्ठावर परत",
+
+  "notFound.message": "हे पृष्ठ अस्तित्वात नाही. लिंक तपासा किंवा मुख्यपृष्ठावर परत जा.",
+  "notFound.home": "मुख्यपृष्ठावर जा",
 
   "module.enquiry.title": "इव्हेंट चौकशी",
   "module.enquiry.subtitle": "पॅकेज, मेनू, सजावट आणि अधिकासह संपूर्ण कोटेशन.",
