@@ -27,6 +27,7 @@ const en: Dict = {
 
   "common.back": "Back",
   "common.next": "Next",
+  "common.saving": "Saving…",
   "common.downloadPdf": "Download PDF",
   "common.runningTotal": "Running total:",
   "common.tipPackage": "Tip: pick a package first — it pre-fills pricing across the other sections.",
@@ -121,6 +122,7 @@ const en: Dict = {
   "validate.guestsRequired": "Number of guests is required.",
   "validate.sourceRequired": "Source is required.",
   "toast.fixErrors": "Please fix the following before continuing:",
+  "toast.leadSubmitFailed": "Could not save your enquiry. Please check your connection and try again.",
 };
 
 const hi: Dict = {
@@ -140,6 +142,7 @@ const hi: Dict = {
 
   "common.back": "पीछे",
   "common.next": "अगला",
+  "common.saving": "सहेजा जा रहा है…",
   "common.downloadPdf": "PDF डाउनलोड करें",
   "common.runningTotal": "कुल अब तक:",
   "common.tipPackage": "सुझाव: पहले पैकेज चुनें — इससे बाकी अनुभागों में मूल्य अपने आप भर जाते हैं।",
@@ -234,6 +237,7 @@ const hi: Dict = {
   "validate.guestsRequired": "मेहमानों की संख्या आवश्यक है।",
   "validate.sourceRequired": "स्रोत आवश्यक है।",
   "toast.fixErrors": "आगे बढ़ने से पहले कृपया इन्हें ठीक करें:",
+  "toast.leadSubmitFailed": "आपकी पूछताछ सहेजी नहीं जा सकी। कृपया कनेक्शन जांचें और पुनः प्रयास करें।",
 };
 
 const mr: Dict = {
@@ -253,6 +257,7 @@ const mr: Dict = {
 
   "common.back": "मागे",
   "common.next": "पुढे",
+  "common.saving": "जतन होत आहे…",
   "common.downloadPdf": "PDF डाउनलोड करा",
   "common.runningTotal": "एकूण आत्तापर्यंत:",
   "common.tipPackage": "सूचना: आधी पॅकेज निवडा — त्यामुळे इतर विभागांमध्ये किंमत आपोआप भरली जाते.",
@@ -347,6 +352,7 @@ const mr: Dict = {
   "validate.guestsRequired": "पाहुण्यांची संख्या आवश्यक आहे.",
   "validate.sourceRequired": "स्रोत आवश्यक आहे.",
   "toast.fixErrors": "पुढे जाण्यापूर्वी कृपया हे दुरुस्त करा:",
+  "toast.leadSubmitFailed": "तुमची चौकशी जतन करता आली नाही. कृपया कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",
 };
 
 const DICTS: Record<Lang, Dict> = { en, hi, mr };

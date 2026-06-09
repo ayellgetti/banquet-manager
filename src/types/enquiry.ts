@@ -1,3 +1,5 @@
+import type { EnquiryApiResponse } from "@/lib/enquiryApi";
+
 export type BasicDetails = {
   customerName: string;
   phone: string;
@@ -22,6 +24,7 @@ export type EnquiryState = {
   discountAmount: number;
   discountType: "percent" | "fixed";
   notes: string;
+  leadApiResponse: EnquiryApiResponse | null;
 };
 
 export const initialEnquiry: EnquiryState = {
@@ -46,4 +49,5 @@ export const initialEnquiry: EnquiryState = {
   discountAmount: 0,
   discountType: "percent",
   notes: "",
+  leadApiResponse: null,
 };

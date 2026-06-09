@@ -15,6 +15,7 @@ import {
 } from "@/data/enquiryOptions";
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, formatINR } from "@/lib/enquiryTotals";
+import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
 import { ArrowLeft, ArrowRight, Printer, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
@@ -61,6 +62,7 @@ export const EnquiryForm = () => {
   const [state, setState] = useState<EnquiryState>(initialEnquiry);
   const [touched, setTouched] = useState<{ customerName?: boolean; phone?: boolean }>({});
   const [attempted, setAttempted] = useState<Set<TabKey>>(new Set());
+  const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const totals = calcTotals(state);
 
   const update = <K extends keyof EnquiryState>(key: K, value: EnquiryState[K]) =>
@@ -147,7 +149,7 @@ export const EnquiryForm = () => {
     }
     return errs;
   };
-  const tryChangeTab = (next: TabKey) => {
+  const tryChangeTab = async (next: TabKey) => {
     if (next === tab) return;
     const nextIdx = TAB_ORDER.indexOf(next);
     if (nextIdx < idx) { setTab(next); return; }
@@ -179,13 +181,28 @@ export const EnquiryForm = () => {
       });
       return;
     }
+
+    if (next === "menu" && !state.leadApiResponse) {
+      setIsSubmittingLead(true);
+      try {
+        const response = await submitEnquiryLead(buildEnquiryLeadPayload(state));
+        setState((s) => ({ ...s, leadApiResponse: response }));
+        setTab(next);
+      } catch {
+        toast.error(t("toast.leadSubmitFailed"));
+      } finally {
+        setIsSubmittingLead(false);
+      }
+      return;
+    }
+
     setTab(next);
   };
   const goNext = () => {
-    if (idx < TAB_ORDER.length - 1) tryChangeTab(TAB_ORDER[idx + 1]);
+    if (idx < TAB_ORDER.length - 1) void tryChangeTab(TAB_ORDER[idx + 1]);
   };
   const goPrev = () => {
-    if (idx > 0) tryChangeTab(TAB_ORDER[idx - 1]);
+    if (idx > 0) void tryChangeTab(TAB_ORDER[idx - 1]);
   };
 
   const menuByCategory = MENU_ITEMS.reduce<Record<string, typeof MENU_ITEMS>>((acc, m) => {
@@ -229,7 +246,7 @@ export const EnquiryForm = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs value={tab} onValueChange={(v) => tryChangeTab(v as TabKey)}>
+      <Tabs value={tab} onValueChange={(v) => void tryChangeTab(v as TabKey)}>
         <div className="no-print -mx-1 overflow-x-auto sm:mx-0">
           <TabsList className="flex h-auto w-max min-w-full justify-start gap-1 rounded-xl border border-border/70 bg-card p-1.5 shadow-soft sm:flex-wrap sm:w-full">
             {TAB_ORDER.map((k, i) => (
@@ -773,8 +790,8 @@ export const EnquiryForm = () => {
               <Printer className="mr-1 h-4 w-4" /> {t("common.downloadPdf")}
             </Button>
           ) : (
-            <Button onClick={goNext} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
-              {t("common.next")} <ArrowRight className="ml-1 h-4 w-4" />
+            <Button onClick={goNext} disabled={isSubmittingLead} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
+              {isSubmittingLead ? t("common.saving") : t("common.next")} {!isSubmittingLead && <ArrowRight className="ml-1 h-4 w-4" />}
             </Button>
           )}
         </div>

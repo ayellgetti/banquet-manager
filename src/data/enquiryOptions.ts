@@ -14,9 +14,9 @@ export type Package = {
 export type MenuItem = { id: string; name: string; category: string; subcategory?: string; price: number };
 export type MenuCategory =
   | "Welcome Drink"
+  | "Starters"
   | "Salads"
   | "Farsan"
-  | "Starters"
   | "Main Course"
   | "Breakfast"
   | "Kathiawadi"
