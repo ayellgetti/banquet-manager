@@ -25,6 +25,7 @@ export type EnquiryState = {
   discountType: "percent" | "fixed";
   notes: string;
   leadApiResponse: EnquiryApiResponse | null;
+  selectMenuLater: boolean;
 };
 
 export const initialEnquiry: EnquiryState = {
@@ -50,4 +51,5 @@ export const initialEnquiry: EnquiryState = {
   discountType: "percent",
   notes: "",
   leadApiResponse: null,
+  selectMenuLater: false,
 };

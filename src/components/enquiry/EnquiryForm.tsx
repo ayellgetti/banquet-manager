@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { SectionCard } from "./SectionCard";
 import { SelectableCard } from "./SelectableCard";
 import { RichTextEditor } from "./RichTextEditor";
@@ -102,7 +103,7 @@ export const EnquiryForm = () => {
   const invalidStage   = attempted.has("stage")   && !state.stageId;
   const menuPlateMissing = attempted.has("menu") && !state.platePackageId;
   const invalidCats = new Set<string>();
-  if (attempted.has("menu") && state.platePackageId) {
+  if (attempted.has("menu") && !state.selectMenuLater && state.platePackageId) {
     const plate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
     const limits = (plate?.limits ?? {}) as Record<string, number>;
     for (const [cat, limit] of Object.entries(limits)) {
@@ -128,8 +129,12 @@ export const EnquiryForm = () => {
       case "venue":   if (!state.venueId)   errs.push(t("toast.needVenue"));   break;
       case "package": if (!state.packageId) errs.push(t("toast.needPackage")); break;
       case "menu": {
-        if (!state.platePackageId)              errs.push(t("toast.needPlate"));
-        else if (state.menuItemIds.length === 0) errs.push(t("toast.needPlate"));
+        if (!state.platePackageId) {
+          errs.push(t("toast.needPlatePackage"));
+          break;
+        }
+        if (state.selectMenuLater) break;
+        if (state.menuItemIds.length === 0) errs.push(t("toast.needPlate"));
         const plate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
         const limits = (plate?.limits ?? {}) as Record<string, number>;
         for (const [cat, limit] of Object.entries(limits)) {
@@ -182,7 +187,9 @@ export const EnquiryForm = () => {
       return;
     }
 
-    if (next === "menu" && !state.leadApiResponse) {
+    const menuIdx = TAB_ORDER.indexOf("menu");
+    const leavingMenuForward = idx === menuIdx && nextIdx > menuIdx;
+    if (leavingMenuForward && !state.leadApiResponse) {
       setIsSubmittingLead(true);
       try {
         const response = await submitEnquiryLead(buildEnquiryLeadPayload(state));
@@ -399,8 +406,29 @@ export const EnquiryForm = () => {
         {/* MENU */}
         <TabsContent value="menu" className="mt-6">
           <SectionCard title={t("menu.title")} description={t("menu.desc")} required>
+            <div className="mb-6 flex items-start gap-3 rounded-lg border bg-muted/40 p-4">
+              <Checkbox
+                id="select-menu-later"
+                checked={state.selectMenuLater}
+                onCheckedChange={(checked) => {
+                  const on = checked === true;
+                  setState((s) => ({
+                    ...s,
+                    selectMenuLater: on,
+                    ...(on ? { menuItemIds: [] } : {}),
+                  }));
+                }}
+              />
+              <div className="space-y-1">
+                <Label htmlFor="select-menu-later" className="cursor-pointer font-medium leading-none">
+                  {t("menu.selectLater")}
+                </Label>
+                <p className="text-sm text-muted-foreground">{t("menu.selectLaterDesc")}</p>
+              </div>
+            </div>
+
             {menuPlateMissing && (
-              <p className="mb-3 text-sm text-destructive">{t("toast.needPlate")}</p>
+              <p className="mb-3 text-sm text-destructive">{t("toast.needPlatePackage")}</p>
             )}
             <div className={`mb-6 overflow-x-auto rounded-lg border ${menuPlateMissing ? "ring-2 ring-destructive/60" : ""}`}>
               <table className="w-full border-collapse text-sm">
@@ -467,7 +495,12 @@ export const EnquiryForm = () => {
               {COMMON_PLATE_ITEMS.join(" · ")}
             </div>
 
-            {!state.platePackageId ? (
+            {state.selectMenuLater && state.platePackageId && (
+              <p className="mb-4 text-sm text-muted-foreground italic">{t("menu.selectLaterHint")}</p>
+            )}
+
+            {!state.selectMenuLater && (
+              !state.platePackageId ? (
               <p className="text-sm text-muted-foreground">{t("menu.selectPlate")}</p>
             ) : (
             <Accordion
@@ -592,6 +625,7 @@ export const EnquiryForm = () => {
                 );
               })}
             </Accordion>
+            )
             )}
           </SectionCard>
         </TabsContent>
@@ -913,7 +947,9 @@ const SelectionsBreakdown = ({ state }: { state: EnquiryState }) => {
               <span className="text-muted-foreground"> · ₹{plate.basePrice}/plate base</span>
             )}
           </div>
-          {Object.keys(menuByCat).length === 0 ? (
+          {state.selectMenuLater ? (
+            <p className="text-xs italic text-muted-foreground">{t("menu.selectedLaterSummary")}</p>
+          ) : Object.keys(menuByCat).length === 0 ? (
             <p className="text-xs text-muted-foreground">{t("summary.noDishes")}</p>
           ) : (
             <div className="space-y-2">

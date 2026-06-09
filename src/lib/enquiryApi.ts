@@ -1,4 +1,9 @@
-import { PACKAGES, PLATE_PACKAGES, VENUE_OPTIONS } from "@/data/enquiryOptions";
+import {
+  PACKAGES,
+  MENU_ITEMS,
+  PLATE_PACKAGES,
+  VENUE_OPTIONS,
+} from "@/data/enquiryOptions";
 import type { EnquiryState } from "@/types/enquiry";
 
 export const ENQUIRY_API_URL =
@@ -21,25 +26,101 @@ export type EnquiryApiResponse = {
   [key: string]: unknown;
 };
 
-export function buildEnquiryLeadPayload(state: EnquiryState): EnquiryLeadPayload {
+
+function formatEventSlot(state: EnquiryState): string {
+  const pkg = PACKAGES.find((p) => p.id === state.packageId);
+  if (!pkg) return "";
+  const slot = pkg.slots?.find((sl) => sl.id === state.slotId) || pkg.slots?.[0];
+  return slot?.label ?? pkg.name;
+}
+
+function formatMenuSelections(state: EnquiryState): string[] {
+  const plate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
+  if (!plate) return [];
+
+  const lines: string[] = [];
+  if (plate.basePrice > 0) {
+    lines.push(`Plate Package: ${plate.name} (₹${plate.basePrice}/plate)`);
+  } else {
+    lines.push(`Plate Package: ${plate.name}`);
+  }
+
+  if (state.selectMenuLater) {
+    lines.push("Dishes: To be selected later");
+    return lines;
+  }
+
+  const selected = MENU_ITEMS.filter((m) => state.menuItemIds.includes(m.id));
+  if (selected.length === 0) {
+    lines.push("Dishes: None selected yet");
+    return lines;
+  }
+
+  const byCat: Record<string, typeof MENU_ITEMS> = {};
+  selected.forEach((m) => {
+    (byCat[m.category] ||= []).push(m);
+  });
+
+  lines.push("Selected Dishes:");
+  for (const [cat, items] of Object.entries(byCat)) {
+    const limit = (plate.limits as Record<string, number>)[cat] ?? 0;
+    const sorted = [...items].sort((a, b) => a.price - b.price);
+    const includedIds = new Set(sorted.slice(0, limit).map((m) => m.id));
+    const dishLabels = items.map((m) => {
+      const isExtra = limit > 0 && !includedIds.has(m.id);
+      const isCustom = limit === 0 && m.price > 0;
+      if (isExtra || isCustom) return `${m.name} (+₹${m.price}/plate)`;
+      return m.name;
+    });
+    lines.push(`  ${cat}: ${dishLabels.join(", ")}`);
+  }
+
+  return lines;
+}
+
+function buildAdditionDetail(state: EnquiryState): string {
   const pkg = PACKAGES.find((p) => p.id === state.packageId);
   const venue = VENUE_OPTIONS.find((v) => v.id === state.venueId);
+
+  const sections: string[] = [];
+
+  if (state.basics.source) sections.push(`Source: ${state.basics.source}`);
+  if (venue) sections.push(`Venue: ${venue.name}${venue.description ? ` — ${venue.description}` : ""}`);
+
+  if (pkg) {
+    const slotLabel = formatEventSlot(state);
+    const slot = pkg.slots?.find((sl) => sl.id === state.slotId) || pkg.slots?.[0];
+    sections.push(
+      slot
+        ? `Time Slot: ${slotLabel}${slot.hours ? ` (${slot.hours}h)` : ""}`
+        : `Time Slot: ${slotLabel}`,
+    );
+  }
+
+  sections.push(...formatMenuSelections(state));
+
+  return sections.join("\n");
+}
+
+export function buildEnquiryLeadPayload(state: EnquiryState): EnquiryLeadPayload {
   const plate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
 
-  const details: string[] = [];
-  if (state.basics.source) details.push(`Source: ${state.basics.source}`);
-  if (venue) details.push(`Venue: ${venue.name}`);
-  if (state.notes.trim()) details.push(state.notes.trim());
+  let eventMenuRange = "";
+  if (plate?.basePrice) {
+    eventMenuRange = String(plate.basePrice);
+  } else if (plate) {
+    eventMenuRange = plate.name;
+  }
 
   return {
     name: state.basics.customerName.trim(),
     mobileNo: state.basics.phone.trim(),
     eventDate: state.basics.eventDate,
-    eventSlot: pkg?.name ?? "",
-    eventMenuRange: plate?.basePrice ? String(plate.basePrice) : "",
+    eventSlot: formatEventSlot(state),
+    eventMenuRange,
     eventNumberOfGuest: String(state.basics.guestCount),
     eventType: state.basics.eventType,
-    eventAdditionDetail: details.join("; "),
+    eventAdditionDetail: buildAdditionDetail(state),
   };
 }
 

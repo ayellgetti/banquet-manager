@@ -409,7 +409,7 @@ export const COMMON_PLATE_ITEMS = [
 export const PLATE_PACKAGES: PlatePackage[] = [
   {
     id: "plate-600",
-    name: "Plate Package ₹600",
+    name: "Signature Package",
     basePrice: 600,
     limits: {
       "Welcome Drink": 1,
@@ -423,7 +423,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
   },
   {
     id: "plate-750",
-    name: "Plate Package ₹750",
+    name: "Platinum Package",
     basePrice: 750,
     limits: {
       "Welcome Drink": 1,
@@ -438,7 +438,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
   },
   {
     id: "plate-950",
-    name: "Plate Package ₹950",
+    name: "Elite Choice Package",
     basePrice: 950,
     limits: {
       "Welcome Drink": 2,
@@ -455,7 +455,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
   },
   {
     id: "plate-1150",
-    name: "Plate Package ₹1150",
+    name: "Royal Choice Package",
     basePrice: 1150,
     limits: {
       "Welcome Drink": 2,
@@ -473,7 +473,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
   },
   {
     id: "plate-custom",
-    name: "Custom Plate",
+    name: "Prestige Custom Package",
     basePrice: 0,
     limits: {},
     extras: ["Build your own menu — every dish is charged per plate"],
