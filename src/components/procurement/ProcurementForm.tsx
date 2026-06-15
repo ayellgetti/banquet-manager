@@ -18,6 +18,7 @@ import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import { ArrowLeft, ArrowRight, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
+import { useProcurementLabels } from "@/i18n/procurementLabels";
 
 const TAB_ORDER = ["materials", "summary"] as const;
 type TabKey = typeof TAB_ORDER[number];
@@ -75,19 +76,23 @@ const ProcurementMaterialsTable = ({
   quantities,
   setQty,
   labels,
+  itemName,
+  unitName,
 }: {
   items: ProcurementItem[];
   quantities: Record<string, number>;
   setQty: (id: string, qty: number) => void;
   labels: ColumnLabels;
+  itemName: (item: ProcurementItem) => string;
+  unitName: (unit: string) => string;
 }) => (
   <>
     <div className="divide-y border-t md:hidden print:hidden">
       {items.map((item) => (
         <div key={item.id} className="px-3 py-3">
-          <p className="text-sm font-medium leading-snug">{item.name}</p>
+          <p className="text-sm font-medium leading-snug">{itemName(item)}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {labels.unit}: {item.unit}
+            {labels.unit}: {unitName(item.unit)}
           </p>
           <div className="mt-3 grid grid-cols-3 gap-2">
             <div>
@@ -122,15 +127,15 @@ const ProcurementMaterialsTable = ({
         <TableBody>
           {items.map((item) => (
             <TableRow key={item.id}>
-              <TableCell className="min-w-[10rem] font-medium">{item.name}</TableCell>
-              <TableCell className="w-20 text-muted-foreground">{item.unit}</TableCell>
+              <TableCell className="min-w-[10rem] font-medium">{itemName(item)}</TableCell>
+              <TableCell className="w-20 text-muted-foreground">{unitName(item.unit)}</TableCell>
               <TableCell className="w-24 p-1 text-right">
                 <Input
                   type="number"
                   min={0}
                   max={9999}
                   inputMode="numeric"
-                  aria-label={`${item.name} ${labels.qty}`}
+                  aria-label={`${itemName(item)} ${labels.qty}`}
                   value={quantities[item.id] ?? ""}
                   onChange={(e) => setQty(item.id, Number(e.target.value) || 0)}
                   className="ml-auto h-9 w-full max-w-[6rem] text-right tabular-nums"
@@ -150,21 +155,25 @@ const ProcurementMaterialsTable = ({
 const ProcurementSummaryTable = ({
   rows,
   labels,
+  itemName,
+  unitName,
 }: {
   rows: { item: ProcurementItem; qty: number }[];
   labels: ColumnLabels;
+  itemName: (item: ProcurementItem) => string;
+  unitName: (unit: string) => string;
 }) => (
   <>
     <div className="divide-y border-t md:hidden print:hidden">
       {rows.map(({ item, qty }) => (
         <div key={item.id} className="px-1 py-3">
-          <p className="text-sm font-medium leading-snug">{item.name}</p>
+          <p className="text-sm font-medium leading-snug">{itemName(item)}</p>
           <div className="mt-2 grid grid-cols-4 gap-2 text-xs">
             <div>
               <span className="block text-[10px] font-semibold uppercase text-muted-foreground">
                 {labels.unit}
               </span>
-              <span className="mt-1 block font-medium">{item.unit}</span>
+              <span className="mt-1 block font-medium">{unitName(item.unit)}</span>
             </div>
             <div>
               <span className="block text-[10px] font-semibold uppercase text-muted-foreground">
@@ -195,8 +204,8 @@ const ProcurementSummaryTable = ({
         <TableBody>
           {rows.map(({ item, qty }) => (
             <TableRow key={item.id}>
-              <TableCell className="min-w-[10rem] font-medium">{item.name}</TableCell>
-              <TableCell className="w-20 text-muted-foreground">{item.unit}</TableCell>
+              <TableCell className="min-w-[10rem] font-medium">{itemName(item)}</TableCell>
+              <TableCell className="w-20 text-muted-foreground">{unitName(item.unit)}</TableCell>
               <TableCell className="w-24 text-right tabular-nums">{qty}</TableCell>
               <VendorBlankCell />
               <VendorBlankCell />
@@ -210,6 +219,7 @@ const ProcurementSummaryTable = ({
 
 export const ProcurementForm = () => {
   const { t } = useT();
+  const { itemName, categoryName, unitName } = useProcurementLabels();
   const [tab, setTab] = useState<TabKey>("materials");
   const [state, setState] = useState<ProcurementState>(initialProcurement);
   const [attempted, setAttempted] = useState<Set<TabKey>>(new Set());
@@ -317,6 +327,8 @@ export const ProcurementForm = () => {
       quantities={state.quantities}
       setQty={setQty}
       labels={columnLabels}
+      itemName={itemName}
+      unitName={unitName}
     />
   );
 
@@ -324,9 +336,14 @@ export const ProcurementForm = () => {
     <div className={className}>
       {summaryByCategory.map(({ cat, catItems }) => (
         <div key={cat} className="mb-6 last:mb-0">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide">{cat}</h3>
+          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide">{categoryName(cat)}</h3>
           <div className="overflow-x-auto">
-            <ProcurementSummaryTable rows={catItems} labels={columnLabels} />
+            <ProcurementSummaryTable
+              rows={catItems}
+              labels={columnLabels}
+              itemName={itemName}
+              unitName={unitName}
+            />
           </div>
         </div>
       ))}
@@ -367,7 +384,7 @@ export const ProcurementForm = () => {
                   <AccordionItem key={cat} value={cat} className={procurementAccordionItemClass}>
                     <AccordionTrigger className={procurementAccordionTriggerClass}>
                       <span className="flex flex-1 items-center gap-2 text-left normal-case sm:uppercase">
-                        {cat}
+                        {categoryName(cat)}
                         {selectedInCat > 0 && (
                           <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium normal-case text-amber-800">
                             {selectedInCat} {t("menu.selected")}
@@ -402,10 +419,15 @@ export const ProcurementForm = () => {
                       {summaryByCategory.map(({ cat, catItems }) => (
                         <AccordionItem key={cat} value={cat} className={procurementAccordionItemClass}>
                           <AccordionTrigger className={procurementAccordionTriggerClass}>
-                            <span className="flex-1 text-left">{cat}</span>
+                            <span className="flex-1 text-left">{categoryName(cat)}</span>
                           </AccordionTrigger>
                           <AccordionContent className="bg-white px-2 pb-4 pt-0">
-                            <ProcurementSummaryTable rows={catItems} labels={columnLabels} />
+                            <ProcurementSummaryTable
+                              rows={catItems}
+                              labels={columnLabels}
+                              itemName={itemName}
+                              unitName={unitName}
+                            />
                           </AccordionContent>
                         </AccordionItem>
                       ))}

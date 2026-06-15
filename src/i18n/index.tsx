@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { buildMenuLabelDict } from "./menuLabels";
+import { buildProcurementLabelDict } from "./procurementLabels";
 
 export type Lang = "en" | "hi" | "mr";
 
@@ -378,6 +379,7 @@ const hi: Dict = {
   "toast.fixErrors": "आगे बढ़ने से पहले कृपया इन्हें ठीक करें:",
   "toast.leadSubmitFailed": "आपकी पूछताछ सहेजी नहीं जा सकी। कृपया कनेक्शन जांचें और पुनः प्रयास करें।",
   ...buildMenuLabelDict("hi"),
+  ...buildProcurementLabelDict("hi"),
 };
 
 const mr: Dict = {
@@ -563,6 +565,7 @@ const mr: Dict = {
   "toast.fixErrors": "पुढे जाण्यापूर्वी कृपया हे दुरुस्त करा:",
   "toast.leadSubmitFailed": "तुमची चौकशी जतन करता आली नाही. कृपया कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",
   ...buildMenuLabelDict("mr"),
+  ...buildProcurementLabelDict("mr"),
 };
 
 const DICTS: Record<Lang, Dict> = { en, hi, mr };
