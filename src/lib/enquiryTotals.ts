@@ -72,12 +72,17 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
   if (venue) {
     const slot = pkg?.slots?.find((sl) => sl.id === s.slotId) || pkg?.slots?.[0];
     const hours = slot?.hours ?? 0;
+    const hallRentIncluded = !!pkg;
     items.push({
       label: `Venue: ${venue.name}`,
-      detail: hours > 0
-        ? `${hours}h × ₹${venue.pricePerHour.toLocaleString("en-IN")}/hr`
-        : `₹${venue.pricePerHour.toLocaleString("en-IN")}/hr · select a package for hours`,
-      amount: venue.pricePerHour * hours,
+      detail: hallRentIncluded
+        ? hours > 0
+          ? `Hall rent included · ${hours}h`
+          : "Hall rent included in package"
+        : hours > 0
+          ? `${hours}h × ₹${venue.pricePerHour.toLocaleString("en-IN")}/hr`
+          : `₹${venue.pricePerHour.toLocaleString("en-IN")}/hr · select a package for hours`,
+      amount: hallRentIncluded ? 0 : venue.pricePerHour * hours,
     });
   }
 

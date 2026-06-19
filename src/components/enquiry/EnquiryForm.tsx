@@ -853,6 +853,12 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
               )}
 
               {!isMenuSelection && (
+              <p className="print-only rounded-md border border-muted-foreground/25 bg-muted/30 p-3 text-xs leading-relaxed text-foreground/90">
+                {t("summary.pdfPackageNote")}
+              </p>
+              )}
+
+              {!isMenuSelection && (
               <div className="space-y-2">
                 <Label className={!state.notes ? "no-print" : ""}>{t("summary.notes")}</Label>
                 <div className="no-print">
@@ -1025,6 +1031,9 @@ const SelectionsBreakdown = ({ state, menuOnly = false }: { state: EnquiryState;
             <span className="font-medium">{plate.name}</span>
             {plate.basePrice > 0 && (
               <span className="text-muted-foreground"> · ₹{plate.basePrice}/plate base</span>
+            )}
+            {plate.minPax != null && (
+              <span className="text-muted-foreground"> · {t("menu.minPax").replace("{n}", String(plate.minPax))}</span>
             )}
           </div>
 

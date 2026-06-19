@@ -135,6 +135,11 @@ export const PlatePackageComparison = ({
                 <div className="font-semibold text-foreground">{p.name}</div>
                 <div className="mt-0.5 text-xs text-muted-foreground">
                   {p.basePrice > 0 ? `₹${p.basePrice}/plate` : t("menu.customPlate")}
+                  {p.minPax != null && (
+                    <span className="mt-0.5 block font-medium text-foreground/80">
+                      {t("menu.minPax").replace("{n}", String(p.minPax))}
+                    </span>
+                  )}
                 </div>
               </div>
               {Object.keys(p.limits).length > 0 ? (
@@ -193,6 +198,11 @@ export const PlatePackageComparison = ({
                       )}
                     >
                       {p.basePrice > 0 ? `₹${p.basePrice}/plate` : "—"}
+                      {p.minPax != null && (
+                        <div className={cn("mt-0.5 font-medium", isSel ? "text-primary-foreground/90" : "text-foreground/70")}>
+                          {t("menu.minPax").replace("{n}", String(p.minPax))}
+                        </div>
+                      )}
                     </div>
                   </th>
                 );

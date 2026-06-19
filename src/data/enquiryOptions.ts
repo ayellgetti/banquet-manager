@@ -32,6 +32,7 @@ export type PlatePackage = {
   id: string;
   name: string;
   basePrice: number;
+  minPax?: number;
   limits: Partial<Record<MenuCategory, number>>;
   /** When set for a category, only these menu item IDs can be chosen on this package. */
   allowedItems?: Partial<Record<MenuCategory, string[]>>;
@@ -684,6 +685,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
     id: "plate-600",
     name: "Bronze",
     basePrice: 650,
+    minPax: 100,
     limits: {
       "Welcome Drink": 1,
       "Starters": 1,

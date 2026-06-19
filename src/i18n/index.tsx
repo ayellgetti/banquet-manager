@@ -110,6 +110,7 @@ const en: Dict = {
   "menu.selectedPackage": "Selected",
   "menu.customPlate": "Custom pricing",
   "menu.customPlateDesc": "Build your own menu — each dish charged at its category rate.",
+  "menu.minPax": "Min. {n} pax required",
   "menu.includedEvery": "Included with every plate:",
   "menu.selectPlate": "Select a plate package above to choose dishes.",
   "menu.included": "included",
@@ -159,6 +160,8 @@ const en: Dict = {
   "summary.subtotal": "Subtotal",
   "summary.grandTotal": "Grand Total",
   "summary.noDishes": "No dishes selected yet.",
+  "summary.pdfPackageNote":
+    "The package includes almost everything apart from hall rent, 2 changing rooms, parking, mic & speaker. Special decoration such as balloon decoration for birthdays, jhula or chandra for baby showers, or other decoration will be charged separately.",
 
   "section.venue": "Venue",
   "section.package": "Package",
@@ -294,6 +297,7 @@ const hi: Dict = {
   "menu.selectedPackage": "चयनित",
   "menu.customPlate": "कस्टम मूल्य",
   "menu.customPlateDesc": "अपना मेनू बनाएँ — प्रत्येक व्यंजन की श्रेणी दर पर शुल्क।",
+  "menu.minPax": "न्यूनतम {n} pax आवश्यक",
   "menu.includedEvery": "हर थाली में शामिल:",
   "menu.selectPlate": "व्यंजन चुनने के लिए ऊपर एक थाली पैकेज चुनें।",
   "menu.included": "शामिल",
@@ -343,6 +347,8 @@ const hi: Dict = {
   "summary.subtotal": "उप-योग",
   "summary.grandTotal": "कुल योग",
   "summary.noDishes": "अभी कोई व्यंजन चयनित नहीं।",
+  "summary.pdfPackageNote":
+    "पैकेज में लगभग सब कुछ शामिल है, सिवाय हॉल किराया, 2 चेंजिंग रूम, पार्किंग, माइक और स्पीकर के। जन्मदिन के लिए गुब्बारे की सजावट, बेबी शावर के लिए झूला या चंद्र, या अन्य विशेष सजावट अलग से शुल्क लिया जाएगा।",
 
   "section.venue": "स्थान",
   "section.package": "पैकेज",
@@ -480,6 +486,7 @@ const mr: Dict = {
   "menu.selectedPackage": "निवडले",
   "menu.customPlate": "सानुकूल किंमत",
   "menu.customPlateDesc": "स्वतःचे मेनू तयार करा — प्रत्येक पदार्थाच्या श्रेणी दरानुसार शुल्क.",
+  "menu.minPax": "किमान {n} pax आवश्यक",
   "menu.includedEvery": "प्रत्येक थाळीसोबत समाविष्ट:",
   "menu.selectPlate": "पदार्थ निवडण्यासाठी वरून थाळी पॅकेज निवडा.",
   "menu.included": "समाविष्ट",
@@ -529,6 +536,8 @@ const mr: Dict = {
   "summary.subtotal": "उप-एकूण",
   "summary.grandTotal": "एकूण रक्कम",
   "summary.noDishes": "अद्याप कोणतेही पदार्थ निवडलेले नाहीत.",
+  "summary.pdfPackageNote":
+    "पॅकेजमध्ये जवळजवळ सर्व काही समाविष्ट आहे, हॉल भाडे, 2 चेंजिंग रूम, पार्किंग, माइक आणि स्पीकर वगळता. वाढदिवसासाठी बलून सजावट, बेबी शॉअरसाठी झुला किंवा चंद्र, किंवा इतर विशेष सजावट वेगळ्या शुल्कासाठी असेल.",
 
   "section.venue": "स्थळ",
   "section.package": "पॅकेज",
