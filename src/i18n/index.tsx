@@ -141,6 +141,7 @@ const en: Dict = {
 
   "extras.title": "Extra Services",
   "extras.desc": "Add-ons to round out the event.",
+  "extras.djSuggestion": "Optional: Add DJ & Sound for just {price} — not included in your total above. A small add-on that won't significantly change your overall quote.",
 
   "summary.title": "Summary",
   "summary.desc": "Review everything and apply a discount.",
@@ -176,6 +177,7 @@ const en: Dict = {
   "summary.pdfTerms.separate.menuExtras": "Menu items selected beyond the limits of your chosen plate package",
   "summary.pdfTerms.separate.addOns": "Upgraded stage décor, premium seating, additional décor, and extra services, as listed separately in this quotation",
   "summary.pdfTerms.footer": "Prices are based on the guest count shown above. Minimum guest counts apply where noted (e.g. 100 pax for Bronze). Final billing will be based on confirmed attendance on the event day. This quotation is valid for 7 days from the date shown.",
+  "summary.pdfDjSuggestion": "Optional suggestion (not included in the total above): Add DJ & Sound for just {price} — a minor add-on that won't significantly change your overall quote.",
 
   "section.venue": "Venue",
   "section.package": "Package",
@@ -342,6 +344,7 @@ const hi: Dict = {
 
   "extras.title": "अतिरिक्त सेवाएँ",
   "extras.desc": "इवेंट को पूरा करने के लिए ऐड-ऑन।",
+  "extras.djSuggestion": "वैकल्पिक: सिर्फ {price} में DJ और साउंड जोड़ें — ऊपर दिखाए गए कुल योग में शामिल नहीं। यह एक छोटा ऐड-ऑन है जो आपके कुल कोट में बड़ा बदलाव नहीं करेगा।",
 
   "summary.title": "सारांश",
   "summary.desc": "सब कुछ देखें और छूट लगाएं।",
@@ -377,6 +380,7 @@ const hi: Dict = {
   "summary.pdfTerms.separate.menuExtras": "चयनित थाली पैकेज की निर्धारित सीमा से अधिक मेनू व्यंजन",
   "summary.pdfTerms.separate.addOns": "अपग्रेडेड स्टेज सजावट, प्रीमियम कुर्सियाँ, अतिरिक्त सजावट और अन्य सेवाएँ — जिन्हें इस कोट में अलग से दर्शाया गया है",
   "summary.pdfTerms.footer": "कीमतें ऊपर दिखाई गई मेहमान संख्या पर आधारित हैं। जहाँ उल्लेख है वहाँ न्यूनतम मेहमान संख्या लागू होती है (जैसे Bronze के लिए 100 pax)। अंतिम बिलिंग इवेंट के दिन पुष्टि की गई उपस्थिति पर आधारित होगी। यह कोट दिखाई गई तारीख से 7 दिनों तक मान्य है।",
+  "summary.pdfDjSuggestion": "वैकल्पिक सुझाव (ऊपर के कुल योग में शामिल नहीं): सिर्फ {price} में DJ और साउंड जोड़ें — यह एक छोटा ऐड-ऑन है जो आपके कुल कोट में बड़ा बदलाव नहीं करेगा।",
 
   "section.venue": "स्थान",
   "section.package": "पैकेज",
@@ -545,6 +549,7 @@ const mr: Dict = {
 
   "extras.title": "अतिरिक्त सेवा",
   "extras.desc": "इव्हेंट पूर्ण करण्यासाठी अॅड-ऑन.",
+  "extras.djSuggestion": "पर्यायी: फक्त {price} मध्ये DJ आणि साउंड जोडा — वर दर्शविलел्या एकूण रकमेत समाविष्ट नाही. हा एक लहान अॅड-ऑन आहे जो तुमच्या एकूण कोटमध्ये मोठा बदल करणार नाही.",
 
   "summary.title": "सारांश",
   "summary.desc": "सर्व पहा आणि सवलत लागू करा.",
@@ -580,6 +585,7 @@ const mr: Dict = {
   "summary.pdfTerms.separate.menuExtras": "निवडलेल्या थाळी पॅकेजच्या निर्धारित मर्यादेपलीकडील अतिरिक्त मेनू पदार्थ",
   "summary.pdfTerms.separate.addOns": "सुधारित स्टेज सजावट, प्रीमियम खुर्च्या, अतिरिक्त सजावट आणि इतर सेवा — या कोटमध्ये वेगळ्या ओळी म्हणून दर्शवलेल्या",
   "summary.pdfTerms.footer": "किंमती वर दर्शविलेल्या पाहुण्यांच्या संख्येवर आधारित आहेत. जिथे नमूद केले आहे तिथे किमान पाहुण्यांची संख्या लागू (उदा. Bronze साठी 100 pax). अंतिम बिलिंग इव्हेंटच्या दिवशी पुष्टी केलेल्या उपस्थितीवर आधारित असेल. हा कोट दर्शविलेल्या तारखेपासून 7 दिवसांसाठी वैध आहे.",
+  "summary.pdfDjSuggestion": "पर्यायी सूचना (वरील एकूण रकमेत समाविष्ट नाही): फक्त {price} मध्ये DJ आणि साउंड जोडा — हा एक लहान अॅड-ऑन आहे जो तुमच्या एकूण कोटमध्ये मोठा बदल करणार नाही.",
 
   "section.venue": "स्थळ",
   "section.package": "पॅकेज",

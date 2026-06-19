@@ -807,6 +807,8 @@ export const EXTRA_SERVICES: ExtraService[] = [
   { id: "e9", name: "Projector", price: 3500, unit: "event" },
 ];
 
+export const DJ_EXTRA_ID = "e3";
+
 export const VENUE_OPTIONS: VenueOption[] = [
   { id: "v1", name: "Main Banquet Hall", pricePerHour: 6000, description: "Indoor AC hall · up to 400 guests" },
 ];

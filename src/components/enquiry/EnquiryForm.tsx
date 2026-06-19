@@ -14,7 +14,7 @@ import { RichTextEditor } from "./RichTextEditor";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import {
   PACKAGES, MENU_ITEMS, PLATE_PACKAGES, DECOR_OPTIONS, STAGE_OPTIONS,
-  CHAIR_OPTIONS, EXTRA_SERVICES, VENUE_OPTIONS, EVENT_TYPES, SOURCES,
+  CHAIR_OPTIONS, EXTRA_SERVICES, VENUE_OPTIONS, EVENT_TYPES, SOURCES, DJ_EXTRA_ID,
   getIncludedMenuItemIds, getItemExtraPrice, getCategoryExtraPrice,
   getLiveCounterExtraLabel, getMenuSubcategoryErrors, LIVE_COUNTER_RULES,
   filterMenuIdsForPackage, getMenuItemsForPackage,
@@ -765,6 +765,13 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="bg-white px-4 pb-4">
+                  {!state.extraIds.includes(DJ_EXTRA_ID) && (
+                    <p className="mb-3 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-foreground">
+                      {t("extras.djSuggestion").replace("{price}", formatINR(
+                        EXTRA_SERVICES.find((e) => e.id === DJ_EXTRA_ID)?.price ?? 6000,
+                      ))}
+                    </p>
+                  )}
                   <div className="grid gap-4 pt-3 sm:grid-cols-2 lg:grid-cols-3">
                     {EXTRA_SERVICES.map((e) => (
                       <SelectableCard
@@ -870,6 +877,10 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                 )}
               </div>
               )}
+
+              {!isMenuSelection && !state.extraIds.includes(DJ_EXTRA_ID) && (
+                <DjPdfSuggestion />
+              )}
             </div>
           </SectionCard>
         </TabsContent>
@@ -948,6 +959,18 @@ const PackagePdfNotes = () => {
         {t("summary.pdfTerms.footer")}
       </p>
     </div>
+  );
+};
+
+const DjPdfSuggestion = () => {
+  const { t } = useT();
+  const djPrice = formatINR(
+    EXTRA_SERVICES.find((e) => e.id === DJ_EXTRA_ID)?.price ?? 6000,
+  );
+  return (
+    <p className="print-only rounded-md border border-primary/30 bg-primary/5 p-3 text-xs font-medium leading-relaxed text-foreground">
+      {t("summary.pdfDjSuggestion").replace("{price}", djPrice)}
+    </p>
   );
 };
 
