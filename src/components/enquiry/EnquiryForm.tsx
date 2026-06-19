@@ -852,8 +852,6 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
               </div>
               )}
 
-              {!isMenuSelection && <PdfPackageTerms />}
-
               {!isMenuSelection && (
               <div className="space-y-2">
                 <Label className={!state.notes ? "no-print" : ""}>{t("summary.notes")}</Label>
@@ -928,14 +926,10 @@ const PDF_TERMS_SEPARATE = [
   "summary.pdfTerms.separate.addOns",
 ] as const;
 
-const PdfPackageTerms = () => {
+const PackagePdfNotes = () => {
   const { t } = useT();
   return (
-    <div className="print-only mt-2 rounded-md border border-muted-foreground/30 bg-muted/20 p-4 text-xs leading-relaxed text-foreground/90">
-      <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary">
-        {t("summary.pdfTerms.title")}
-      </h4>
-
+    <div className="print-only mt-3 border-t border-muted-foreground/20 pt-3 text-xs leading-relaxed text-foreground/90">
       <p className="font-semibold text-foreground">{t("summary.pdfTerms.includedHeading")}</p>
       <ul className="mt-1.5 list-disc space-y-1 pl-4">
         {PDF_TERMS_INCLUDED.map((key) => (
@@ -950,7 +944,7 @@ const PdfPackageTerms = () => {
         ))}
       </ul>
 
-      <p className="mt-3 border-t border-muted-foreground/20 pt-2.5 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
         {t("summary.pdfTerms.footer")}
       </p>
     </div>
@@ -1044,12 +1038,13 @@ const SelectionsBreakdown = ({ state, menuOnly = false }: { state: EnquiryState;
             <div className="text-xs italic text-muted-foreground">{pkg.tagline}</div>
           )}
           {pkg.perks?.length > 0 && (
-            <ul className="space-y-0.5 text-xs text-muted-foreground">
+            <ul className="no-print space-y-0.5 text-xs text-muted-foreground">
               {pkg.perks.map((perk) => (
                 <li key={perk}>• {perk}</li>
               ))}
             </ul>
           )}
+          <PackagePdfNotes />
         </div>
       ),
     });
