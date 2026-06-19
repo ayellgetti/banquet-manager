@@ -852,11 +852,7 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
               </div>
               )}
 
-              {!isMenuSelection && (
-              <p className="print-only rounded-md border border-muted-foreground/25 bg-muted/30 p-3 text-xs leading-relaxed text-foreground/90">
-                {t("summary.pdfPackageNote")}
-              </p>
-              )}
+              {!isMenuSelection && <PdfPackageTerms />}
 
               {!isMenuSelection && (
               <div className="space-y-2">
@@ -911,6 +907,52 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
           {t("common.tipPackage")}
         </div>
       )}
+    </div>
+  );
+};
+
+const PDF_TERMS_INCLUDED = [
+  "summary.pdfTerms.included.hall",
+  "summary.pdfTerms.included.stage",
+  "summary.pdfTerms.included.av",
+  "summary.pdfTerms.included.seating",
+  "summary.pdfTerms.included.changingRooms",
+  "summary.pdfTerms.included.parking",
+  "summary.pdfTerms.included.elevator",
+  "summary.pdfTerms.included.dining",
+] as const;
+
+const PDF_TERMS_SEPARATE = [
+  "summary.pdfTerms.separate.decor",
+  "summary.pdfTerms.separate.menuExtras",
+  "summary.pdfTerms.separate.addOns",
+] as const;
+
+const PdfPackageTerms = () => {
+  const { t } = useT();
+  return (
+    <div className="print-only mt-2 rounded-md border border-muted-foreground/30 bg-muted/20 p-4 text-xs leading-relaxed text-foreground/90">
+      <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary">
+        {t("summary.pdfTerms.title")}
+      </h4>
+
+      <p className="font-semibold text-foreground">{t("summary.pdfTerms.includedHeading")}</p>
+      <ul className="mt-1.5 list-disc space-y-1 pl-4">
+        {PDF_TERMS_INCLUDED.map((key) => (
+          <li key={key}>{t(key)}</li>
+        ))}
+      </ul>
+
+      <p className="mt-3 font-semibold text-foreground">{t("summary.pdfTerms.separateHeading")}</p>
+      <ul className="mt-1.5 list-disc space-y-1 pl-4">
+        {PDF_TERMS_SEPARATE.map((key) => (
+          <li key={key}>{t(key)}</li>
+        ))}
+      </ul>
+
+      <p className="mt-3 border-t border-muted-foreground/20 pt-2.5 text-[11px] leading-relaxed text-muted-foreground">
+        {t("summary.pdfTerms.footer")}
+      </p>
     </div>
   );
 };
