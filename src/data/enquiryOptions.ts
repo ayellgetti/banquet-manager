@@ -758,7 +758,7 @@ const SANGEET = "Sangeet / Mehendi / Haldi";
 export const DECOR_OPTIONS: DecorOption[] = [
   { id: "d1", name: "Floral Entrance Arch", price: 8000, description: "Fresh flower entry gate", events: [WEDDING, ENGAGEMENT, SANGEET, NAMING] },
   { id: "d2", name: "Fairy Light Canopy", price: 6000, description: "Warm fairy lights overhead", events: [WEDDING, ENGAGEMENT, SANGEET, BIRTHDAY, KITTY] },
-  { id: "d3", name: "Balloon Décor", price: 4500, description: "Themed balloon arrangements", events: [BIRTHDAY, NAMING, SCHOOL, KITTY] },
+  { id: "d3", name: "Balloon Décor", price: 12000, description: "Themed balloon arrangements", events: [BIRTHDAY, NAMING, SCHOOL, KITTY] },
   { id: "d4", name: "Table Centerpieces", price: 3500, description: "Per 10 tables", events: [WEDDING, ENGAGEMENT, CORPORATE, GALA, CHARITY, NAMING, BIRTHDAY] },
   { id: "d5", name: "Theme Backdrop", price: 7000, description: "Custom photo backdrop", events: [BIRTHDAY, NAMING, KITTY, SCHOOL, SANGEET] },
   { id: "d6", name: "Mandap Floral Setup", price: 25000, description: "Traditional flower mandap", events: [WEDDING] },
@@ -804,6 +804,7 @@ export const EXTRA_SERVICES: ExtraService[] = [
   { id: "e6", name: "Anchor / MC", price: 12000, unit: "event" },
   { id: "e7", name: "Fireworks", price: 22000, unit: "show" },
   { id: "e8", name: "Return Gifts", price: 150, unit: "per guest" },
+  { id: "e9", name: "Projector", price: 3500, unit: "event" },
 ];
 
 export const VENUE_OPTIONS: VenueOption[] = [

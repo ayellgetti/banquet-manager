@@ -53,10 +53,17 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
 
   const chair = CHAIR_OPTIONS.find((c) => c.id === s.chairId);
   if (chair) {
+    const chairsIncluded = !!pkg?.perks?.includes("Chair");
+    const isStandardChair = chair.id === "c1";
+    const amount =
+      chairsIncluded && isStandardChair ? 0 : chair.pricePerUnit * guests;
     items.push({
       label: `Chairs: ${chair.name}`,
-      detail: `${guests} × ₹${chair.pricePerUnit}`,
-      amount: chair.pricePerUnit * guests,
+      detail:
+        chairsIncluded && isStandardChair
+          ? "Included in package"
+          : `${guests} × ₹${chair.pricePerUnit}`,
+      amount,
     });
   }
 
