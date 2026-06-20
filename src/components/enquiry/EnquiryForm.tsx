@@ -81,8 +81,8 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
   const [state, setState] = useState<EnquiryState>(() => ({
     ...initialEnquiry,
     ...(isMenuSelection
-      ? { packageId: "", venueId: "", stageId: "", chairId: "", decorIds: [], extraIds: [] }
-      : {}),
+      ? { packageId: "", venueId: "", stageId: "", chairId: "", decorIds: [], extraIds: [], selectMenuLater: false }
+      : { selectMenuLater: true }),
   }));
   const [touched, setTouched] = useState<{ customerName?: boolean; phone?: boolean }>({});
   const [attempted, setAttempted] = useState<Set<TabKey>>(new Set());
