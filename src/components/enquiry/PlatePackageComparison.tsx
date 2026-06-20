@@ -2,7 +2,7 @@ import { PLATE_PACKAGES } from "@/data/enquiryOptions";
 import { useT } from "@/i18n";
 import { useMenuLabels } from "@/i18n/menuLabels";
 import { cn } from "@/lib/utils";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Check } from "lucide-react";
 
 const ALL_CATEGORIES = Array.from(
   new Set(PLATE_PACKAGES.flatMap((p) => Object.keys(p.limits))),
@@ -49,44 +49,63 @@ const PackageSelectToggle = ({
     interactive && "cursor-pointer",
   );
 
-  const checkboxClass = cn(
-    "pointer-events-none shrink-0",
-    onPrimary &&
-      isSel &&
-      "border-primary-foreground data-[state=checked]:bg-primary-foreground data-[state=checked]:text-primary",
-  );
-
-  const label = (
-    <>
-      <Checkbox
-        checked={isSel}
-        disabled={!interactive}
-        tabIndex={-1}
-        aria-hidden={interactive}
-        className={checkboxClass}
-      />
-      <span>{isSel ? t("menu.selectedPackage") : t("menu.selectPackage")}</span>
-    </>
-  );
+  const label = isSel ? t("menu.selectedPackage") : t("menu.selectPackage");
 
   if (!interactive) {
     return (
       <div className={className} aria-label={t("menu.selectedPackage")}>
-        {label}
+        <span
+          aria-hidden="true"
+          className={cn(
+            "inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border",
+            onPrimary
+              ? "border-primary-foreground bg-primary-foreground text-primary"
+              : "border-primary bg-primary text-primary-foreground",
+          )}
+        >
+          <Check className="h-3 w-3" />
+        </span>
+        <span>{label}</span>
       </div>
     );
   }
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       className={className}
       aria-pressed={isSel}
-      aria-label={isSel ? t("menu.selectedPackage") : t("menu.selectPackage")}
-      onClick={() => onToggle(packageId)}
+      aria-label={label}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onToggle(packageId);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle(packageId);
+        }
+      }}
     >
-      {label}
-    </button>
+      <span
+        aria-hidden="true"
+        className={cn(
+          "inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border transition-colors",
+          isSel
+            ? onPrimary
+              ? "border-primary-foreground bg-primary-foreground text-primary"
+              : "border-primary bg-primary text-primary-foreground"
+            : onPrimary
+              ? "border-primary-foreground/40 bg-transparent"
+              : "border-border bg-background",
+        )}
+      >
+        {isSel ? <Check className="h-3 w-3" /> : null}
+      </span>
+      <span>{label}</span>
+    </div>
   );
 };
 

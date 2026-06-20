@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ClipboardList, ShoppingBasket, UtensilsCrossed } from "lucide-react";
+import { ClipboardList, ClipboardPen, ShoppingBasket, UtensilsCrossed } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useT } from "@/i18n";
 
@@ -10,6 +10,13 @@ const MODULES = [
     icon: ClipboardList,
     titleKey: "module.enquiry.title",
     descKey: "module.enquiry.desc",
+  },
+  {
+    id: "enquiry-v2",
+    path: "/enquiry-v2",
+    icon: ClipboardPen,
+    titleKey: "module.enquiryV2.title",
+    descKey: "module.enquiryV2.desc",
   },
   {
     id: "menu",
@@ -34,7 +41,7 @@ const Home = () => {
     <AppShell title={t("home.title")} subtitle={t("home.subtitle")} backTo="">
       <div className="mx-auto max-w-4xl">
         <p className="mb-8 text-center text-muted-foreground">{t("home.choose")}</p>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2">
           {MODULES.map(({ id, path, icon: Icon, titleKey, descKey }) => (
             <Link
               key={id}
