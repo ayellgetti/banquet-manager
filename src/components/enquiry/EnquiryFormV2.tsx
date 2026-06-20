@@ -28,8 +28,10 @@ import {
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, formatINR } from "@/lib/enquiryTotals";
 import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
+import { openEnquiryWhatsApp } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import { ArrowLeft, Loader2, Printer, Send } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
 
@@ -182,6 +184,13 @@ export const EnquiryFormV2 = () => {
       toast.error(t("toast.leadSubmitFailed"));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleWhatsApp = () => {
+    if (!validateForm()) return;
+    if (!openEnquiryWhatsApp(state)) {
+      toast.error(t("toast.whatsappNoNumber"));
     }
   };
 
@@ -498,23 +507,41 @@ export const EnquiryFormV2 = () => {
             <ArrowLeft className="mr-1 h-4 w-4" /> {t("common.back")}
           </Button>
           {tab === "summary" ? (
-            <Button
-              onClick={() => void handleDownloadPdf()}
-              disabled={isPdfGenerating}
-              className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
-            >
-              <Printer className="mr-1 h-4 w-4" />
-              {isPdfGenerating ? t("toast.pdfGenerating") : t("common.downloadPdf")}
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                onClick={handleWhatsApp}
+                className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+              >
+                <WhatsAppIcon className="mr-1 h-4 w-4" /> {t("whatsapp.send")}
+              </Button>
+              <Button
+                onClick={() => void handleDownloadPdf()}
+                disabled={isPdfGenerating}
+                className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
+              >
+                <Printer className="mr-1 h-4 w-4" />
+                {isPdfGenerating ? t("toast.pdfGenerating") : t("common.downloadPdf")}
+              </Button>
+            </>
           ) : (
-            <Button
-              onClick={() => void handleSubmit()}
-              disabled={isSubmitting}
-              className="gap-2 bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
-            >
-              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              {isSubmitting ? t("enquiryV2.submitting") : t("enquiryV2.submit")}
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                onClick={handleWhatsApp}
+                className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+              >
+                <WhatsAppIcon className="mr-1 h-4 w-4" /> {t("whatsapp.send")}
+              </Button>
+              <Button
+                onClick={() => void handleSubmit()}
+                disabled={isSubmitting}
+                className="gap-2 bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
+              >
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {isSubmitting ? t("enquiryV2.submitting") : t("enquiryV2.submit")}
+              </Button>
+            </>
           )}
         </div>
       </div>

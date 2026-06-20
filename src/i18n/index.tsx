@@ -242,6 +242,8 @@ const en: Dict = {
   "validate.sourceRequired": "Source is required.",
   "toast.fixErrors": "Please fix the following before continuing:",
   "toast.leadSubmitFailed": "Could not save your enquiry. Please check your connection and try again.",
+  "whatsapp.send": "WhatsApp",
+  "toast.whatsappNoNumber": "WhatsApp number is not configured. Set VITE_WHATSAPP_NUMBER in your environment.",
 };
 
 const hi: Dict = {
@@ -474,6 +476,8 @@ const hi: Dict = {
   "validate.sourceRequired": "स्रोत आवश्यक है।",
   "toast.fixErrors": "आगे बढ़ने से पहले कृपया इन्हें ठीक करें:",
   "toast.leadSubmitFailed": "आपकी पूछताछ सहेजी नहीं जा सकी। कृपया कनेक्शन जांचें और पुनः प्रयास करें।",
+  "whatsapp.send": "WhatsApp",
+  "toast.whatsappNoNumber": "WhatsApp नंबर कॉन्फ़िगर नहीं है। VITE_WHATSAPP_NUMBER सेट करें।",
   ...buildMenuLabelDict("hi"),
   ...buildProcurementLabelDict("hi"),
 };
@@ -708,6 +712,8 @@ const mr: Dict = {
   "validate.sourceRequired": "स्रोत आवश्यक आहे.",
   "toast.fixErrors": "पुढे जाण्यापूर्वी कृपया हे दुरुस्त करा:",
   "toast.leadSubmitFailed": "तुमची चौकशी जतन करता आली नाही. कृपया कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",
+  "whatsapp.send": "WhatsApp",
+  "toast.whatsappNoNumber": "WhatsApp नंबर कॉन्फिगर केलेला नाही. VITE_WHATSAPP_NUMBER सेट करा.",
   ...buildMenuLabelDict("mr"),
   ...buildProcurementLabelDict("mr"),
 };

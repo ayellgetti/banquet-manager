@@ -47,16 +47,30 @@ export type VenueOption = { id: string; name: string; pricePerHour: number; desc
 export const EVENT_TYPES = [
   "Wedding Ceremony & Reception",
   "Engagement Ceremony",
-  "Birthday / Anniversary / Retirement Party",
-  "Naming Ceremony / Baby Shower / Bridal Shower",
+  "Sangeet",
+  "Mehendi",
+  "Haldi",
+  "Birthday",
+  "Anniversary",
+  "Retirement Party",
+  "Naming Ceremony",
+  "Baby Shower",
+  "Bridal Shower",
+  "Kitty Party",
+  "Karaoke Night",
+  "Garba",
+  "Dance Practice",
+  "Preschool",
+  "School Annual Day",
   "Corporate Event (Meeting, Conference, Gala)",
-  "Kitty Party / Karaoke Night",
-  "Garba / Dance Practice",
-  "Preschool / School Annual Day",
-  "AGM / Society Meeting / Re-Development Meeting",
-  "Charity / Fundraiser Event",
-  "Corporate Gala / Awards Dinner / Seminar",
-  "Sangeet / Mehendi / Haldi",
+  "Corporate Gala",
+  "Awards Dinner",
+  "Seminar",
+  "AGM",
+  "Society Meeting",
+  "Re-Development Meeting",
+  "Charity Event",
+  "Fundraiser Event",
 ];
 
 export const SOURCES = [
@@ -756,39 +770,53 @@ export const PLATE_PACKAGES: PlatePackage[] = [
 
 const WEDDING = "Wedding Ceremony & Reception";
 const ENGAGEMENT = "Engagement Ceremony";
-const BIRTHDAY = "Birthday / Anniversary / Retirement Party";
-const NAMING = "Naming Ceremony / Baby Shower / Bridal Shower";
+const SANGEET = "Sangeet";
+const MEHENDI = "Mehendi";
+const HALDI = "Haldi";
+const BIRTHDAY = "Birthday";
+const ANNIVERSARY = "Anniversary";
+const RETIREMENT = "Retirement Party";
+const NAMING = "Naming Ceremony";
+const BABY_SHOWER = "Baby Shower";
+const BRIDAL_SHOWER = "Bridal Shower";
 const CORPORATE = "Corporate Event (Meeting, Conference, Gala)";
-const KITTY = "Kitty Party / Karaoke Night";
-const GARBA = "Garba / Dance Practice";
-const SCHOOL = "Preschool / School Annual Day";
-const AGM = "AGM / Society Meeting / Re-Development Meeting";
-const CHARITY = "Charity / Fundraiser Event";
-const GALA = "Corporate Gala / Awards Dinner / Seminar";
-const SANGEET = "Sangeet / Mehendi / Haldi";
+const KITTY = "Kitty Party";
+const KARAOKE = "Karaoke Night";
+const GARBA = "Garba";
+const DANCE_PRACTICE = "Dance Practice";
+const PRESCHOOL = "Preschool";
+const SCHOOL = "School Annual Day";
+const GALA = "Corporate Gala";
+const AWARDS = "Awards Dinner";
+const SEMINAR = "Seminar";
+const AGM = "AGM";
+const SOCIETY = "Society Meeting";
+const REDEV = "Re-Development Meeting";
+const CHARITY = "Charity Event";
+const FUNDRAISER = "Fundraiser Event";
 
 export const DECOR_OPTIONS: DecorOption[] = [
-  { id: "d1", name: "Floral Entrance Arch", price: 8000, description: "Fresh flower entry gate", events: [WEDDING, ENGAGEMENT, SANGEET, NAMING] },
-  { id: "d2", name: "Fairy Light Canopy", price: 6000, description: "Warm fairy lights overhead", events: [WEDDING, ENGAGEMENT, SANGEET, BIRTHDAY, KITTY] },
-  { id: "d3", name: "Balloon Décor", price: 12000, description: "Themed balloon arrangements", events: [BIRTHDAY, NAMING, SCHOOL, KITTY] },
-  { id: "d4", name: "Table Centerpieces", price: 3500, description: "Per 10 tables", events: [WEDDING, ENGAGEMENT, CORPORATE, GALA, CHARITY, NAMING, BIRTHDAY] },
-  { id: "d5", name: "Theme Backdrop", price: 7000, description: "Custom photo backdrop", events: [BIRTHDAY, NAMING, KITTY, SCHOOL, SANGEET] },
+  { id: "d1", name: "Floral Entrance Arch", price: 8000, description: "Fresh flower entry gate", events: [WEDDING, ENGAGEMENT, SANGEET, MEHENDI, HALDI, NAMING, BABY_SHOWER, BRIDAL_SHOWER] },
+  { id: "d2", name: "Fairy Light Canopy", price: 6000, description: "Warm fairy lights overhead", events: [WEDDING, ENGAGEMENT, SANGEET, MEHENDI, HALDI, BIRTHDAY, ANNIVERSARY, RETIREMENT, KITTY, KARAOKE] },
+  { id: "d3", name: "Balloon Décor", price: 12000, description: "Themed balloon arrangements", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, PRESCHOOL, SCHOOL, KITTY, KARAOKE] },
+  { id: "d4", name: "Table Centerpieces", price: 3500, description: "Per 10 tables", events: [WEDDING, ENGAGEMENT, CORPORATE, GALA, AWARDS, SEMINAR, CHARITY, FUNDRAISER, NAMING, BABY_SHOWER, BRIDAL_SHOWER, BIRTHDAY, ANNIVERSARY, RETIREMENT] },
+  { id: "d5", name: "Theme Backdrop", price: 7000, description: "Custom photo backdrop", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, KITTY, KARAOKE, PRESCHOOL, SCHOOL, SANGEET, MEHENDI, HALDI] },
   { id: "d6", name: "Mandap Floral Setup", price: 25000, description: "Traditional flower mandap", events: [WEDDING] },
-  { id: "d7", name: "Haldi Yellow Theme", price: 9000, description: "Marigold & yellow drapes", events: [SANGEET] },
-  { id: "d8", name: "Mehendi Green Theme", price: 9000, description: "Green florals & jhumkas", events: [SANGEET] },
+  { id: "d7", name: "Haldi Yellow Theme", price: 9000, description: "Marigold & yellow drapes", events: [HALDI] },
+  { id: "d8", name: "Mehendi Green Theme", price: 9000, description: "Green florals & jhumkas", events: [MEHENDI] },
   { id: "d9", name: "Ring Ceremony Platter", price: 3000, description: "Decorated ring tray", events: [ENGAGEMENT] },
-  { id: "d10", name: "Cradle Decoration", price: 6500, description: "Floral cradle for baby", events: [NAMING] },
-  { id: "d11", name: "Baby Shower Drapes", price: 5500, description: "Pastel drapes & props", events: [NAMING] },
-  { id: "d12", name: "Corporate Branding Standee", price: 4000, description: "Logo standees & flags", events: [CORPORATE, GALA, AGM, CHARITY] },
-  { id: "d13", name: "Stage Podium & Banner", price: 5000, description: "Podium with branded banner", events: [CORPORATE, GALA, AGM, CHARITY, SCHOOL] },
-  { id: "d14", name: "Conference Table Setup", price: 3500, description: "Table linens & notepads", events: [CORPORATE, AGM] },
-  { id: "d15", name: "Awards Spotlight Setup", price: 12000, description: "Spotlight + red carpet", events: [GALA, CHARITY] },
+  { id: "d10", name: "Cradle Decoration", price: 6500, description: "Floral cradle for baby", events: [NAMING, BABY_SHOWER] },
+  { id: "d11", name: "Baby Shower Drapes", price: 5500, description: "Pastel drapes & props", events: [BABY_SHOWER] },
+  { id: "d12", name: "Corporate Branding Standee", price: 4000, description: "Logo standees & flags", events: [CORPORATE, GALA, AWARDS, SEMINAR, AGM, SOCIETY, REDEV, CHARITY, FUNDRAISER] },
+  { id: "d13", name: "Stage Podium & Banner", price: 5000, description: "Podium with branded banner", events: [CORPORATE, GALA, AWARDS, SEMINAR, AGM, SOCIETY, REDEV, CHARITY, FUNDRAISER, PRESCHOOL, SCHOOL] },
+  { id: "d14", name: "Conference Table Setup", price: 3500, description: "Table linens & notepads", events: [CORPORATE, AGM, SOCIETY, REDEV, SEMINAR] },
+  { id: "d15", name: "Awards Spotlight Setup", price: 12000, description: "Spotlight + red carpet", events: [GALA, AWARDS, CHARITY, FUNDRAISER] },
   { id: "d16", name: "Garba Dandiya Décor", price: 8500, description: "Traditional chaniya theme", events: [GARBA] },
-  { id: "d17", name: "LED Dance Floor", price: 18000, description: "Illuminated dance floor", events: [GARBA, SANGEET, WEDDING, BIRTHDAY] },
-  { id: "d18", name: "Karaoke Lounge Setup", price: 6000, description: "Mood lighting + props", events: [KITTY] },
-  { id: "d19", name: "Cake Table Décor", price: 2500, description: "Decorated cake table", events: [BIRTHDAY, NAMING, KITTY] },
-  { id: "d20", name: "School Theme Cutouts", price: 5500, description: "Cartoon/educational props", events: [SCHOOL] },
-  { id: "d21", name: "Charity Donor Wall", price: 7000, description: "Sponsor & donor display", events: [CHARITY] },
+  { id: "d17", name: "LED Dance Floor", price: 18000, description: "Illuminated dance floor", events: [GARBA, DANCE_PRACTICE, SANGEET, MEHENDI, HALDI, WEDDING, BIRTHDAY, ANNIVERSARY, RETIREMENT] },
+  { id: "d18", name: "Karaoke Lounge Setup", price: 6000, description: "Mood lighting + props", events: [KARAOKE, KITTY] },
+  { id: "d19", name: "Cake Table Décor", price: 2500, description: "Decorated cake table", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, KITTY, KARAOKE] },
+  { id: "d20", name: "School Theme Cutouts", price: 5500, description: "Cartoon/educational props", events: [PRESCHOOL, SCHOOL] },
+  { id: "d21", name: "Charity Donor Wall", price: 7000, description: "Sponsor & donor display", events: [CHARITY, FUNDRAISER] },
 ];
 
 export const STAGE_OPTIONS: DecorOption[] = [

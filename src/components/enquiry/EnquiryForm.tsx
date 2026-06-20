@@ -24,6 +24,7 @@ import {
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, formatINR } from "@/lib/enquiryTotals";
 import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
+import { openEnquiryWhatsApp } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import {
   buildEnquiryPdfFilename,
@@ -35,6 +36,7 @@ import {
   SummaryField,
 } from "./EnquiryPdfSummary";
 import { ArrowLeft, ArrowRight, Printer, Sparkles } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
 import { useMenuLabels } from "@/i18n/menuLabels";
@@ -264,6 +266,25 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
     (acc[m.category] ||= []).push(m);
     return acc;
   }, {});
+
+  const handleWhatsApp = () => {
+    const basicsErrs = validateTab("basics");
+    if (!isMenuSelection && basicsErrs.length) {
+      setAttempted((prev) => new Set(prev).add("basics"));
+      setTouched({ customerName: true, phone: true });
+      toast.error(t("toast.fixErrors"), {
+        description: (
+          <ul className="ml-4 list-disc space-y-0.5 text-white">
+            {basicsErrs.map((e, i) => <li key={i}>{e}</li>)}
+          </ul>
+        ),
+      });
+      return;
+    }
+    if (!openEnquiryWhatsApp(state)) {
+      toast.error(t("toast.whatsappNoNumber"));
+    }
+  };
 
   const handleDownloadPdf = async () => {
     if (!isMenuSelection && !state.basics.customerName) {
@@ -919,9 +940,20 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
             <ArrowLeft className="mr-1 h-4 w-4" /> {t("common.back")}
           </Button>
           {tab === "summary" ? (
-            <Button onClick={handleDownloadPdf} disabled={isPdfGenerating} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
-              <Printer className="mr-1 h-4 w-4" /> {isPdfGenerating ? t("toast.pdfGenerating") : t("common.downloadPdf")}
-            </Button>
+            <>
+              {!isMenuSelection && (
+                <Button
+                  variant="outline"
+                  onClick={handleWhatsApp}
+                  className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+                >
+                  <WhatsAppIcon className="mr-1 h-4 w-4" /> {t("whatsapp.send")}
+                </Button>
+              )}
+              <Button onClick={handleDownloadPdf} disabled={isPdfGenerating} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
+                <Printer className="mr-1 h-4 w-4" /> {isPdfGenerating ? t("toast.pdfGenerating") : t("common.downloadPdf")}
+              </Button>
+            </>
           ) : (
             <Button onClick={goNext} disabled={isSubmittingLead} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
               {isSubmittingLead ? t("common.saving") : t("common.next")} {!isSubmittingLead && <ArrowRight className="ml-1 h-4 w-4" />}
