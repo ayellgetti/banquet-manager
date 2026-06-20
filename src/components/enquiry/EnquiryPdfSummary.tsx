@@ -402,6 +402,10 @@ export const EnquiryPdfDocument = ({
           <SummaryField label={t("summary.timing")} value={formatTiming(state)} highlight />
           <SummaryField label={t("summary.guests")} value={String(state.basics.guestCount || 0)} />
           <SummaryField label={t("summary.source")} value={state.basics.source || "—"} />
+          <SummaryField
+            label={t("summary.approxBudget")}
+            value={state.basics.approxBudget || "—"}
+          />
         </div>
       )}
 

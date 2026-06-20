@@ -19,8 +19,10 @@ import {
 import {
   PACKAGES,
   VENUE_OPTIONS,
+  getDefaultVenueId,
   EVENT_TYPES,
   SOURCES,
+  APPROX_BUDGET_RANGES,
   DJ_EXTRA_ID,
 } from "@/data/enquiryOptions";
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
@@ -59,7 +61,7 @@ const emptyV2State = (): EnquiryState => ({
   packageId: "",
   slotId: "",
   platePackageId: "",
-  venueId: "",
+  venueId: getDefaultVenueId(),
   selectMenuLater: true,
 });
 
@@ -328,7 +330,7 @@ export const EnquiryFormV2 = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <div className="space-y-2">
                   <Label>{t("venue.title")}<Req /></Label>
                   <Select value={state.venueId} onValueChange={(v) => updateForm("venueId", v)}>
@@ -357,6 +359,22 @@ export const EnquiryFormV2 = () => {
                     </SelectContent>
                   </Select>
                   {show("source") && <p className="text-xs text-destructive">{errors.source}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{t("basics.approxBudget")}</Label>
+                  <Select value={state.basics.approxBudget} onValueChange={(v) => updateBasic("approxBudget", v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("basics.approxBudget.ph")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {APPROX_BUDGET_RANGES.map((range) => (
+                        <SelectItem key={range} value={range}>
+                          {range}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -396,6 +414,10 @@ export const EnquiryFormV2 = () => {
                 <SummaryField label={t("summary.timing")} value={formatTiming(state)} highlight />
                 <SummaryField label={t("summary.guests")} value={String(state.basics.guestCount || 0)} />
                 <SummaryField label={t("summary.source")} value={state.basics.source || "—"} />
+                <SummaryField
+                  label={t("summary.approxBudget")}
+                  value={state.basics.approxBudget || "—"}
+                />
               </div>
 
               <SelectionsBreakdown state={state} />

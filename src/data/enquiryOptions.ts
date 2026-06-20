@@ -70,6 +70,18 @@ export const SOURCES = [
   "Other",
 ];
 
+export const APPROX_BUDGET_RANGES = [
+  "1k - 50k",
+  "50k - 1Lac",
+  "1Lac - 2Lac",
+  "2Lac - 3Lac",
+  "3Lac - 4Lac",
+  "4Lac - 5Lac",
+  "More than 5lac",
+] as const;
+
+export type ApproxBudgetRange = (typeof APPROX_BUDGET_RANGES)[number];
+
 const SILVER_PERKS = [
   "Hall Rent + AC Electricity",
   "Basic Decoration",
@@ -812,3 +824,7 @@ export const DJ_EXTRA_ID = "e3";
 export const VENUE_OPTIONS: VenueOption[] = [
   { id: "v1", name: "Main Banquet Hall", pricePerHour: 6000, description: "Indoor AC hall · up to 400 guests" },
 ];
+
+export function getDefaultVenueId(): string {
+  return VENUE_OPTIONS.length === 1 ? VENUE_OPTIONS[0].id : "";
+}

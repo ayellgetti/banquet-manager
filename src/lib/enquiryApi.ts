@@ -90,6 +90,9 @@ function buildAdditionDetail(state: EnquiryState): string {
   const sections: string[] = ["Module: Enquiry"];
 
   if (state.basics.source) sections.push(`Source: ${state.basics.source}`);
+  if (state.basics.approxBudget) {
+    sections.push(`Approximate Budget: ${state.basics.approxBudget}`);
+  }
   if (venue) sections.push(`Venue: ${venue.name}${venue.description ? ` — ${venue.description}` : ""}`);
 
   if (pkg) {

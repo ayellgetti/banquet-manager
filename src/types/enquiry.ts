@@ -7,6 +7,7 @@ export type BasicDetails = {
   eventDate: string;
   guestCount: number;
   source: string;
+  approxBudget: string;
 };
 
 export type EnquiryState = {
@@ -36,6 +37,7 @@ export const initialEnquiry: EnquiryState = {
     eventDate: "",
     guestCount: 100,
     source: "",
+    approxBudget: "",
   },
   packageId: "silver-morning",
   slotId: "",
@@ -45,7 +47,7 @@ export const initialEnquiry: EnquiryState = {
   stageId: "s0",
   chairId: "c1",
   extraIds: [],
-  venueId: "v1",
+  venueId: "",
   discountPercent: 0,
   discountAmount: 0,
   discountType: "percent",

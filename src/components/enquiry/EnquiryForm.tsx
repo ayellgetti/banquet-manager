@@ -14,7 +14,7 @@ import { RichTextEditor } from "./RichTextEditor";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import {
   PACKAGES, MENU_ITEMS, PLATE_PACKAGES, DECOR_OPTIONS, STAGE_OPTIONS,
-  CHAIR_OPTIONS, EXTRA_SERVICES, VENUE_OPTIONS, EVENT_TYPES, SOURCES, DJ_EXTRA_ID,
+  CHAIR_OPTIONS, EXTRA_SERVICES, VENUE_OPTIONS, getDefaultVenueId, EVENT_TYPES, SOURCES, APPROX_BUDGET_RANGES, DJ_EXTRA_ID,
   getIncludedMenuItemIds, getItemExtraPrice, getCategoryExtraPrice,
   getLiveCounterExtraLabel, getMenuSubcategoryErrors, LIVE_COUNTER_RULES,
   filterMenuIdsForPackage, getMenuItemsForPackage,
@@ -89,8 +89,9 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
   const [tab, setTab] = useState<TabKey>(isMenuSelection ? "menu" : "basics");
   const [state, setState] = useState<EnquiryState>(() => ({
     ...initialEnquiry,
+    venueId: getDefaultVenueId(),
     ...(isMenuSelection
-      ? { packageId: "", venueId: "", stageId: "", chairId: "", decorIds: [], extraIds: [], selectMenuLater: false }
+      ? { packageId: "", stageId: "", chairId: "", decorIds: [], extraIds: [], selectMenuLater: false }
       : { selectMenuLater: true }),
   }));
   const [touched, setTouched] = useState<{ customerName?: boolean; phone?: boolean }>({});
@@ -428,6 +429,19 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                   </SelectContent>
                 </Select>
                 {err.source && <p className="text-xs text-destructive">{err.source}</p>}
+              </div>
+              )}
+              {!isMenuSelection && (
+              <div className="space-y-2">
+                <Label>{t("basics.approxBudget")}</Label>
+                <Select value={state.basics.approxBudget} onValueChange={(v) => updateBasic("approxBudget", v)}>
+                  <SelectTrigger><SelectValue placeholder={t("basics.approxBudget.ph")} /></SelectTrigger>
+                  <SelectContent>
+                    {APPROX_BUDGET_RANGES.map((range) => (
+                      <SelectItem key={range} value={range}>{range}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               )}
             </div>
@@ -807,6 +821,10 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                 <SummaryField label={t("summary.timing")} value={formatTiming(state)} highlight />
                 <SummaryField label={t("summary.guests")} value={String(state.basics.guestCount || 0)} />
                 <SummaryField label={t("summary.source")} value={state.basics.source || "—"} />
+                <SummaryField
+                  label={t("summary.approxBudget")}
+                  value={state.basics.approxBudget || "—"}
+                />
               </div>
               )}
 
