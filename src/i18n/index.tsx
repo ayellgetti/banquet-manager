@@ -107,6 +107,7 @@ const en: Dict = {
   "common.saving": "Saving…",
   "common.downloadPdf": "Download PDF",
   "common.runningTotal": "Running total:",
+  "common.pricePerPlate": "Price per plate:",
   "common.tipPackage": "Tip: pick a package first — it pre-fills pricing across the other sections.",
 
   "basics.title": "Basic Details",
@@ -239,6 +240,7 @@ const en: Dict = {
   "validate.eventDateRequired": "Event date is required.",
   "validate.eventDateFuture": "Event date must be in the future.",
   "validate.guestsRequired": "Number of guests is required.",
+  "validate.minPax": "Minimum guest count for this package is {n}.",
   "validate.sourceRequired": "Source is required.",
   "toast.fixErrors": "Please fix the following before continuing:",
   "toast.leadSubmitFailed": "Could not save your enquiry. Please check your connection and try again.",
@@ -341,6 +343,7 @@ const hi: Dict = {
   "common.saving": "सहेजा जा रहा है…",
   "common.downloadPdf": "PDF डाउनलोड करें",
   "common.runningTotal": "कुल अब तक:",
+  "common.pricePerPlate": "प्रति थाली मूल्य:",
   "common.tipPackage": "सुझाव: पहले पैकेज चुनें — इससे बाकी अनुभागों में मूल्य अपने आप भर जाते हैं।",
 
   "basics.title": "मूल विवरण",
@@ -473,6 +476,7 @@ const hi: Dict = {
   "validate.eventDateRequired": "इवेंट की तारीख आवश्यक है।",
   "validate.eventDateFuture": "इवेंट की तारीख भविष्य की होनी चाहिए।",
   "validate.guestsRequired": "मेहमानों की संख्या आवश्यक है।",
+  "validate.minPax": "इस पैकेज के लिए न्यूनतम {n} मेहमान आवश्यक हैं।",
   "validate.sourceRequired": "स्रोत आवश्यक है।",
   "toast.fixErrors": "आगे बढ़ने से पहले कृपया इन्हें ठीक करें:",
   "toast.leadSubmitFailed": "आपकी पूछताछ सहेजी नहीं जा सकी। कृपया कनेक्शन जांचें और पुनः प्रयास करें।",
@@ -577,6 +581,7 @@ const mr: Dict = {
   "common.saving": "जतन होत आहे…",
   "common.downloadPdf": "PDF डाउनलोड करा",
   "common.runningTotal": "एकूण आत्तापर्यंत:",
+  "common.pricePerPlate": "प्रति थाळी किंमत:",
   "common.tipPackage": "सूचना: आधी पॅकेज निवडा — त्यामुळे इतर विभागांमध्ये किंमत आपोआप भरली जाते.",
 
   "basics.title": "मूलभूत तपशील",
@@ -709,6 +714,7 @@ const mr: Dict = {
   "validate.eventDateRequired": "इव्हेंटची तारीख आवश्यक आहे.",
   "validate.eventDateFuture": "इव्हेंटची तारीख भविष्यातील असावी.",
   "validate.guestsRequired": "पाहुण्यांची संख्या आवश्यक आहे.",
+  "validate.minPax": "या पॅकेजसाठी किमान {n} पाहुणे आवश्यक आहेत.",
   "validate.sourceRequired": "स्रोत आवश्यक आहे.",
   "toast.fixErrors": "पुढे जाण्यापूर्वी कृपया हे दुरुस्त करा:",
   "toast.leadSubmitFailed": "तुमची चौकशी जतन करता आली नाही. कृपया कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",

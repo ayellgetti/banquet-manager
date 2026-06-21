@@ -4,6 +4,7 @@ import {
   VENUE_OPTIONS,
 } from "@/data/enquiryOptions";
 import type { EnquiryState } from "@/types/enquiry";
+import { formatINR } from "@/lib/enquiryTotals";
 
 export const WHATSAPP_NUMBER =
   import.meta.env.VITE_WHATSAPP_NUMBER?.replace(/\D/g, "") ?? "919930413300";
@@ -36,9 +37,17 @@ const formatSpecialRequest = (raw: string): string => {
   return plain || "—";
 };
 
+const formatPreferredPackage = (state: EnquiryState): string => {
+  const plate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
+  if (!plate) return "—";
+  if (plate.basePrice > 0) {
+    return `${plate.name} (${formatINR(plate.basePrice)}/plate)`;
+  }
+  return plate.name;
+};
+
 export function buildEnquiryWhatsAppMessage(state: EnquiryState): string {
   const b = state.basics;
-  const plate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
 
   const lines = [
     "*New Enquiry*",
@@ -48,7 +57,7 @@ export function buildEnquiryWhatsAppMessage(state: EnquiryState): string {
     `📅 Event Date: ${formatEventDate(b.eventDate)}`,
     `🎉 Event Type: ${b.eventType || "—"}`,
     `👥 Expected Guest Count: ${b.guestCount || "—"}`,
-    `🍽 Preferred Package (if any): ${plate?.name || "—"}`,
+    `🍽 Preferred Package (if any): ${formatPreferredPackage(state)}`,
     `💵 Approximate Budget: ${b.approxBudget || "—"}`,
     `📍 Venue: ${formatVenue(state)}`,
     `⏰ Time Slot: ${formatTimeSlot(state) || "—"}`,

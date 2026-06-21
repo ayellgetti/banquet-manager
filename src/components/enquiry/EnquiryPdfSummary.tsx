@@ -11,10 +11,13 @@ import {
   getIncludedMenuItemIds,
   getItemExtraPrice,
   getLiveCounterExtraLabel,
+  getMenuCardPriceLabel,
+  isCustomPlatePackage,
   isSwappableMenuCategory,
+  sortMenuCategories,
 } from "@/data/enquiryOptions";
 import type { EnquiryState } from "@/types/enquiry";
-import { calcTotals, formatINR } from "@/lib/enquiryTotals";
+import { calcMenuPerPlate, calcTotals, formatINR } from "@/lib/enquiryTotals";
 import { PlatePackageComparison } from "./PlatePackageComparison";
 import { MenuPackageAlerts } from "./MenuPackageAlerts";
 import { useT } from "@/i18n";
@@ -146,6 +149,7 @@ export const SelectionsBreakdown = ({
   const summaryIncludedIds = plate
     ? getIncludedMenuItemIds(state.menuItemIds, plate.limits)
     : new Set<string>();
+  const customPlate = plate ? isCustomPlatePackage(plate.id) : false;
 
   const sections: { title: string; body: React.ReactNode; key: string }[] = [];
 
@@ -228,7 +232,8 @@ export const SelectionsBreakdown = ({
               <p className="text-xs text-muted-foreground">{t("summary.noDishes")}</p>
             ) : (
               <div className="space-y-2">
-                {Object.entries(menuByCat).map(([cat, items]) => {
+                {sortMenuCategories(Object.keys(menuByCat)).map((cat) => {
+                  const items = menuByCat[cat];
                   const limit = (plate.limits as Record<string, number>)[cat] ?? 0;
                   const isSwappable = isSwappableMenuCategory(cat);
                   const extraCount = items.filter((m) => !summaryIncludedIds.has(m.id)).length;
@@ -249,7 +254,7 @@ export const SelectionsBreakdown = ({
                             {items.length} {t("menu.selected")}
                           </span>
                         )}
-                        {extraCount > 0 && (
+                        {extraCount > 0 && !customPlate && (
                           <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[10px] font-semibold text-amber-900">
                             +{extraCount} {t("menu.extra")}
                           </span>
@@ -257,7 +262,15 @@ export const SelectionsBreakdown = ({
                       </div>
                       <ul className="space-y-0.5">
                         {items.map((m) => {
-                          const beyondPackage = !summaryIncludedIds.has(m.id);
+                          const beyondPackage = !customPlate && !summaryIncludedIds.has(m.id);
+                          const { price } = getMenuCardPriceLabel(m, {
+                            selected: true,
+                            customPlate,
+                            beyondIncluded: beyondPackage,
+                            includedLabel: t("menu.included"),
+                            extraCounterLabel: t("menu.extraCounter"),
+                            beyondLimitLabel: t("menu.beyondLimit"),
+                          });
                           return (
                             <li
                               key={m.id}
@@ -275,16 +288,15 @@ export const SelectionsBreakdown = ({
                               </span>
                               <span
                                 className={
-                                  beyondPackage
+                                  beyondPackage || customPlate
                                     ? "font-semibold text-amber-800 tabular-nums"
                                     : "text-muted-foreground"
                                 }
                               >
-                                {beyondPackage
-                                  ? m.category === "Live Counters" && m.subcategory
-                                    ? getLiveCounterExtraLabel(m.subcategory)
-                                    : `+₹${getItemExtraPrice(m)}/plate`
-                                  : t("menu.included")}
+                                {price ??
+                                  (customPlate
+                                    ? `₹${getItemExtraPrice(m)}/plate`
+                                    : t("menu.included"))}
                               </span>
                             </li>
                           );
@@ -390,6 +402,7 @@ export const EnquiryPdfDocument = ({
 }) => {
   const { t } = useT();
   const totals = calcTotals(state);
+  const menuPerPlate = calcMenuPerPlate(state);
 
   return (
     <div className="space-y-6 bg-white text-foreground">
@@ -410,6 +423,19 @@ export const EnquiryPdfDocument = ({
       )}
 
       <SelectionsBreakdown state={state} menuOnly={menuOnly} />
+
+      {menuOnly && state.platePackageId && (
+        <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-noir p-6 text-white shadow-gold">
+          <div className="flex items-center justify-between">
+            <span className="font-display text-base font-semibold uppercase tracking-wider text-white/80">
+              {t("common.pricePerPlate")}
+            </span>
+            <span className="font-display text-3xl font-bold text-gradient-gold tabular-nums">
+              {formatINR(menuPerPlate)}
+            </span>
+          </div>
+        </div>
+      )}
 
       {!menuOnly && (
         <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-noir p-6 text-white shadow-gold [&_.text-muted-foreground]:text-white/70 [&_.tabular-nums]:text-white">

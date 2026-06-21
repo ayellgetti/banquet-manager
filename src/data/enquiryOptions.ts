@@ -28,6 +28,34 @@ export type MenuCategory =
   | "Sweets & Ice Cream"
   | "Live Counters";
 
+/** Display order for menu categories across plate packages and summaries. */
+export const MENU_CATEGORY_ORDER: MenuCategory[] = [
+  "Welcome Drink",
+  "Salads",
+  "Starters",
+  "Main Course",
+  "Breakfast",
+  "Kathiawadi",
+  "Rajasthani",
+  "Indian Breads",
+  "Raita",
+  "Rice",
+  "Dal",
+  "Farsan",
+  "Sweets & Ice Cream",
+  "Live Counters",
+];
+
+export function sortMenuCategories(categories: string[]): string[] {
+  const rank = new Map(MENU_CATEGORY_ORDER.map((cat, index) => [cat, index]));
+  return [...categories].sort((a, b) => {
+    const rankA = rank.get(a as MenuCategory) ?? Number.MAX_SAFE_INTEGER;
+    const rankB = rank.get(b as MenuCategory) ?? Number.MAX_SAFE_INTEGER;
+    if (rankA !== rankB) return rankA - rankB;
+    return a.localeCompare(b);
+  });
+}
+
 export type PlatePackage = {
   id: string;
   name: string;
@@ -216,6 +244,63 @@ export function getLiveCounterExtraLabel(sub: string): string {
     return `+₹${rule.pricePerItem}/plate × min ${rule.minSelection}`;
   }
   return `+₹${rule.pricePerItem}/plate`;
+}
+
+export const CUSTOM_PLATE_PACKAGE_ID = "plate-custom";
+
+export function isCustomPlatePackage(platePackageId: string): boolean {
+  return platePackageId === CUSTOM_PLATE_PACKAGE_ID;
+}
+
+function formatLiveCounterPlateRate(sub: string): string {
+  const rule = LIVE_COUNTER_RULES[sub];
+  if (!rule) return `₹${CATEGORY_EXTRA_PRICES["Live Counters"]}/plate`;
+  if (rule.flatPrice != null) return `₹${rule.flatPrice}/plate`;
+  if (rule.bundlePrice != null) {
+    const min = rule.minSelection ?? 1;
+    return `₹${rule.bundlePrice}/plate (min ${min} varieties)`;
+  }
+  if (rule.pricePerItem != null && rule.minSelection != null) {
+    return `₹${rule.pricePerItem}/plate × min ${rule.minSelection}`;
+  }
+  if (rule.pricePerItem != null) return `₹${rule.pricePerItem}/plate`;
+  return `₹${CATEGORY_EXTRA_PRICES["Live Counters"]}/plate`;
+}
+
+export function getMenuCardPriceLabel(
+  item: MenuItem,
+  opts: {
+    selected: boolean;
+    customPlate: boolean;
+    beyondIncluded: boolean;
+    includedLabel: string;
+    extraCounterLabel: string;
+    beyondLimitLabel: string;
+  },
+): { price?: string; subtitle?: string } {
+  const { selected, customPlate, beyondIncluded, includedLabel, extraCounterLabel, beyondLimitLabel } = opts;
+
+  if (customPlate) {
+    const rate =
+      item.category === LIVE_COUNTER_CATEGORY && item.subcategory
+        ? formatLiveCounterPlateRate(item.subcategory)
+        : `₹${getItemExtraPrice(item)}/plate`;
+    return { price: rate };
+  }
+
+  if (!selected) return {};
+
+  if (beyondIncluded) {
+    return {
+      price:
+        item.category === LIVE_COUNTER_CATEGORY
+          ? extraCounterLabel
+          : `+₹${getItemExtraPrice(item)}/plate`,
+      subtitle: beyondLimitLabel,
+    };
+  }
+
+  return { price: includedLabel };
 }
 
 /** Main Course, Rice, Dal & Live Counters share one interchangeable slot pool per package. */
@@ -733,12 +818,12 @@ export const PLATE_PACKAGES: PlatePackage[] = [
     basePrice: 800,
     limits: {
       "Welcome Drink": 1,
-      "Farsan": 1,
       "Starters": 1,
       "Main Course": 2,
       "Indian Breads": 1,
       "Rice": 1,
       "Dal": 1,
+      "Farsan": 1,
       "Sweets & Ice Cream": 1,
     },
   },
@@ -749,13 +834,13 @@ export const PLATE_PACKAGES: PlatePackage[] = [
     limits: {
       "Welcome Drink": 2,
       "Salads": 1,
-      "Farsan": 1,
       "Starters": 2,
       "Main Course": 2,
       "Indian Breads": 2,
       "Raita": 1,
       "Rice": 2,
       "Dal": 2,
+      "Farsan": 1,
       "Sweets & Ice Cream": 2,
     },
   },
@@ -763,6 +848,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
     id: "plate-custom",
     name: "Platinum",
     basePrice: 0,
+    minPax: 100,
     limits: {},
     extras: ["Build your own menu — each dish charged at its category rate"],
   },

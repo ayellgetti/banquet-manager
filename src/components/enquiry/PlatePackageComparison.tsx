@@ -1,11 +1,11 @@
-import { PLATE_PACKAGES } from "@/data/enquiryOptions";
+import { PLATE_PACKAGES, sortMenuCategories } from "@/data/enquiryOptions";
 import { useT } from "@/i18n";
 import { useMenuLabels } from "@/i18n/menuLabels";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 
-const ALL_CATEGORIES = Array.from(
-  new Set(PLATE_PACKAGES.flatMap((p) => Object.keys(p.limits))),
+const ALL_CATEGORIES = sortMenuCategories(
+  Array.from(new Set(PLATE_PACKAGES.flatMap((p) => Object.keys(p.limits)))),
 );
 
 type PlatePackageComparisonProps = {

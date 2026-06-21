@@ -28,7 +28,7 @@ import {
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, formatINR } from "@/lib/enquiryTotals";
 import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
-import { openEnquiryWhatsApp } from "@/lib/whatsappEnquiry";
+import { openEnquiryWhatsApp, WHATSAPP_NUMBER } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import { ArrowLeft, Loader2, Printer, Send } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
@@ -162,22 +162,28 @@ export const EnquiryFormV2 = () => {
     return true;
   };
 
+  const submitLeadToSheet = async (): Promise<EnquiryState> => {
+    const payload = buildEnquiryLeadPayload(state);
+    payload.eventAdditionDetail = [
+      "Module: Enquiry v2",
+      payload.eventAdditionDetail,
+      state.notes.trim() ? `Notes: ${state.notes.trim()}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const response = await submitEnquiryLead(payload);
+    const submittedState = { ...state, leadApiResponse: response };
+    setState(submittedState);
+    return submittedState;
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
-      const payload = buildEnquiryLeadPayload(state);
-      payload.eventAdditionDetail = [
-        "Module: Enquiry v2",
-        payload.eventAdditionDetail,
-        state.notes.trim() ? `Notes: ${state.notes.trim()}` : "",
-      ]
-        .filter(Boolean)
-        .join("\n");
-
-      const response = await submitEnquiryLead(payload);
-      setState((s) => ({ ...s, leadApiResponse: response }));
+      await submitLeadToSheet();
       toast.success(t("enquiryV2.submitSuccess"));
       setTab("summary");
     } catch {
@@ -187,10 +193,30 @@ export const EnquiryFormV2 = () => {
     }
   };
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = async () => {
     if (!validateForm()) return;
-    if (!openEnquiryWhatsApp(state)) {
+    if (!WHATSAPP_NUMBER) {
       toast.error(t("toast.whatsappNoNumber"));
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const needsSubmit = !state.leadApiResponse;
+      const submittedState = needsSubmit ? await submitLeadToSheet() : state;
+
+      if (needsSubmit) {
+        toast.success(t("enquiryV2.submitSuccess"));
+      }
+
+      setTab("summary");
+      window.setTimeout(() => {
+        openEnquiryWhatsApp(submittedState);
+      }, 150);
+    } catch {
+      toast.error(t("toast.leadSubmitFailed"));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -510,10 +536,12 @@ export const EnquiryFormV2 = () => {
             <>
               <Button
                 variant="outline"
-                onClick={handleWhatsApp}
+                onClick={() => void handleWhatsApp()}
+                disabled={isSubmitting}
                 className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
               >
-                <WhatsAppIcon className="mr-1 h-4 w-4" /> {t("whatsapp.send")}
+                {isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <WhatsAppIcon className="mr-1 h-4 w-4" />}
+                {isSubmitting ? t("enquiryV2.submitting") : t("whatsapp.send")}
               </Button>
               <Button
                 onClick={() => void handleDownloadPdf()}
@@ -528,10 +556,12 @@ export const EnquiryFormV2 = () => {
             <>
               <Button
                 variant="outline"
-                onClick={handleWhatsApp}
+                onClick={() => void handleWhatsApp()}
+                disabled={isSubmitting}
                 className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
               >
-                <WhatsAppIcon className="mr-1 h-4 w-4" /> {t("whatsapp.send")}
+                {isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <WhatsAppIcon className="mr-1 h-4 w-4" />}
+                {isSubmitting ? t("enquiryV2.submitting") : t("whatsapp.send")}
               </Button>
               <Button
                 onClick={() => void handleSubmit()}

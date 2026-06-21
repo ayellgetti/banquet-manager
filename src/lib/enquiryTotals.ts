@@ -108,5 +108,13 @@ export function calcTotals(s: EnquiryState) {
   return { items, subtotal, discount, total };
 }
 
+/** Menu-only per-plate cost (base package rate + any extra dishes). */
+export function calcMenuPerPlate(s: EnquiryState): number {
+  const plate = PLATE_PACKAGES.find((p) => p.id === s.platePackageId);
+  if (!plate) return 0;
+  const { extrasPerPlate } = calcExtraDishesPerPlate(s.menuItemIds, plate.limits);
+  return plate.basePrice + extrasPerPlate;
+}
+
 export const formatINR = (n: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
