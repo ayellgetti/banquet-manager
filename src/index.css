@@ -209,3 +209,18 @@ body.printing #invoice-print-area td {
   border: 1px solid #cbd5e1 !important;
   border-collapse: collapse !important;
 }
+
+body.printing #visiting-card-print-area {
+  border: 2px solid #b8934a !important;
+  border-style: solid !important;
+  background-color: #faf8f5 !important;
+}
+body.printing #visiting-card-print-area [data-vcard-box] {
+  border: 1px solid #d4b06a !important;
+  border-style: solid !important;
+  background-color: #ffffff !important;
+}
+body.printing #visiting-card-print-area img {
+  display: block !important;
+  max-width: 300px !important;
+}
