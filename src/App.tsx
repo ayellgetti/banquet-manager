@@ -7,6 +7,7 @@ import Home from "./pages/Home.tsx";
 import EnquiryPage from "./pages/EnquiryPage.tsx";
 import EnquiryPageV2 from "./pages/EnquiryPageV2.tsx";
 import MenuSelectionPage from "./pages/MenuSelectionPage.tsx";
+import BillPage from "./pages/BillPage.tsx";
 import ProcurementPage from "./pages/ProcurementPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { LanguageProvider } from "@/i18n";
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/enquiry" element={<EnquiryPage />} />
             <Route path="/enquiry-v2" element={<EnquiryPageV2 />} />
             <Route path="/menu-selection" element={<MenuSelectionPage />} />
+            <Route path="/bill" element={<BillPage />} />
             <Route path="/procurement" element={<ProcurementPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

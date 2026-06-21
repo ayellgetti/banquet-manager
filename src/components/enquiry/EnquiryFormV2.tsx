@@ -553,25 +553,14 @@ export const EnquiryFormV2 = () => {
               </Button>
             </>
           ) : (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => void handleWhatsApp()}
-                disabled={isSubmitting}
-                className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
-              >
-                {isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <WhatsAppIcon className="mr-1 h-4 w-4" />}
-                {isSubmitting ? t("enquiryV2.submitting") : t("whatsapp.send")}
-              </Button>
-              <Button
-                onClick={() => void handleSubmit()}
-                disabled={isSubmitting}
-                className="gap-2 bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
-              >
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                {isSubmitting ? t("enquiryV2.submitting") : t("enquiryV2.submit")}
-              </Button>
-            </>
+            <Button
+              onClick={() => void handleSubmit()}
+              disabled={isSubmitting}
+              className="gap-2 bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
+            >
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {isSubmitting ? t("enquiryV2.submitting") : t("enquiryV2.submit")}
+            </Button>
           )}
         </div>
       </div>

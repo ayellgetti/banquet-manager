@@ -248,7 +248,7 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
 
     const menuIdx = TAB_ORDER.indexOf("menu");
     const leavingMenuForward = idx === menuIdx && nextIdx > menuIdx;
-    if (leavingMenuForward && !isMenuSelection && !state.leadApiResponse) {
+    if (leavingMenuForward && variant === "enquiry" && !state.leadApiResponse) {
       setIsSubmittingLead(true);
       try {
         const response = await submitEnquiryLead(buildEnquiryLeadPayload(state));

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ClipboardList, ClipboardPen, ShoppingBasket, UtensilsCrossed } from "lucide-react";
+import { ClipboardList, ClipboardPen, Receipt, ShoppingBasket, UtensilsCrossed } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useT } from "@/i18n";
 
@@ -24,6 +24,13 @@ const MODULES = [
     icon: UtensilsCrossed,
     titleKey: "module.menu.title",
     descKey: "module.menu.desc",
+  },
+  {
+    id: "bill",
+    path: "/bill",
+    icon: Receipt,
+    titleKey: "module.bill.title",
+    descKey: "module.bill.desc",
   },
   {
     id: "procurement",
