@@ -1,81 +1,43 @@
 import { Link } from "react-router-dom";
-import { ClipboardList, ClipboardPen, Contact, Receipt, ShoppingBasket, UtensilsCrossed } from "lucide-react";
-import { AppShell } from "@/components/layout/AppShell";
+import { ArrowRight } from "lucide-react";
+import { ADMIN_NAV_ITEMS } from "@/config/adminNav";
 import { useT } from "@/i18n";
-
-const MODULES = [
-  {
-    id: "enquiry",
-    path: "/enquiry",
-    icon: ClipboardList,
-    titleKey: "module.enquiry.title",
-    descKey: "module.enquiry.desc",
-  },
-  {
-    id: "enquiry-v2",
-    path: "/enquiry-v2",
-    icon: ClipboardPen,
-    titleKey: "module.enquiryV2.title",
-    descKey: "module.enquiryV2.desc",
-  },
-  {
-    id: "menu",
-    path: "/menu-selection",
-    icon: UtensilsCrossed,
-    titleKey: "module.menu.title",
-    descKey: "module.menu.desc",
-  },
-  {
-    id: "bill",
-    path: "/bill",
-    icon: Receipt,
-    titleKey: "module.bill.title",
-    descKey: "module.bill.desc",
-  },
-  {
-    id: "visiting-card",
-    path: "/visiting-card",
-    icon: Contact,
-    titleKey: "module.visitingCard.title",
-    descKey: "module.visitingCard.desc",
-  },
-  {
-    id: "procurement",
-    path: "/procurement",
-    icon: ShoppingBasket,
-    titleKey: "module.procurement.title",
-    descKey: "module.procurement.desc",
-  },
-] as const;
 
 const Home = () => {
   const { t } = useT();
+  const modules = ADMIN_NAV_ITEMS.filter((item) => item.id !== "dashboard");
 
   return (
-    <AppShell title={t("home.title")} subtitle={t("home.subtitle")} backTo="">
-      <div className="mx-auto max-w-4xl">
-        <p className="mb-8 text-center text-muted-foreground">{t("home.choose")}</p>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2">
-          {MODULES.map(({ id, path, icon: Icon, titleKey, descKey }) => (
+    <div className="mx-auto max-w-3xl space-y-8">
+      <div className="rounded-2xl border border-border/70 bg-card p-6 shadow-soft sm:p-8">
+        <h2 className="font-display text-xl font-semibold sm:text-2xl">{t("admin.dashboard.welcome")}</h2>
+        <p className="mt-2 text-muted-foreground">{t("admin.dashboard.desc")}</p>
+      </div>
+
+      <div>
+        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          {t("admin.dashboard.modules")}
+        </h3>
+        <div className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border/70 bg-card shadow-soft">
+          {modules.map(({ id, path, icon: Icon, titleKey, descKey }) => (
             <Link
               key={id}
               to={path}
-              className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card p-6 shadow-soft transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-gold"
+              className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
             >
-              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-gradient-gold opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-gold text-primary-foreground shadow-gold">
-                <Icon className="h-6 w-6" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-gold text-primary-foreground shadow-gold">
+                <Icon className="h-5 w-5" />
               </div>
-              <h2 className="font-display text-lg font-semibold text-foreground">{t(titleKey)}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{t(descKey)}</p>
-              <span className="mt-4 inline-block text-sm font-medium text-primary group-hover:underline">
-                {t("home.open")} →
-              </span>
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-foreground">{t(titleKey)}</p>
+                {descKey && <p className="mt-0.5 truncate text-sm text-muted-foreground">{t(descKey)}</p>}
+              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
             </Link>
           ))}
         </div>
       </div>
-    </AppShell>
+    </div>
   );
 };
 

@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 import Home from "./pages/Home.tsx";
 import EnquiryPage from "./pages/EnquiryPage.tsx";
 import EnquiryPageV2 from "./pages/EnquiryPageV2.tsx";
@@ -23,13 +24,15 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/enquiry" element={<EnquiryPage />} />
-            <Route path="/enquiry-v2" element={<EnquiryPageV2 />} />
-            <Route path="/menu-selection" element={<MenuSelectionPage />} />
-            <Route path="/bill" element={<BillPage />} />
-            <Route path="/visiting-card" element={<VisitingCardPage />} />
-            <Route path="/procurement" element={<ProcurementPage />} />
+            <Route element={<AdminLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/enquiry" element={<EnquiryPage />} />
+              <Route path="/enquiry-v2" element={<EnquiryPageV2 />} />
+              <Route path="/menu-selection" element={<MenuSelectionPage />} />
+              <Route path="/bill" element={<BillPage />} />
+              <Route path="/visiting-card" element={<VisitingCardPage />} />
+              <Route path="/procurement" element={<ProcurementPage />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

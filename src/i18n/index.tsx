@@ -23,6 +23,16 @@ const en: Dict = {
   "home.open": "Open",
   "home.back": "Back to home",
 
+  "admin.badge": "Admin",
+  "admin.nav.label": "Admin navigation",
+  "admin.nav.open": "Open menu",
+  "admin.nav.current": "Current page",
+  "admin.dashboard.title": "Dashboard",
+  "admin.dashboard.subtitle": "Overview of all banquet management tools.",
+  "admin.dashboard.desc": "Use the sidebar to switch between enquiries, menu, invoices, visiting card, and procurement.",
+  "admin.dashboard.welcome": "Welcome to Banquet Manager",
+  "admin.dashboard.modules": "All modules",
+
   "notFound.message": "This page doesn't exist. Check the link or return to the home screen.",
   "notFound.home": "Back to Home",
 
@@ -332,6 +342,16 @@ const hi: Dict = {
   "home.choose": "आज आप क्या करना चाहेंगे?",
   "home.open": "खोलें",
   "home.back": "होम पर वापस",
+
+  "admin.badge": "एडमिन",
+  "admin.nav.label": "एडमिन नेविगेशन",
+  "admin.nav.open": "मेनू खोलें",
+  "admin.nav.current": "वर्तमान पृष्ठ",
+  "admin.dashboard.title": "डैशबोर्ड",
+  "admin.dashboard.subtitle": "सभी बैंक्वेट प्रबंधन उपकरणों का अवलोकन।",
+  "admin.dashboard.desc": "पूछताछ, मेनू, इनवॉइस, विज़िटिंग कार्ड और खरीद के बीच स्विच करने के लिए साइडबार का उपयोग करें।",
+  "admin.dashboard.welcome": "बैंक्वेट मैनेजर में आपका स्वागत है",
+  "admin.dashboard.modules": "सभी मॉड्यूल",
 
   "notFound.message": "यह पेज मौजूद नहीं है। लिंक जाँचें या होम पर लौटें।",
   "notFound.home": "होम पर जाएँ",
@@ -644,6 +664,16 @@ const mr: Dict = {
   "home.choose": "आज तुम्हाला काय करायचे आहे?",
   "home.open": "उघडा",
   "home.back": "मुख्यपृष्ठावर परत",
+
+  "admin.badge": "अॅडमिन",
+  "admin.nav.label": "अॅडमिन नेव्हिगेशन",
+  "admin.nav.open": "मेनू उघडा",
+  "admin.nav.current": "सध्याचे पृष्ठ",
+  "admin.dashboard.title": "डॅशबोर्ड",
+  "admin.dashboard.subtitle": "सर्व बँक्वेट व्यवस्थापन साधनांचा आढावा.",
+  "admin.dashboard.desc": "चौकशी, मेनू, इनव्हॉइस, विजिटिंग कार्ड आणि खरेदी दरम्यान स्विच करण्यासाठी साइडबार वापरा.",
+  "admin.dashboard.welcome": "बँक्वेट मॅनेजरमध्ये आपले स्वागत आहे",
+  "admin.dashboard.modules": "सर्व मॉड्यूल",
 
   "notFound.message": "हे पृष्ठ अस्तित्वात नाही. लिंक तपासा किंवा मुख्यपृष्ठावर परत जा.",
   "notFound.home": "मुख्यपृष्ठावर जा",
