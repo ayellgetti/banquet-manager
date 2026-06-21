@@ -6,7 +6,11 @@ import { useT } from "@/i18n";
 const NAVY = "#1a2744";
 const ROW_ALT = "#f4f6f9";
 const AMOUNT_BG = "#e8ecf4";
-const BORDER = "#e2e8f0";
+const BORDER = "#cbd5e1";
+const BORDER_SOLID = `1px solid ${BORDER}`;
+const OUTLINE_SOLID = `2px solid ${NAVY}`;
+
+const boxBorder = { border: BORDER_SOLID, boxSizing: "border-box" as const };
 
 const formatDisplayDate = (iso: string): string => {
   if (!iso) return "—";
@@ -44,7 +48,7 @@ const PartyBlock = ({
   phoneLabel: string;
   emailLabel: string;
 }) => (
-  <div className="h-full rounded-lg border p-4" style={{ borderColor: BORDER }}>
+  <div className="h-full rounded-lg p-4" style={boxBorder} data-invoice-box>
     <p className="mb-3 text-xs font-bold uppercase tracking-wide" style={{ color: NAVY }}>
       {title}
     </p>
@@ -73,8 +77,12 @@ export const InvoicePreview = ({ state, totals }: Props) => {
   return (
     <div
       id="invoice-print-area"
-      className="overflow-hidden bg-white text-[13px] leading-relaxed text-[#334155]"
-      style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif" }}
+      className="bg-white text-[13px] leading-relaxed text-[#334155]"
+      style={{
+        fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif",
+        border: OUTLINE_SOLID,
+        boxSizing: "border-box",
+      }}
     >
       <div className="px-8 py-6 text-white" style={{ backgroundColor: NAVY }}>
         <p className="text-3xl font-bold tracking-wide">{t("invoice.titleCaps")}</p>
@@ -84,8 +92,9 @@ export const InvoicePreview = ({ state, totals }: Props) => {
       <div className="space-y-6 px-8 py-6">
         {/* col-sm-12: invoice meta */}
         <div
-          className="grid gap-4 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-3"
-          style={{ borderColor: BORDER }}
+          className="grid gap-4 rounded-lg p-4 sm:grid-cols-2 lg:grid-cols-3"
+          style={boxBorder}
+          data-invoice-box
         >
           <MetaField label={t("invoice.date")} value={formatDisplayDate(state.invoiceDate)} />
           <MetaField label={t("invoice.number")} value={state.invoiceNumber} />
@@ -120,20 +129,37 @@ export const InvoicePreview = ({ state, totals }: Props) => {
             {t("invoice.linesTitle")}
             <span className="text-destructive">*</span>
           </p>
-          <table className="w-full border-collapse text-[12px]">
+          <table
+            className="w-full text-[12px]"
+            style={{ border: BORDER_SOLID, borderCollapse: "collapse", boxSizing: "border-box" }}
+          >
             <thead>
               <tr style={{ backgroundColor: NAVY, color: "#fff" }}>
-                <th className="px-3 py-2.5 text-left font-semibold">{t("invoice.col.no")}</th>
-                <th className="px-3 py-2.5 text-left font-semibold">{t("invoice.col.description")}</th>
-                <th className="px-3 py-2.5 text-center font-semibold">{t("invoice.col.qty")}</th>
-                <th className="px-3 py-2.5 text-right font-semibold">{t("invoice.col.rate")}</th>
-                <th className="px-3 py-2.5 text-right font-semibold">{t("invoice.col.amount")}</th>
+                <th className="px-3 py-2.5 text-left font-semibold" style={{ border: BORDER_SOLID }}>
+                  {t("invoice.col.no")}
+                </th>
+                <th className="px-3 py-2.5 text-left font-semibold" style={{ border: BORDER_SOLID }}>
+                  {t("invoice.col.description")}
+                </th>
+                <th className="px-3 py-2.5 text-center font-semibold" style={{ border: BORDER_SOLID }}>
+                  {t("invoice.col.qty")}
+                </th>
+                <th className="px-3 py-2.5 text-right font-semibold" style={{ border: BORDER_SOLID }}>
+                  {t("invoice.col.rate")}
+                </th>
+                <th className="px-3 py-2.5 text-right font-semibold" style={{ border: BORDER_SOLID }}>
+                  {t("invoice.col.amount")}
+                </th>
               </tr>
             </thead>
             <tbody>
               {displayLines.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="border-b px-3 py-4 text-center text-[#94a3b8]" style={{ borderColor: BORDER }}>
+                  <td
+                    colSpan={5}
+                    className="px-3 py-4 text-center text-[#94a3b8]"
+                    style={{ border: BORDER_SOLID }}
+                  >
                     —
                   </td>
                 </tr>
@@ -143,19 +169,19 @@ export const InvoicePreview = ({ state, totals }: Props) => {
                     key={line.id}
                     style={{ backgroundColor: index % 2 === 1 ? ROW_ALT : "#ffffff" }}
                   >
-                    <td className="border-b px-3 py-2.5 tabular-nums" style={{ borderColor: BORDER }}>
+                    <td className="px-3 py-2.5 tabular-nums" style={{ border: BORDER_SOLID }}>
                       {index + 1}
                     </td>
-                    <td className="border-b px-3 py-2.5" style={{ borderColor: BORDER }}>
+                    <td className="px-3 py-2.5" style={{ border: BORDER_SOLID }}>
                       {line.description}
                     </td>
-                    <td className="border-b px-3 py-2.5 text-center tabular-nums" style={{ borderColor: BORDER }}>
+                    <td className="px-3 py-2.5 text-center tabular-nums" style={{ border: BORDER_SOLID }}>
                       {line.quantity}
                     </td>
-                    <td className="border-b px-3 py-2.5 text-right tabular-nums" style={{ borderColor: BORDER }}>
+                    <td className="px-3 py-2.5 text-right tabular-nums" style={{ border: BORDER_SOLID }}>
                       {formatINR(line.rate)}
                     </td>
-                    <td className="border-b px-3 py-2.5 text-right tabular-nums" style={{ borderColor: BORDER }}>
+                    <td className="px-3 py-2.5 text-right tabular-nums" style={{ border: BORDER_SOLID }}>
                       {formatINR(line.amount)}
                     </td>
                   </tr>
@@ -178,7 +204,7 @@ export const InvoicePreview = ({ state, totals }: Props) => {
               )}
               <div
                 className="flex items-center justify-between gap-4 rounded px-3 py-2.5"
-                style={{ backgroundColor: AMOUNT_BG }}
+                style={{ backgroundColor: AMOUNT_BG, border: BORDER_SOLID, boxSizing: "border-box" }}
               >
                 <span className="text-sm font-bold text-[#1e293b]">{t("invoice.amountDue")}</span>
                 <span className="text-lg font-bold tabular-nums" style={{ color: NAVY }}>
@@ -189,7 +215,10 @@ export const InvoicePreview = ({ state, totals }: Props) => {
           </div>
 
           {(state.paymentInfo.trim() || state.notes.trim()) && (
-            <div className="mt-6 grid gap-4 border-t pt-4 sm:grid-cols-2" style={{ borderColor: BORDER }}>
+            <div
+              className="mt-6 grid gap-4 pt-4 sm:grid-cols-2"
+              style={{ borderTop: BORDER_SOLID }}
+            >
               {state.paymentInfo.trim() && (
                 <div className="text-[12px]">
                   <p className="mb-1 font-bold text-[#1e293b]">{t("invoice.paymentInfo")}</p>
@@ -207,7 +236,10 @@ export const InvoicePreview = ({ state, totals }: Props) => {
 
           {state.authorizedSignatory.trim() && (
             <div className="mt-8 flex justify-end">
-              <div className="w-48 border-t pt-2 text-center text-[12px]" style={{ borderColor: "#94a3b8" }}>
+              <div
+                className="w-48 pt-2 text-center text-[12px]"
+                style={{ borderTop: `1px solid #94a3b8` }}
+              >
                 <p className="mb-1 font-medium italic text-[#475569]">{state.authorizedSignatory.trim()}</p>
                 <p className="text-[11px] text-[#64748b]">{t("invoice.authorizedSignature")}</p>
               </div>
@@ -217,8 +249,8 @@ export const InvoicePreview = ({ state, totals }: Props) => {
       </div>
 
       <div
-        className="mx-8 mb-6 flex flex-wrap items-center justify-between gap-3 border-t py-4 text-[11px] text-[#64748b]"
-        style={{ borderColor: BORDER }}
+        className="mx-8 mb-6 flex flex-wrap items-center justify-between gap-3 py-4 text-[11px] text-[#64748b]"
+        style={{ borderTop: BORDER_SOLID }}
       >
         <p>{t("invoice.thankYou")}</p>
         <p className="text-right">

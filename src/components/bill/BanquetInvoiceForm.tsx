@@ -480,7 +480,7 @@ export const BanquetInvoiceForm = () => {
 
         <TabsContent value="preview" className="mt-6">
           <SectionCard title={t("invoice.tab.preview")} description={t("invoice.previewDesc")}>
-            <div className="overflow-hidden rounded-lg border shadow-sm">
+            <div className="overflow-hidden rounded-lg">
               <InvoicePreview state={state} totals={totals} />
             </div>
           </SectionCard>
