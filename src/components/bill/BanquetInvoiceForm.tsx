@@ -13,7 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SectionCard } from "@/components/enquiry/SectionCard";
-import { createInvoiceLineItem, initialInvoice, type InvoiceState } from "@/types/invoice";
+import { InvoicePreview } from "@/components/bill/InvoicePreview";
+import { createInvoiceLineItem, initialInvoice, saveInvoiceBusinessProfile, type InvoiceState } from "@/types/invoice";
 import { calcInvoiceTotals } from "@/lib/invoiceTotals";
 import { formatINR } from "@/lib/enquiryTotals";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
@@ -26,13 +27,6 @@ type TabKey = (typeof TABS)[number];
 
 const Req = () => <span aria-hidden="true" className="ml-0.5 text-destructive">*</span>;
 
-const formatDisplayDate = (iso: string): string => {
-  if (!iso) return "—";
-  const [y, m, d] = iso.split("-");
-  if (!y || !m || !d) return iso;
-  return `${d}/${m}/${y}`;
-};
-
 export const BanquetInvoiceForm = () => {
   const { t } = useT();
   const [tab, setTab] = useState<TabKey>("invoice");
@@ -43,7 +37,20 @@ export const BanquetInvoiceForm = () => {
   const idx = TABS.indexOf(tab);
 
   const update = <K extends keyof InvoiceState>(key: K, value: InvoiceState[K]) =>
-    setState((s) => ({ ...s, [key]: value }));
+    setState((s) => {
+      const next = { ...s, [key]: value };
+      if (key === "businessName" || key === "businessAddress" || key === "businessPhone" || key === "businessEmail" || key === "authorizedSignatory" || key === "paymentInfo") {
+        saveInvoiceBusinessProfile({
+          businessName: next.businessName,
+          businessAddress: next.businessAddress,
+          businessPhone: next.businessPhone,
+          businessEmail: next.businessEmail,
+          authorizedSignatory: next.authorizedSignatory,
+          paymentInfo: next.paymentInfo,
+        });
+      }
+      return next;
+    });
 
   const updateLine = (id: string, patch: Partial<InvoiceState["lineItems"][number]>) =>
     setState((s) => ({
@@ -131,65 +138,157 @@ export const BanquetInvoiceForm = () => {
           ))}
         </TabsList>
 
-        <TabsContent value="invoice" className="mt-6 space-y-6">
-          <SectionCard title={t("invoice.customerTitle")} description={t("invoice.customerDesc")} required>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="inv-customer">{t("basics.customerName")}<Req /></Label>
-                <Input
-                  id="inv-customer"
-                  value={state.customerName}
-                  onChange={(e) => update("customerName", e.target.value.slice(0, 100))}
-                  aria-invalid={showCustomerError}
-                  className={showCustomerError ? "border-destructive" : ""}
-                  placeholder={t("basics.customerName.ph")}
-                />
-                {showCustomerError && (
-                  <p className="text-xs text-destructive">{t("invoice.validate.customer")}</p>
-                )}
+        <TabsContent value="invoice" className="mt-6">
+          <SectionCard title={t("invoice.tab.edit")} description={t("invoice.formDesc")}>
+            <div className="space-y-8">
+              {/* col-sm-12: invoice meta */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="inv-date">{t("invoice.date")}</Label>
+                  <Input
+                    id="inv-date"
+                    type="date"
+                    value={state.invoiceDate}
+                    onChange={(e) => update("invoiceDate", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inv-number">{t("invoice.number")}</Label>
+                  <Input
+                    id="inv-number"
+                    value={state.invoiceNumber}
+                    onChange={(e) => update("invoiceNumber", e.target.value.slice(0, 40))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inv-due-date">{t("invoice.dueDate")}</Label>
+                  <Input
+                    id="inv-due-date"
+                    type="date"
+                    value={state.dueDate}
+                    onChange={(e) => update("dueDate", e.target.value)}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="inv-phone">{t("basics.phone")}</Label>
-                <Input
-                  id="inv-phone"
-                  inputMode="tel"
-                  value={state.phone}
-                  onChange={(e) => update("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="9876543210"
-                  maxLength={10}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="inv-number">{t("invoice.number")}</Label>
-                <Input
-                  id="inv-number"
-                  value={state.invoiceNumber}
-                  onChange={(e) => update("invoiceNumber", e.target.value.slice(0, 40))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="inv-date">{t("invoice.date")}</Label>
-                <Input
-                  id="inv-date"
-                  type="date"
-                  value={state.invoiceDate}
-                  onChange={(e) => update("invoiceDate", e.target.value)}
-                />
-              </div>
-              <div className="space-y-2 sm:col-span-2 sm:max-w-xs">
-                <Label htmlFor="inv-event-date">{t("basics.eventDate")}</Label>
-                <Input
-                  id="inv-event-date"
-                  type="date"
-                  value={state.eventDate}
-                  onChange={(e) => update("eventDate", e.target.value)}
-                />
-              </div>
-            </div>
-          </SectionCard>
 
-          <SectionCard title={t("invoice.linesTitle")} description={t("invoice.linesDesc")} required>
-            <div className="space-y-3">
+              {/* col-sm-6 + col-sm-6: business & customer */}
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div className="space-y-4 rounded-lg border border-border/70 p-4">
+                  <p className="text-sm font-semibold">{t("invoice.businessTitle")}</p>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-business-name">{t("invoice.businessName")}</Label>
+                      <Input
+                        id="inv-business-name"
+                        value={state.businessName}
+                        onChange={(e) => update("businessName", e.target.value.slice(0, 120))}
+                        placeholder={t("app.title")}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-business-address">{t("invoice.businessAddress")}</Label>
+                      <Textarea
+                        id="inv-business-address"
+                        value={state.businessAddress}
+                        onChange={(e) => update("businessAddress", e.target.value.slice(0, 500))}
+                        rows={3}
+                        placeholder={t("invoice.businessAddressPh")}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-business-phone">{t("invoice.businessPhone")}</Label>
+                      <Input
+                        id="inv-business-phone"
+                        inputMode="tel"
+                        value={state.businessPhone}
+                        onChange={(e) => update("businessPhone", e.target.value.replace(/\D/g, "").slice(0, 15))}
+                        placeholder="9876543210"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-business-email">{t("invoice.businessEmail")}</Label>
+                      <Input
+                        id="inv-business-email"
+                        type="email"
+                        value={state.businessEmail}
+                        onChange={(e) => update("businessEmail", e.target.value.slice(0, 120))}
+                        placeholder="info@venue.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-signatory">{t("invoice.authorizedSignatory")}</Label>
+                      <Input
+                        id="inv-signatory"
+                        value={state.authorizedSignatory}
+                        onChange={(e) => update("authorizedSignatory", e.target.value.slice(0, 80))}
+                        placeholder={t("invoice.authorizedSignatoryPh")}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 rounded-lg border border-border/70 p-4">
+                  <p className="text-sm font-semibold">
+                    {t("invoice.customerTitle")}
+                    <Req />
+                  </p>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-customer">{t("invoice.customerName")}<Req /></Label>
+                      <Input
+                        id="inv-customer"
+                        value={state.customerName}
+                        onChange={(e) => update("customerName", e.target.value.slice(0, 100))}
+                        aria-invalid={showCustomerError}
+                        className={showCustomerError ? "border-destructive" : ""}
+                        placeholder={t("basics.customerName.ph")}
+                      />
+                      {showCustomerError && (
+                        <p className="text-xs text-destructive">{t("invoice.validate.customer")}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-customer-address">{t("invoice.customerAddress")}</Label>
+                      <Textarea
+                        id="inv-customer-address"
+                        value={state.customerAddress}
+                        onChange={(e) => update("customerAddress", e.target.value.slice(0, 500))}
+                        rows={3}
+                        placeholder={t("invoice.customerAddressPh")}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-customer-phone">{t("invoice.customerPhone")}</Label>
+                      <Input
+                        id="inv-customer-phone"
+                        inputMode="tel"
+                        value={state.customerPhone}
+                        onChange={(e) => update("customerPhone", e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        placeholder="9876543210"
+                        maxLength={10}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="inv-customer-email">{t("invoice.customerEmail")}</Label>
+                      <Input
+                        id="inv-customer-email"
+                        type="email"
+                        value={state.customerEmail}
+                        onChange={(e) => update("customerEmail", e.target.value.slice(0, 120))}
+                        placeholder="customer@email.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* col-sm-12: charges */}
+              <div className="space-y-3 border-t border-border/70 pt-6">
+                <p className="text-sm font-semibold">
+                  {t("invoice.linesTitle")}
+                  <Req />
+                </p>
+                <p className="text-xs text-muted-foreground">{t("invoice.linesDesc")}</p>
               <div className="hidden overflow-x-auto md:block">
                 <Table>
                   <TableHeader>
@@ -315,143 +414,74 @@ export const BanquetInvoiceForm = () => {
                 <Plus className="h-4 w-4" />
                 {t("invoice.addLine")}
               </Button>
-            </div>
-          </SectionCard>
 
-          <SectionCard title={t("invoice.extrasTitle")} description={t("invoice.extrasDesc")}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>{t("summary.discount").replace(" (%)", "")}</Label>
-                <div className="flex items-center gap-2">
-                  <div className="inline-flex overflow-hidden rounded-md border">
-                    <button
-                      type="button"
-                      onClick={() => update("discountType", "percent")}
-                      className={`h-9 px-3 text-xs font-semibold ${state.discountType === "percent" ? "bg-gradient-gold text-primary-foreground" : "bg-muted/40"}`}
-                    >
-                      %
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => update("discountType", "fixed")}
-                      className={`h-9 px-3 text-xs font-semibold ${state.discountType === "fixed" ? "bg-gradient-gold text-primary-foreground" : "bg-muted/40"}`}
-                    >
-                      ₹
-                    </button>
+              <div className="mt-6 grid gap-4 border-t pt-6 sm:grid-cols-2">
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="inv-payment-info">{t("invoice.paymentInfo")}</Label>
+                  <Textarea
+                    id="inv-payment-info"
+                    value={state.paymentInfo}
+                    onChange={(e) => update("paymentInfo", e.target.value.slice(0, 500))}
+                    rows={3}
+                    placeholder={t("invoice.paymentInfoPh")}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("summary.discount").replace(" (%)", "")}</Label>
+                  <div className="flex items-center gap-2">
+                    <div className="inline-flex overflow-hidden rounded-md border">
+                      <button
+                        type="button"
+                        onClick={() => update("discountType", "percent")}
+                        className={`h-9 px-3 text-xs font-semibold ${state.discountType === "percent" ? "bg-gradient-gold text-primary-foreground" : "bg-muted/40"}`}
+                      >
+                        %
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => update("discountType", "fixed")}
+                        className={`h-9 px-3 text-xs font-semibold ${state.discountType === "fixed" ? "bg-gradient-gold text-primary-foreground" : "bg-muted/40"}`}
+                      >
+                        ₹
+                      </button>
+                    </div>
+                    <Input
+                      type="number"
+                      min={0}
+                      max={state.discountType === "percent" ? 100 : undefined}
+                      className="w-28 text-right tabular-nums"
+                      value={state.discountType === "percent" ? state.discountPercent : state.discountAmount}
+                      onChange={(e) => {
+                        const n = Math.max(0, Number(e.target.value) || 0);
+                        if (state.discountType === "percent") {
+                          update("discountPercent", Math.min(100, n));
+                        } else {
+                          update("discountAmount", n);
+                        }
+                      }}
+                    />
                   </div>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={state.discountType === "percent" ? 100 : undefined}
-                    className="w-28 text-right tabular-nums"
-                    value={state.discountType === "percent" ? state.discountPercent : state.discountAmount}
-                    onChange={(e) => {
-                      const n = Math.max(0, Number(e.target.value) || 0);
-                      if (state.discountType === "percent") {
-                        update("discountPercent", Math.min(100, n));
-                      } else {
-                        update("discountAmount", n);
-                      }
-                    }}
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="inv-notes">{t("summary.notes")}</Label>
+                  <Textarea
+                    id="inv-notes"
+                    value={state.notes}
+                    onChange={(e) => update("notes", e.target.value.slice(0, 1000))}
+                    rows={3}
+                    placeholder={t("invoice.notesPh")}
                   />
                 </div>
               </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="inv-notes">{t("summary.notes")}</Label>
-                <Textarea
-                  id="inv-notes"
-                  value={state.notes}
-                  onChange={(e) => update("notes", e.target.value.slice(0, 1000))}
-                  rows={3}
-                  placeholder={t("invoice.notesPh")}
-                />
-              </div>
+            </div>
             </div>
           </SectionCard>
         </TabsContent>
 
         <TabsContent value="preview" className="mt-6">
           <SectionCard title={t("invoice.tab.preview")} description={t("invoice.previewDesc")}>
-            <div id="invoice-print-area" className="space-y-6 bg-white text-foreground">
-              <div className="flex flex-wrap items-start justify-between gap-4 border-b pb-4">
-                <div>
-                  <p className="font-display text-2xl font-bold tracking-tight">{t("app.title")}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{t("invoice.heading")}</p>
-                </div>
-                <div className="text-right text-sm">
-                  <p className="font-semibold">{state.invoiceNumber}</p>
-                  <p className="text-muted-foreground">{formatDisplayDate(state.invoiceDate)}</p>
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2 text-sm">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t("invoice.billTo")}
-                  </p>
-                  <p className="mt-1 font-medium">{state.customerName}</p>
-                  {state.phone && <p className="text-muted-foreground">{state.phone}</p>}
-                </div>
-                {state.eventDate && (
-                  <div className="sm:text-right">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t("basics.eventDate")}
-                    </p>
-                    <p className="mt-1 font-medium">{formatDisplayDate(state.eventDate)}</p>
-                  </div>
-                )}
-              </div>
-
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>{t("invoice.col.description")}</TableHead>
-                    <TableHead className="text-right">{t("invoice.col.qty")}</TableHead>
-                    <TableHead className="text-right">{t("invoice.col.rate")}</TableHead>
-                    <TableHead className="text-right">{t("invoice.col.amount")}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {totals.items
-                    .filter((line) => line.description.trim() && line.amount > 0)
-                    .map((line, index) => (
-                      <TableRow key={line.id}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>{line.description}</TableCell>
-                        <TableCell className="text-right tabular-nums">{line.quantity}</TableCell>
-                        <TableCell className="text-right tabular-nums">{formatINR(line.rate)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{formatINR(line.amount)}</TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-
-              <div className="ml-auto w-full max-w-xs space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("summary.subtotal")}</span>
-                  <span className="tabular-nums">{formatINR(totals.subtotal)}</span>
-                </div>
-                {totals.discount > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("summary.discount").replace(" (%)", "")}</span>
-                    <span className="tabular-nums">- {formatINR(totals.discount)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between border-t pt-2 text-base font-bold">
-                  <span>{t("summary.grandTotal")}</span>
-                  <span className="tabular-nums text-primary">{formatINR(totals.total)}</span>
-                </div>
-              </div>
-
-              {state.notes.trim() && (
-                <div className="rounded-md border bg-muted/30 p-3 text-sm">
-                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t("summary.notes")}
-                  </p>
-                  <p className="whitespace-pre-wrap">{state.notes.trim()}</p>
-                </div>
-              )}
+            <div className="overflow-hidden rounded-lg border shadow-sm">
+              <InvoicePreview state={state} totals={totals} />
             </div>
           </SectionCard>
         </TabsContent>

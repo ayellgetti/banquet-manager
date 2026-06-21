@@ -18,3 +18,5 @@ export function calcInvoiceTotals(state: InvoiceState) {
   const total = subtotal - discount;
   return { items, subtotal, discount, total };
 }
+
+export type InvoiceTotals = ReturnType<typeof calcInvoiceTotals>;
