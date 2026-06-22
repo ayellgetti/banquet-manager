@@ -114,6 +114,7 @@ export const EVENT_TYPES = [
   "Re-Development Meeting",
   "Charity Event",
   "Fundraiser Event",
+  "Other",
 ];
 
 export const SOURCES = [
@@ -908,7 +909,7 @@ export const RECOMMENDED_PACKAGES: RecommendedPackage[] = [
       "Starter 1",
       "Pani Puri / Chat - 1",
       "Pav Bhaji - 1",
-      "Chole Puri - 1",
+      "Misal Pav - 1",
       "Dosa - 3",
       "Ice Cream - 1",
     ],
