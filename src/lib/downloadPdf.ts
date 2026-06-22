@@ -39,9 +39,11 @@ async function savePdfBlob(blob: Blob, filename: string, mobile: boolean): Promi
 export async function downloadPdfFromElement(
   element: HTMLElement,
   filename: string,
+  options?: { margin?: number },
 ): Promise<DownloadPdfResult> {
   const mobile = isMobileBrowser();
   const scale = mobile ? 1 : 2;
+  const margin = options?.margin ?? 10;
 
   element.scrollIntoView({ block: "start" });
   window.scrollTo(0, 0);
@@ -53,7 +55,7 @@ export async function downloadPdfFromElement(
     const { default: html2pdf } = await import("html2pdf.js");
     const blob = (await html2pdf()
       .set({
-        margin: 10,
+        margin,
         filename,
         image: { type: "jpeg", quality: mobile ? 0.85 : 0.95 },
         html2canvas: {

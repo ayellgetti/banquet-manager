@@ -3,6 +3,7 @@ import {
   ClipboardList,
   ClipboardPen,
   Contact,
+  LayoutGrid,
   LayoutDashboard,
   Receipt,
   ShoppingBasket,
@@ -66,6 +67,14 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     titleKey: "module.visitingCard.title",
     subtitleKey: "module.visitingCard.subtitle",
     descKey: "module.visitingCard.desc",
+  },
+  {
+    id: "menu-package-card",
+    path: "/menu-package-card",
+    icon: LayoutGrid,
+    titleKey: "module.menuPackageCard.title",
+    subtitleKey: "module.menuPackageCard.subtitle",
+    descKey: "module.menuPackageCard.desc",
   },
   {
     id: "procurement",

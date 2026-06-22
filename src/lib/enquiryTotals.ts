@@ -70,8 +70,13 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
   s.extraIds.forEach((id) => {
     const e = EXTRA_SERVICES.find((x) => x.id === id);
     if (e) {
-      const amount = e.unit === "per guest" ? e.price * guests : e.price;
-      items.push({ label: `Extra: ${e.name}`, detail: e.unit, amount });
+      const amount = e.quoteOnly ? 0 : e.unit === "per guest" ? e.price * guests : e.price;
+      const detail = e.quoteOnly
+        ? (e.subtitle ?? e.unit)
+        : e.priceMax != null
+          ? `${formatINR(e.price)} – ${formatINR(e.priceMax)}`
+          : e.unit;
+      items.push({ label: `Extra: ${e.name}`, detail, amount });
     }
   });
 
@@ -118,3 +123,14 @@ export function calcMenuPerPlate(s: EnquiryState): number {
 
 export const formatINR = (n: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+
+export function formatExtraPriceDisplay(e: {
+  price: number;
+  priceMax?: number;
+  quoteOnly?: boolean;
+  subtitle?: string;
+}): string | undefined {
+  if (e.quoteOnly) return undefined;
+  if (e.priceMax != null) return `${formatINR(e.price)} – ${formatINR(e.priceMax)}`;
+  return formatINR(e.price);
+}

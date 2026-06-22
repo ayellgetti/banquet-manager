@@ -55,7 +55,10 @@ export const MenuPackageAlerts = ({
 
       {plate?.extras?.length ? (
         <div className="menu-alert-amber rounded-lg border border-amber-200 bg-amber-50/80 p-3 text-xs text-amber-950">
-          <span className="font-semibold">{plate.name}:</span> {plate.extras.join(" · ")}
+          <div className="flex items-start gap-2">
+            <span className="shrink-0 font-semibold">{plate.name}:</span>
+            <span className="min-w-0 flex-1 leading-relaxed">{plate.extras.join(" · ")}</span>
+          </div>
         </div>
       ) : null}
 

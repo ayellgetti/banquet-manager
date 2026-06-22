@@ -10,6 +10,7 @@ import EnquiryPageV2 from "./pages/EnquiryPageV2.tsx";
 import MenuSelectionPage from "./pages/MenuSelectionPage.tsx";
 import BillPage from "./pages/BillPage.tsx";
 import VisitingCardPage from "./pages/VisitingCardPage.tsx";
+import MenuPackageCardPage from "./pages/MenuPackageCardPage.tsx";
 import ProcurementPage from "./pages/ProcurementPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { LanguageProvider } from "@/i18n";
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/menu-selection" element={<MenuSelectionPage />} />
               <Route path="/bill" element={<BillPage />} />
               <Route path="/visiting-card" element={<VisitingCardPage />} />
+              <Route path="/menu-package-card" element={<MenuPackageCardPage />} />
               <Route path="/procurement" element={<ProcurementPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />

@@ -69,7 +69,15 @@ export type PlatePackage = {
 
 export type DecorOption = { id: string; name: string; price: number; description: string; events?: string[] };
 export type ChairOption = { id: string; name: string; pricePerUnit: number };
-export type ExtraService = { id: string; name: string; price: number; unit: string };
+export type ExtraService = {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+  priceMax?: number;
+  subtitle?: string;
+  quoteOnly?: boolean;
+};
 export type VenueOption = { id: string; name: string; pricePerHour: number; description: string };
 
 export const EVENT_TYPES = [
@@ -828,8 +836,25 @@ export const PLATE_PACKAGES: PlatePackage[] = [
     },
   },
   {
-    id: "plate-1150",
+    id: "plate-950",
     name: "Gold",
+    basePrice: 950,
+    limits: {
+      "Welcome Drink": 2,
+      "Salads": 1,
+      "Farsan": 1,
+      "Starters": 2,
+      "Main Course": 2,
+      "Indian Breads": 2,
+      "Raita": 1,
+      "Rice": 1,
+      "Dal": 1,
+      "Sweets & Ice Cream": 2,
+    },
+  },
+  {
+    id: "plate-1150",
+    name: "Platinum",
     basePrice: 1150,
     limits: {
       "Welcome Drink": 2,
@@ -846,7 +871,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
   },
   {
     id: "plate-custom",
-    name: "Platinum",
+    name: "Elite",
     basePrice: 0,
     minPax: 100,
     limits: {},
@@ -925,15 +950,54 @@ export const EXTRA_SERVICES: ExtraService[] = [
   { id: "e1", name: "Photography", price: 25000, unit: "package" },
   { id: "e2", name: "Videography + Drone", price: 35000, unit: "package" },
   { id: "e3", name: "DJ & Sound", price: 6000, unit: "event" },
-  { id: "e4", name: "Live Band", price: 40000, unit: "event" },
   { id: "e5", name: "Valet Parking", price: 8000, unit: "event" },
   { id: "e6", name: "Anchor / MC", price: 12000, unit: "event" },
-  { id: "e7", name: "Fireworks", price: 22000, unit: "show" },
+  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 22000, unit: "show" },
   { id: "e8", name: "Return Gifts", price: 150, unit: "per guest" },
   { id: "e9", name: "Projector", price: 3500, unit: "event" },
+  { id: "e10", name: "Vidhi Mandap", price: 15000, priceMax: 25000, unit: "event" },
+  {
+    id: "e11",
+    name: "Digital Screen",
+    price: 15000,
+    priceMax: 25000,
+    unit: "event",
+    subtitle: "10' * 10' or 10' * 12'",
+  },
 ];
 
 export const DJ_EXTRA_ID = "e3";
+
+export type MenuPackageCardExtra = {
+  id: string;
+  name: string;
+  price?: number;
+  priceMax?: number;
+  detail?: string;
+};
+
+export function formatMenuPackageExtraPrice(item: MenuPackageCardExtra): string {
+  if (item.price != null && item.priceMax != null) {
+    return `₹${item.price.toLocaleString("en-IN")} – ₹${item.priceMax.toLocaleString("en-IN")}`;
+  }
+  if (item.price != null) return `₹${item.price.toLocaleString("en-IN")}`;
+  return item.detail ?? "";
+}
+
+/** Named add-ons for the menu package card (matches enquiry tab labels). */
+export const MENU_PACKAGE_CARD_EXTRAS: MenuPackageCardExtra[] = [
+  { id: "e3", name: "DJ & Sound", price: 6000 },
+  { id: "extra-balloon", name: "Balloon Decoration", price: 15000 },
+  { id: "e1", name: "Photography", price: 25000 },
+  { id: "e2", name: "Videography + Drone", price: 35000 },
+  { id: "e5", name: "Valet Parking", price: 8000 },
+  { id: "e6", name: "Anchor / MC", price: 12000 },
+  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 22000 },
+  { id: "e8", name: "Return Gifts", price: 150 },
+  { id: "e9", name: "Projector", price: 3500 },
+  { id: "e10", name: "Vidhi Mandap", price: 15000, priceMax: 25000 },
+  { id: "e11", name: "Digital Screen", price: 15000, priceMax: 25000, detail: "10' * 10' or 10' * 12'" },
+];
 
 export const VENUE_OPTIONS: VenueOption[] = [
   { id: "v1", name: "Main Banquet Hall", pricePerHour: 6000, description: "Indoor AC hall · up to 400 guests" },

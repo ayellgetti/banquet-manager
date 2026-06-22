@@ -17,7 +17,7 @@ import {
   sortMenuCategories,
 } from "@/data/enquiryOptions";
 import type { EnquiryState } from "@/types/enquiry";
-import { calcMenuPerPlate, calcTotals, formatINR } from "@/lib/enquiryTotals";
+import { calcMenuPerPlate, calcTotals, formatExtraPriceDisplay, formatINR } from "@/lib/enquiryTotals";
 import { PlatePackageComparison } from "./PlatePackageComparison";
 import { MenuPackageAlerts } from "./MenuPackageAlerts";
 import { useT } from "@/i18n";
@@ -351,9 +351,14 @@ export const SelectionsBreakdown = ({
           {extras.map((e) => (
             <li key={e.id} className="flex items-center justify-between">
               <span>
-                {e.name} <span className="text-xs text-muted-foreground">({e.unit})</span>
+                {e.name}{" "}
+                <span className="text-xs text-muted-foreground">
+                  ({e.subtitle ?? e.unit})
+                </span>
               </span>
-              <span className="text-muted-foreground tabular-nums">{formatINR(e.price)}</span>
+              <span className="text-muted-foreground tabular-nums">
+                {formatExtraPriceDisplay(e) ?? e.subtitle ?? "—"}
+              </span>
             </li>
           ))}
         </ul>

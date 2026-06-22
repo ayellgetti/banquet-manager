@@ -177,8 +177,10 @@ export const PlatePackageComparison = ({
               ) : (
                 <p className="mt-3 text-xs text-muted-foreground">{t("menu.customPlateDesc")}</p>
               )}
-              {isSel && p.extras?.length ? (
-                <p className="mt-3 border-t pt-2 text-xs text-amber-950">{p.extras.join(" · ")}</p>
+              {p.extras?.length ? (
+                <div className="mt-3 border-t pt-2">
+                  <p className="text-xs leading-relaxed text-amber-950">{p.extras.join(" · ")}</p>
+                </div>
               ) : null}
             </div>
           );
@@ -251,6 +253,25 @@ export const PlatePackageComparison = ({
                 })}
               </tr>
             ))}
+            <tr className="border-t bg-amber-50/50">
+              <td className="sticky left-0 z-10 bg-amber-50/50 px-3 py-2 text-xs font-medium text-foreground align-top">
+                {t("menu.packageNotes")}
+              </td>
+              {PLATE_PACKAGES.map((p) => {
+                const isSel = selectedId === p.id;
+                return (
+                  <td
+                    key={p.id}
+                    className={cn(
+                      "border-l px-3 py-2 text-left text-xs leading-relaxed text-amber-950 align-top",
+                      isSel ? "bg-primary/10" : "",
+                    )}
+                  >
+                    {p.extras?.length ? p.extras.join(" · ") : "—"}
+                  </td>
+                );
+              })}
+            </tr>
           </tbody>
         </table>
       </div>

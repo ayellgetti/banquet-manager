@@ -23,7 +23,7 @@ import {
   sortMenuCategories,
 } from "@/data/enquiryOptions";
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
-import { calcTotals, calcMenuPerPlate, formatINR } from "@/lib/enquiryTotals";
+import { calcTotals, calcMenuPerPlate, formatExtraPriceDisplay, formatINR } from "@/lib/enquiryTotals";
 import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
 import { openEnquiryWhatsApp } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
@@ -831,8 +831,8 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                         selected={state.extraIds.includes(e.id)}
                         onClick={() => update("extraIds", toggle(state.extraIds, e.id))}
                         title={e.name}
-                        subtitle={e.unit}
-                        price={formatINR(e.price)}
+                        subtitle={e.subtitle ?? e.unit}
+                        price={formatExtraPriceDisplay(e)}
                       />
                     ))}
                   </div>
