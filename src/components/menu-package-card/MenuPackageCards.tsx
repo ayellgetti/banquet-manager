@@ -10,11 +10,13 @@ import {
   MENU_PACKAGE_CARD_EXTRAS,
   PACKAGES,
   PLATE_PACKAGES,
+  RECOMMENDED_PACKAGES,
   VENUE_OPTIONS,
   getCategoryExtraPrice,
   sortMenuCategories,
   type MenuCategory,
   type PlatePackage,
+  type RecommendedPackage,
 } from "@/data/enquiryOptions";
 import { VISITING_CARD_ADDRESS, VISITING_CARD_BUSINESS_NAME, VISITING_CARD_CONTACTS, VISITING_CARD_QR_CODES } from "@/data/visitingCard";
 import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
@@ -41,12 +43,17 @@ const getEliteRateCategories = (): MenuCategory[] => {
 const SectionShell = ({
   title,
   note,
+  notes,
   children,
 }: {
   title: string;
   note?: string;
+  notes?: string[];
   children: ReactNode;
-}) => (
+}) => {
+  const noteLines = notes ?? (note ? [note] : []);
+
+  return (
   <section
     className="menu-package-section overflow-hidden rounded-lg shadow-soft"
     style={{ border: BORDER_GOLD, backgroundColor: CREAM, fontFamily: CARD_FONT }}
@@ -58,15 +65,16 @@ const SectionShell = ({
       <h2 className="text-sm font-bold sm:text-base" style={{ color: GOLD }}>
         {title}
       </h2>
-      {note ? (
-        <p className="mx-auto mt-1 max-w-2xl text-[9px] leading-snug sm:text-[10px]" style={{ color: BROWN }}>
-          {note}
+      {noteLines.map((line) => (
+        <p key={line} className="mx-auto mt-1 max-w-2xl text-[9px] leading-snug sm:text-[10px]" style={{ color: BROWN }}>
+          {line}
         </p>
-      ) : null}
+      ))}
     </div>
     <div className="p-2 sm:p-3">{children}</div>
   </section>
-);
+  );
+};
 
 const MenuPackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
   const { t } = useT();
@@ -147,6 +155,89 @@ const MenuPackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
             {plate.extras.join(" · ")}
           </div>
         ) : null}
+
+        <GoldDivider className="max-w-[180px]" />
+
+        <div>
+          <p
+            className="mb-1 text-center text-[9px] font-bold uppercase tracking-[0.15em]"
+            style={{ color: GOLD }}
+          >
+            {t("menu.includedEvery")}
+          </p>
+          <p className="text-center text-[9px] leading-snug sm:text-[10px]" style={{ color: BROWN }}>
+            {COMMON_PLATE_ITEMS.map(menuLabels.commonPlateName).join(" · ")}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const parseRecommendedItem = (item: string): { label: string; quantity?: string } => {
+  const dashMatch = item.match(/^(.+?)\s*-\s*(\d+)$/);
+  if (dashMatch) return { label: dashMatch[1].trim(), quantity: dashMatch[2] };
+  const match = item.match(/^(.+?)\s+(\d+)$/);
+  if (match) return { label: match[1], quantity: match[2] };
+  return { label: item };
+};
+
+const RecommendedPackageCardPreview = ({ pkg }: { pkg: RecommendedPackage }) => {
+  const { t } = useT();
+  const menuLabels = useMenuLabels();
+
+  return (
+    <div
+      className="flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-soft"
+      data-menu-package-box
+      style={{
+        border: BORDER_GOLD,
+        boxSizing: "border-box",
+        backgroundColor: CREAM,
+        fontFamily: CARD_FONT,
+      }}
+    >
+      <div className="flex flex-1 flex-col space-y-2 px-2.5 pb-2.5 pt-2.5 sm:px-3">
+        <div className="text-center">
+          <p className="text-sm font-bold" style={{ color: GOLD }}>
+            {pkg.name}
+          </p>
+          {pkg.basePrice != null && pkg.basePrice > 0 ? (
+            <p className="mt-0.5 text-[11px] leading-tight" style={{ color: BROWN }}>
+              {`₹${pkg.basePrice.toLocaleString("en-IN")}${t("menuPackageCard.perPlate")}`}
+            </p>
+          ) : null}
+        </div>
+
+        <GoldDivider className="max-w-[180px]" />
+
+        <div>
+          <p
+            className="mb-1 text-center text-[9px] font-bold uppercase tracking-[0.15em]"
+            style={{ color: GOLD }}
+          >
+            {t("menuPackageCard.includes")}
+          </p>
+          <ul className="space-y-0.5">
+            {pkg.items.map((item) => {
+              const { label, quantity } = parseRecommendedItem(item);
+              return (
+                <li
+                  key={item}
+                  className="flex items-start justify-between gap-1 rounded px-1.5 py-0.5 text-[10px] sm:text-[11px]"
+                  data-menu-package-box
+                  data-menu-package-category
+                  style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
+                >
+                  <span className="min-w-0 flex-1 break-words leading-tight">{label}</span>
+                  {quantity ? (
+                    <span className="shrink-0 pl-1 font-semibold tabular-nums">{quantity}</span>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
         <GoldDivider className="max-w-[180px]" />
 
@@ -378,9 +469,23 @@ export const MenuPackageCards = () => {
     return lines.join("\n");
   };
 
+  const formatRecommendedShareBlock = (pkg: RecommendedPackage) => {
+    const lines = [
+      pkg.name,
+      ...(pkg.basePrice != null && pkg.basePrice > 0
+        ? [`₹${pkg.basePrice}${t("menuPackageCard.perPlate")}`]
+        : []),
+      t("menuPackageCard.includes"),
+      ...pkg.items,
+      commonPlateLine,
+    ];
+    return lines.join("\n");
+  };
+
   const buildShareText = () => {
     const packageSection = standardPackages.map(formatPackageShareBlock).join("\n\n");
     const eliteSection = elitePackage ? formatPackageShareBlock(elitePackage) : "";
+    const recommendedSection = RECOMMENDED_PACKAGES.map(formatRecommendedShareBlock).join("\n\n");
 
     const venue = VENUE_OPTIONS[0];
     const hallLines = PACKAGES.map((pkg) => {
@@ -405,7 +510,8 @@ export const MenuPackageCards = () => {
       "",
       t("menuPackageCard.section.recommendedPackages"),
       t("menuPackageCard.menuOnlyNote"),
-      packageSection,
+      t("menuPackageCard.recommendedMinPaxNote"),
+      recommendedSection,
       "",
       t("menuPackageCard.section.extraAndDecoration"),
       MENU_PACKAGE_CARD_EXTRAS.map((item) => {
@@ -490,11 +596,17 @@ export const MenuPackageCards = () => {
           </SectionShell>
         ) : null}
 
-        <SectionShell title={t("menuPackageCard.section.recommendedPackages")} note={t("menuPackageCard.menuOnlyNote")}>
+        <SectionShell
+          title={t("menuPackageCard.section.recommendedPackages")}
+          notes={[
+            t("menuPackageCard.menuOnlyNote"),
+            t("menuPackageCard.recommendedMinPaxNote"),
+          ]}
+        >
           <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {standardPackages.map((plate) => (
-              <div key={`recommended-${plate.id}`} className="min-w-0">
-                <MenuPackageCardPreview plate={plate} />
+            {RECOMMENDED_PACKAGES.map((pkg) => (
+              <div key={pkg.id} className="min-w-0">
+                <RecommendedPackageCardPreview pkg={pkg} />
               </div>
             ))}
           </div>

@@ -67,6 +67,13 @@ export type PlatePackage = {
   extras?: string[];
 };
 
+export type RecommendedPackage = {
+  id: string;
+  name: string;
+  basePrice?: number;
+  items: string[];
+};
+
 export type DecorOption = { id: string; name: string; price: number; description: string; events?: string[] };
 export type ChairOption = { id: string; name: string; pricePerUnit: number };
 export type ExtraService = {
@@ -876,6 +883,63 @@ export const PLATE_PACKAGES: PlatePackage[] = [
     minPax: 100,
     limits: {},
     extras: ["Build your own menu — each dish charged at its category rate"],
+  },
+];
+
+export const RECOMMENDED_PACKAGES: RecommendedPackage[] = [
+  {
+    id: "recommended-beginner",
+    name: "Beginner",
+    basePrice: 300,
+    items: [
+      "Welcome Drink 1",
+      "Starter 1",
+      "Pav Bhaji / Chole Puri - 1",
+      "Briyani - 1",
+      "Gulamjamun - 1",
+    ],
+  },
+  {
+    id: "recommended-intermediate",
+    name: "Intermediate",
+    basePrice: 400,
+    items: [
+      "Welcome Drink 1",
+      "Starter 1",
+      "Pav Bhaji - 1",
+      "Chole Puri - 1",
+      "Pani Puri / Chat - 1",
+      "Dosa - 3",
+      "Ice Cream - 1",
+    ],
+  },
+  {
+    id: "recommended-advanced",
+    name: "Advanced",
+    basePrice: 500,
+    items: [
+      "Welcome Drink 1",
+      "Starter 1",
+      "Pani Puri / Chat - 1",
+      "Pav Bhaji / Chole Puri - 1",
+      "Chinese - 3",
+      "Dosa - 3",
+      "Ice Cream - 1",
+    ],
+  },
+  {
+    id: "recommended-pro",
+    name: "Professional",
+    basePrice: 600,
+    items: [
+      "Welcome Drink 1",
+      "Starter 1",
+      "Pani Puri / Chat - 1",
+      "Pizza - 1",
+      "Pasta - 2",
+      "Dosa - 3",
+      "Ice Cream - 1",
+    ],
   },
 ];
 
