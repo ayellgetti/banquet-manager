@@ -5,7 +5,7 @@ export type VisitingCardContact = {
 
 export const VISITING_CARD_BUSINESS_NAME = "Eternity Banquet";
 
-export const VISITING_CARD_LOGO = "/eternity-banquet-logo.png";
+export const VISITING_CARD_LOGO = "/logo-removebg-preview.png";
 
 export const VISITING_CARD_ADDRESS =
   "Plot No. 93-A, 2nd Floor, Bank Of Baroda, Kandivali co-operative Government Industrial Estate Ltd, Opp Sahyadri Nagar Hanuman Temple Kandivali, Charkop Gaon, Kandivali West, Mumbai, Maharashtra 400067";
