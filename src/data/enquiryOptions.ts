@@ -906,9 +906,9 @@ export const RECOMMENDED_PACKAGES: RecommendedPackage[] = [
     items: [
       "Welcome Drink 1",
       "Starter 1",
+      "Pani Puri / Chat - 1",
       "Pav Bhaji - 1",
       "Chole Puri - 1",
-      "Pani Puri / Chat - 1",
       "Dosa - 3",
       "Ice Cream - 1",
     ],
