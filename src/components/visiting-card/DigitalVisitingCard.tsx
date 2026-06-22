@@ -2,18 +2,19 @@ import { useState } from "react";
 import { MapPin, Share2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
-import { GoldDivider } from "@/components/visiting-card/GoldDivider";
 import {
-  BORDER_GOLD,
+  BORDER_SIMPLE,
   BROWN,
   CARD_FONT,
   CREAM,
   GOLD,
+  GOLD_LIGHT,
 } from "@/components/visiting-card/cardTheme";
 import {
   VISITING_CARD_ADDRESS,
   VISITING_CARD_BUSINESS_NAME,
   VISITING_CARD_CONTACTS,
+  VISITING_CARD_QR_CODES,
   visitingCardMapsUrl,
 } from "@/data/visitingCard";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
@@ -34,6 +35,9 @@ export const DigitalVisitingCard = () => {
     visitingCardMapsUrl(),
     "",
     ...VISITING_CARD_CONTACTS.flatMap((c) => [`${c.name}: ${c.phone}`]),
+    "",
+    t("visitingCard.qrScanLabel"),
+    ...VISITING_CARD_QR_CODES.map((qr) => `${t(qr.labelKey)}: ${qr.href}`),
   ].join("\n");
 
   const handleShare = async () => {
@@ -84,9 +88,9 @@ export const DigitalVisitingCard = () => {
     <div className="mx-auto max-w-md space-y-4">
       <div
         id="visiting-card-print-area"
-        className="overflow-hidden rounded-sm shadow-soft"
+        className="overflow-hidden rounded-sm"
         style={{
-          border: BORDER_GOLD,
+          border: BORDER_SIMPLE,
           boxSizing: "border-box",
           backgroundColor: CREAM,
           fontFamily: CARD_FONT,
@@ -94,9 +98,11 @@ export const DigitalVisitingCard = () => {
       >
         <BanquetHeader embedded showContactActions />
 
-        <div className="px-6 py-4 text-center" style={{ backgroundColor: "#ffffff" }}>
-          <GoldDivider />
-          <p className="mx-auto mt-3 max-w-xs text-[12px] italic leading-relaxed" style={{ color: BROWN }}>
+        <div
+          className="border-t px-6 py-4 text-center"
+          style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
+        >
+          <p className="mx-auto max-w-xs text-[12px] italic leading-relaxed" style={{ color: BROWN }}>
             {t("visitingCard.footer")}
           </p>
           <p

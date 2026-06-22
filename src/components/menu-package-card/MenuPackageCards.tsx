@@ -16,7 +16,7 @@ import {
   type MenuCategory,
   type PlatePackage,
 } from "@/data/enquiryOptions";
-import { VISITING_CARD_ADDRESS, VISITING_CARD_BUSINESS_NAME, VISITING_CARD_CONTACTS } from "@/data/visitingCard";
+import { VISITING_CARD_ADDRESS, VISITING_CARD_BUSINESS_NAME, VISITING_CARD_CONTACTS, VISITING_CARD_QR_CODES } from "@/data/visitingCard";
 import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
 import { GoldDivider } from "@/components/visiting-card/GoldDivider";
 import {
@@ -40,9 +40,11 @@ const getEliteRateCategories = (): MenuCategory[] => {
 
 const SectionShell = ({
   title,
+  note,
   children,
 }: {
   title: string;
+  note?: string;
   children: ReactNode;
 }) => (
   <section
@@ -56,6 +58,11 @@ const SectionShell = ({
       <h2 className="text-sm font-bold sm:text-base" style={{ color: GOLD }}>
         {title}
       </h2>
+      {note ? (
+        <p className="mx-auto mt-1 max-w-2xl text-[9px] leading-snug sm:text-[10px]" style={{ color: BROWN }}>
+          {note}
+        </p>
+      ) : null}
     </div>
     <div className="p-2 sm:p-3">{children}</div>
   </section>
@@ -389,10 +396,16 @@ export const MenuPackageCards = () => {
       ...VISITING_CARD_CONTACTS.flatMap((c) => [`${c.name}: ${c.phone}`]),
       "",
       t("menuPackageCard.section.packages"),
+      t("menuPackageCard.packagesNote"),
       packageSection,
       "",
       t("menuPackageCard.section.customPackage"),
+      t("menuPackageCard.menuOnlyNote"),
       eliteSection,
+      "",
+      t("menuPackageCard.section.recommendedPackages"),
+      t("menuPackageCard.menuOnlyNote"),
+      packageSection,
       "",
       t("menuPackageCard.section.extraAndDecoration"),
       MENU_PACKAGE_CARD_EXTRAS.map((item) => {
@@ -403,6 +416,9 @@ export const MenuPackageCards = () => {
       t("menuPackageCard.section.hallRent"),
       venue ? `${venue.name}: ₹${venue.pricePerHour}/hr` : "",
       ...hallLines,
+      "",
+      t("visitingCard.qrScanLabel"),
+      ...VISITING_CARD_QR_CODES.map((qr) => `${t(qr.labelKey)}: ${qr.href}`),
     ].join("\n");
   };
 
@@ -456,9 +472,9 @@ export const MenuPackageCards = () => {
       <p className="no-print text-sm text-muted-foreground">{t("menuPackageCard.desc")}</p>
 
       <div id="menu-package-card-print-area" className="mx-auto w-full max-w-[210mm] space-y-1.5">
-        <BanquetHeader />
+        <BanquetHeader showContactActions />
 
-        <SectionShell title={t("menuPackageCard.section.packages")}>
+        <SectionShell title={t("menuPackageCard.section.packages")} note={t("menuPackageCard.packagesNote")}>
           <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {standardPackages.map((plate) => (
               <div key={plate.id} className="min-w-0">
@@ -469,10 +485,20 @@ export const MenuPackageCards = () => {
         </SectionShell>
 
         {elitePackage ? (
-          <SectionShell title={t("menuPackageCard.section.customPackage")}>
+          <SectionShell title={t("menuPackageCard.section.customPackage")} note={t("menuPackageCard.menuOnlyNote")}>
             <ElitePackageCardPreview plate={elitePackage} />
           </SectionShell>
         ) : null}
+
+        <SectionShell title={t("menuPackageCard.section.recommendedPackages")} note={t("menuPackageCard.menuOnlyNote")}>
+          <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {standardPackages.map((plate) => (
+              <div key={`recommended-${plate.id}`} className="min-w-0">
+                <MenuPackageCardPreview plate={plate} />
+              </div>
+            ))}
+          </div>
+        </SectionShell>
 
         <div className="grid gap-1.5 lg:grid-cols-2">
           <SectionShell title={t("menuPackageCard.section.extraAndDecoration")}>
