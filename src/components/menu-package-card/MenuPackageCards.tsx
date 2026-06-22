@@ -16,41 +16,27 @@ import {
   type MenuCategory,
   type PlatePackage,
 } from "@/data/enquiryOptions";
-import { VISITING_CARD_ADDRESS, VISITING_CARD_BUSINESS_NAME, VISITING_CARD_LOGO } from "@/data/visitingCard";
+import { VISITING_CARD_ADDRESS, VISITING_CARD_BUSINESS_NAME, VISITING_CARD_CONTACTS } from "@/data/visitingCard";
+import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
+import { GoldDivider } from "@/components/visiting-card/GoldDivider";
+import {
+  BORDER_GOLD,
+  BOX_BORDER,
+  BROWN,
+  CARD_FONT,
+  CREAM,
+  GOLD,
+  GOLD_LIGHT,
+} from "@/components/visiting-card/cardTheme";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import { useT } from "@/i18n";
 import { useMenuLabels } from "@/i18n/menuLabels";
 import { toast } from "sonner";
 
-const GOLD = "#b8934a";
-const GOLD_LIGHT = "#d4b06a";
-const BROWN = "#4a3728";
-const CREAM = "#faf8f5";
-const BORDER_GOLD = `2px solid ${GOLD}`;
-const BOX_BORDER = `1px solid ${GOLD_LIGHT}`;
-const CARD_FONT = "Georgia, 'Times New Roman', serif";
-
 const getEliteRateCategories = (): MenuCategory[] => {
   const cats = MENU_CATEGORY_ORDER.filter((cat) => CATEGORY_EXTRA_PRICES[cat] != null);
   return [...cats.filter((cat) => cat !== "Breakfast"), ...(cats.includes("Breakfast") ? ["Breakfast" as const] : [])];
 };
-
-const GoldDivider = ({ className = "max-w-[240px]" }: { className?: string }) => (
-  <svg viewBox="0 0 320 16" className={`mx-auto h-3.5 w-full ${className}`} aria-hidden="true">
-    <path
-      d="M0 12 H120 Q160 12 160 12 Q200 12 240 12 H320"
-      fill="none"
-      stroke={GOLD}
-      strokeWidth="1"
-    />
-    <path
-      d="M150 4 L160 12 L170 4 M155 20 L160 12 L165 20"
-      fill="none"
-      stroke={GOLD}
-      strokeWidth="1"
-    />
-  </svg>
-);
 
 const SectionShell = ({
   title,
@@ -67,37 +53,12 @@ const SectionShell = ({
       className="rounded-t-lg border-b px-3 py-1.5 text-center sm:px-4"
       style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
     >
-      <h2 className="text-sm font-bold sm:text-base" style={{ color: BROWN }}>
+      <h2 className="text-sm font-bold sm:text-base" style={{ color: GOLD }}>
         {title}
       </h2>
     </div>
     <div className="p-2 sm:p-3">{children}</div>
   </section>
-);
-
-const BanquetHeader = () => (
-  <header
-    className="overflow-hidden rounded-lg shadow-soft"
-    data-menu-package-header
-    style={{ border: BORDER_GOLD, backgroundColor: "#ffffff", fontFamily: CARD_FONT }}
-  >
-    <div className="flex items-center justify-between gap-2 px-3 py-2">
-      <div className="min-w-0 flex-1 text-left">
-        <p className="text-sm font-bold leading-tight sm:text-base" style={{ color: BROWN }}>
-          {VISITING_CARD_BUSINESS_NAME}
-        </p>
-        <p className="mt-0.5 text-[10px] leading-snug sm:text-[11px]" style={{ color: BROWN }}>
-          {VISITING_CARD_ADDRESS}
-        </p>
-      </div>
-      <img
-        src={VISITING_CARD_LOGO}
-        alt={VISITING_CARD_BUSINESS_NAME}
-        className="h-auto w-14 shrink-0 object-contain sm:w-20"
-        crossOrigin="anonymous"
-      />
-    </div>
-  </header>
 );
 
 const MenuPackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
@@ -122,7 +83,7 @@ const MenuPackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
     >
       <div className="flex flex-1 flex-col space-y-2 px-2.5 pb-2.5 pt-2.5 sm:px-3">
         <div className="text-center">
-          <p className="text-sm font-bold" style={{ color: BROWN }}>
+          <p className="text-sm font-bold" style={{ color: GOLD }}>
             {plate.name}
           </p>
           <p className="mt-0.5 text-[11px] leading-tight" style={{ color: BROWN }}>
@@ -219,7 +180,7 @@ const ElitePackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
           className="flex w-[4.5rem] shrink-0 flex-col justify-center border-r px-2 py-2 text-center sm:w-24"
           style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
         >
-          <p className="text-xs font-bold leading-tight sm:text-sm" style={{ color: BROWN }}>
+          <p className="text-xs font-bold leading-tight sm:text-sm" style={{ color: GOLD }}>
             {plate.name}
           </p>
           <p className="mt-0.5 text-[10px] leading-tight" style={{ color: BROWN }}>
@@ -315,7 +276,7 @@ const HallRentSection = () => {
           data-menu-package-box
           style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
         >
-          <p className="text-[11px] font-semibold">{venue.name}</p>
+          <p className="text-[11px] font-semibold" style={{ color: GOLD }}>{venue.name}</p>
           <p className="mt-0.5 text-[10px]">{venue.description}</p>
           <p className="mt-1 text-xs font-bold tabular-nums" style={{ color: GOLD }}>
             ₹{venue.pricePerHour.toLocaleString("en-IN")}
@@ -424,6 +385,8 @@ export const MenuPackageCards = () => {
     return [
       VISITING_CARD_BUSINESS_NAME,
       VISITING_CARD_ADDRESS,
+      "",
+      ...VISITING_CARD_CONTACTS.flatMap((c) => [`${c.name}: ${c.phone}`]),
       "",
       t("menuPackageCard.section.packages"),
       packageSection,

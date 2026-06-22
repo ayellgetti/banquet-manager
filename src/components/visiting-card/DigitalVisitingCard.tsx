@@ -1,43 +1,24 @@
 import { useState } from "react";
-import { MapPin, Phone, Share2, Printer } from "lucide-react";
+import { MapPin, Share2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
+import { GoldDivider } from "@/components/visiting-card/GoldDivider";
+import {
+  BORDER_GOLD,
+  BROWN,
+  CARD_FONT,
+  CREAM,
+  GOLD,
+} from "@/components/visiting-card/cardTheme";
 import {
   VISITING_CARD_ADDRESS,
   VISITING_CARD_BUSINESS_NAME,
   VISITING_CARD_CONTACTS,
-  VISITING_CARD_LOGO,
-  phoneTel,
-  phoneWhatsApp,
   visitingCardMapsUrl,
 } from "@/data/visitingCard";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import { useT } from "@/i18n";
 import { toast } from "sonner";
-
-const GOLD = "#b8934a";
-const GOLD_LIGHT = "#d4b06a";
-const BROWN = "#4a3728";
-const CREAM = "#faf8f5";
-const BORDER_GOLD = `2px solid ${GOLD}`;
-const BOX_BORDER = `1px solid ${GOLD_LIGHT}`;
-
-const GoldDivider = () => (
-  <svg viewBox="0 0 320 16" className="mx-auto h-3.5 w-full max-w-[240px]" aria-hidden="true">
-    <path
-      d="M0 12 H120 Q160 12 160 12 Q200 12 240 12 H320"
-      fill="none"
-      stroke={GOLD}
-      strokeWidth="1"
-    />
-    <path
-      d="M150 4 L160 12 L170 4 M155 20 L160 12 L165 20"
-      fill="none"
-      stroke={GOLD}
-      strokeWidth="1"
-    />
-  </svg>
-);
 
 export const DigitalVisitingCard = () => {
   const { t } = useT();
@@ -103,116 +84,23 @@ export const DigitalVisitingCard = () => {
     <div className="mx-auto max-w-md space-y-4">
       <div
         id="visiting-card-print-area"
-        className="overflow-hidden bg-white shadow-soft"
+        className="overflow-hidden rounded-sm shadow-soft"
         style={{
           border: BORDER_GOLD,
           boxSizing: "border-box",
           backgroundColor: CREAM,
-          fontFamily: "Georgia, 'Times New Roman', serif",
+          fontFamily: CARD_FONT,
         }}
       >
-        {/* Logo header — print-safe */}
-        <div className="px-1 pb-1 pt-1 text-center" >
-          <img
-            src={VISITING_CARD_LOGO}
-            alt={VISITING_CARD_BUSINESS_NAME}
-            className="mx-auto h-auto w-full max-w-[200px] object-contain"
-            crossOrigin="anonymous"
-          />
-        </div>
+        <BanquetHeader embedded showContactActions />
 
-        <div className="px-1 pb-1">
+        <div className="px-6 py-4 text-center" style={{ backgroundColor: "#ffffff" }}>
           <GoldDivider />
-        </div>
-
-        {/* Body */}
-        <div className="space-y-3 px-6 pb-4 pt-1">
-          <div className="text-center">
-            <p
-              className="text-[10px] font-bold uppercase tracking-[0.2em]"
-              style={{ color: GOLD }}
-            >
-              {t("visitingCard.addressLabel")}
-            </p>
-            <p
-              className="mx-auto mt-1.5 max-w-sm text-[13px] leading-snug"
-              style={{ color: BROWN }}
-            >
-              {VISITING_CARD_ADDRESS}
-            </p>
-          </div>
-
-          <GoldDivider />
-
-          <div>
-            <p
-              className="mb-2 text-center text-[10px] font-bold uppercase tracking-[0.2em]"
-              style={{ color: GOLD }}
-            >
-              {t("visitingCard.contactsLabel")}
-            </p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {VISITING_CARD_CONTACTS.map((contact) => (
-                <div
-                  key={contact.phone}
-                  className="rounded-lg px-3 py-2 text-center"
-                  style={{ border: BOX_BORDER, backgroundColor: "#ffffff" }}
-                  data-vcard-box
-                >
-                  <p className="text-[14px] font-semibold" style={{ color: BROWN }}>
-                    {contact.name}
-                  </p>
-                  <p
-                    className="mt-1 flex items-center justify-center gap-1.5 text-[13px] tabular-nums"
-                    style={{ color: BROWN }}
-                  >
-                    <Phone className="h-3.5 w-3.5 shrink-0" style={{ color: GOLD }} aria-hidden="true" />
-                    <span>{contact.phone}</span>
-                  </p>
-                  <div className="no-print mt-2 flex flex-wrap justify-center gap-1.5">
-                    <Button
-                      asChild
-                      size="sm"
-                      variant="outline"
-                      className="gap-1.5"
-                      style={{ borderColor: GOLD_LIGHT, color: BROWN }}
-                    >
-                      <a href={`tel:${phoneTel(contact.phone)}`}>
-                        <Phone className="h-3.5 w-3.5" />
-                        {t("visitingCard.call")}
-                      </a>
-                    </Button>
-                    <Button
-                      asChild
-                      size="sm"
-                      className="gap-1.5 bg-[#25D366] text-white hover:bg-[#20bd5a]"
-                    >
-                      <a
-                        href={`https://wa.me/${phoneWhatsApp(contact.phone)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <WhatsAppIcon className="h-3.5 w-3.5" />
-                        WhatsApp
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div
-          className="px-6 py-3 text-center"
-          style={{ borderTop: BOX_BORDER, backgroundColor: "#ffffff" }}
-        >
-          <p className="text-[11px] italic leading-snug" style={{ color: BROWN }}>
+          <p className="mx-auto mt-3 max-w-xs text-[12px] italic leading-relaxed" style={{ color: BROWN }}>
             {t("visitingCard.footer")}
           </p>
           <p
-            className="mt-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+            className="mt-2 text-[10px] font-bold uppercase tracking-[0.2em]"
             style={{ color: GOLD }}
           >
             {VISITING_CARD_BUSINESS_NAME}
