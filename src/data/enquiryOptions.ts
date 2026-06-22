@@ -902,7 +902,7 @@ export const RECOMMENDED_PACKAGES: RecommendedPackage[] = [
   {
     id: "recommended-intermediate",
     name: "Intermediate",
-    basePrice: 400,
+    basePrice: 475,
     items: [
       "Welcome Drink 1",
       "Starter 1",
@@ -930,7 +930,7 @@ export const RECOMMENDED_PACKAGES: RecommendedPackage[] = [
   {
     id: "recommended-pro",
     name: "Professional",
-    basePrice: 600,
+    basePrice: 550,
     items: [
       "Welcome Drink 1",
       "Starter 1",
