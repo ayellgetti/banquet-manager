@@ -17,6 +17,8 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
   const items: LineItem[] = [];
 
   const pkg = PACKAGES.find((p) => p.id === s.packageId);
+  const slot = pkg?.slots?.find((sl) => sl.id === s.slotId) || pkg?.slots?.[0];
+  const slotHours = slot?.hours ?? 0;
   if (pkg) {
     if (pkg.pricePerPlate > 0) {
       items.push({
@@ -70,20 +72,29 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
   s.extraIds.forEach((id) => {
     const e = EXTRA_SERVICES.find((x) => x.id === id);
     if (e) {
-      const amount = e.quoteOnly ? 0 : e.unit === "per guest" ? e.price * guests : e.price;
+      const amount = e.quoteOnly
+        ? 0
+        : e.unit === "per guest"
+          ? e.price * guests
+          : e.unit === "hour"
+            ? e.price * slotHours
+            : e.price;
       const detail = e.quoteOnly
         ? (e.subtitle ?? e.unit)
         : e.priceMax != null
           ? `${formatINR(e.price)} – ${formatINR(e.priceMax)}`
-          : e.unit;
+          : e.unit === "hour"
+            ? slotHours > 0
+              ? `${slotHours}h × ₹${e.price.toLocaleString("en-IN")}/hr`
+              : `₹${e.price.toLocaleString("en-IN")}/hr · select a package for hours`
+            : e.subtitle ?? e.unit;
       items.push({ label: `Extra: ${e.name}`, detail, amount });
     }
   });
 
   const venue = VENUE_OPTIONS.find((v) => v.id === s.venueId);
   if (venue) {
-    const slot = pkg?.slots?.find((sl) => sl.id === s.slotId) || pkg?.slots?.[0];
-    const hours = slot?.hours ?? 0;
+    const hours = slotHours;
     const hallRentIncluded = !!pkg;
     items.push({
       label: `Venue: ${venue.name}`,

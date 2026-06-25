@@ -263,7 +263,94 @@ body.printing #menu-package-card-print-area [data-menu-package-box] {
   border-style: solid !important;
 }
 
-body.printing #menu-package-card-print-area img {
+body.printing #menu-package-card-print-area [data-menu-package-box] img,
+body.printing #menu-package-card-print-area .menu-package-section img {
   width: 56px !important;
   max-width: 56px !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-compact {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 32%) !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-brand {
+  padding: 2px 4px !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-logo {
+  width: 56px !important;
+  max-width: 56px !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-brand p:last-child {
+  margin-top: 1px !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts {
+  padding: 2px 4px !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts > p {
+  margin-bottom: 1px !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts ul {
+  gap: 0 !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contact {
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-phone {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+body.printing #menu-package-card-print-area > * + * {
+  margin-top: 3px !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-header {
+  padding: 1px 4px !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-header p {
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-body {
+  padding: 1px 3px !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-field {
+  gap: 0 !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-label {
+  font-size: 7.5px !important;
+  letter-spacing: 0.05em !important;
+  line-height: 1 !important;
+  margin-bottom: 1px !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-input {
+  height: 14px !important;
+  min-height: 14px !important;
+  padding: 0 2px !important;
+  font-size: 8.5px !important;
+  line-height: 1.1 !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-phone {
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+}
+
+body.printing #menu-package-card-print-area [data-client-details-section] .grid {
+  gap: 1px !important;
 }

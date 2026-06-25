@@ -1,4 +1,4 @@
-import { PLATE_PACKAGES, sortMenuCategories } from "@/data/enquiryOptions";
+import { PLATE_PACKAGES, getPackageCategoryLabel, sortMenuCategories } from "@/data/enquiryOptions";
 import { useT } from "@/i18n";
 import { useMenuLabels } from "@/i18n/menuLabels";
 import { cn } from "@/lib/utils";
@@ -168,7 +168,9 @@ export const PlatePackageComparison = ({
                     if (n == null) return null;
                     return (
                       <div key={cat} className="flex justify-between gap-2">
-                        <dt className="text-muted-foreground">{menuLabels.categoryName(cat)}</dt>
+                        <dt className="text-muted-foreground">
+                          {getPackageCategoryLabel(p, cat, menuLabels.categoryName)}
+                        </dt>
                         <dd className="font-medium tabular-nums text-foreground">{n}</dd>
                       </div>
                     );

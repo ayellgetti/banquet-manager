@@ -9,7 +9,10 @@ export function menuItemLabel(id: string, fallback: string, lang: Lang): string 
 }
 
 export function menuCategoryLabel(category: string, lang: Lang): string {
-  if (lang === "en") return category;
+  if (lang === "en") {
+    if (category === "Sweets & Ice Cream") return "Sweets or Ice Cream";
+    return category;
+  }
   return MENU_CATEGORY_TRANSLATIONS[category]?.[lang] ?? category;
 }
 

@@ -13,7 +13,7 @@ export const MENU_CATEGORY_TRANSLATIONS: Record<string, L> = {
   "Raita": { hi: "रायता", mr: "रायता" },
   "Rice": { hi: "चावल", mr: "भात" },
   "Dal": { hi: "दाल", mr: "डाळ" },
-  "Sweets & Ice Cream": { hi: "मिठाई और आइसक्रीम", mr: "मिठाई आणि आइसक्रीम" },
+  "Sweets & Ice Cream": { hi: "मिठाई या आइसक्रीम", mr: "मिठाई किंवा आइसक्रीम" },
   "Live Counters": { hi: "लाइव काउंटर", mr: "लाइव्ह काउंटर" },
 };
 

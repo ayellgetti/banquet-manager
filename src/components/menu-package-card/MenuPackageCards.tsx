@@ -10,16 +10,21 @@ import {
   MENU_PACKAGE_CARD_EXTRAS,
   PACKAGES,
   PLATE_PACKAGES,
-  RECOMMENDED_PACKAGES,
   VENUE_OPTIONS,
   getCategoryExtraPrice,
+  getPackageCategoryLabel,
   sortMenuCategories,
   type MenuCategory,
   type PlatePackage,
-  type RecommendedPackage,
 } from "@/data/enquiryOptions";
 import { VISITING_CARD_ADDRESS, VISITING_CARD_BUSINESS_NAME, VISITING_CARD_CONTACTS, VISITING_CARD_QR_CODES } from "@/data/visitingCard";
 import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
+import {
+  ClientDetailsSection,
+  emptyClientDetails,
+  formatClientDetailsBlock,
+  type ClientDetails,
+} from "@/components/menu-package-card/ClientDetailsSection";
 import { GoldDivider } from "@/components/visiting-card/GoldDivider";
 import {
   BORDER_GOLD,
@@ -136,7 +141,7 @@ const MenuPackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
                     style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
                   >
                     <span className="min-w-0 flex-1 break-words leading-tight">
-                      {menuLabels.categoryName(cat)}
+                      {getPackageCategoryLabel(plate, cat, menuLabels.categoryName)}
                     </span>
                     <span className="shrink-0 pl-1 font-semibold tabular-nums">{count}</span>
                   </li>
@@ -174,17 +179,10 @@ const MenuPackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
   );
 };
 
-const parseRecommendedItem = (item: string): { label: string; quantity?: string } => {
-  const dashMatch = item.match(/^(.+?)\s*-\s*(\d+)$/);
-  if (dashMatch) return { label: dashMatch[1].trim(), quantity: dashMatch[2] };
-  const match = item.match(/^(.+?)\s+(\d+)$/);
-  if (match) return { label: match[1], quantity: match[2] };
-  return { label: item };
-};
-
-const RecommendedPackageCardPreview = ({ pkg }: { pkg: RecommendedPackage }) => {
+const ElitePackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
   const { t } = useT();
   const menuLabels = useMenuLabels();
+  const rateCategories = useMemo(() => getEliteRateCategories(), []);
 
   return (
     <div
@@ -200,13 +198,16 @@ const RecommendedPackageCardPreview = ({ pkg }: { pkg: RecommendedPackage }) => 
       <div className="flex flex-1 flex-col space-y-2 px-2.5 pb-2.5 pt-2.5 sm:px-3">
         <div className="text-center">
           <p className="text-sm font-bold" style={{ color: GOLD }}>
-            {pkg.name}
+            {plate.name}
           </p>
-          {pkg.basePrice != null && pkg.basePrice > 0 ? (
-            <p className="mt-0.5 text-[11px] leading-tight" style={{ color: BROWN }}>
-              {`₹${pkg.basePrice.toLocaleString("en-IN")}${t("menuPackageCard.perPlate")}`}
-            </p>
-          ) : null}
+          <p className="mt-0.5 text-[11px] leading-tight" style={{ color: BROWN }}>
+            {t("menuPackageCard.eliteSubtitle")}
+            {plate.minPax != null && (
+              <span className="block text-[10px] opacity-80">
+                {t("menu.minPax").replace("{n}", String(plate.minPax))}
+              </span>
+            )}
+          </p>
         </div>
 
         <GoldDivider className="max-w-[180px]" />
@@ -216,28 +217,38 @@ const RecommendedPackageCardPreview = ({ pkg }: { pkg: RecommendedPackage }) => 
             className="mb-1 text-center text-[9px] font-bold uppercase tracking-[0.15em]"
             style={{ color: GOLD }}
           >
-            {t("menuPackageCard.includes")}
+            {t("menuPackageCard.categoryRates")}
           </p>
           <ul className="space-y-0.5">
-            {pkg.items.map((item) => {
-              const { label, quantity } = parseRecommendedItem(item);
-              return (
-                <li
-                  key={item}
-                  className="flex items-start justify-between gap-1 rounded px-1.5 py-0.5 text-[10px] sm:text-[11px]"
-                  data-menu-package-box
-                  data-menu-package-category
-                  style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
-                >
-                  <span className="min-w-0 flex-1 break-words leading-tight">{label}</span>
-                  {quantity ? (
-                    <span className="shrink-0 pl-1 font-semibold tabular-nums">{quantity}</span>
-                  ) : null}
-                </li>
-              );
-            })}
+            {rateCategories.map((cat) => (
+              <li
+                key={cat}
+                className="flex items-start justify-between gap-1 rounded px-1.5 py-0.5 text-[10px] sm:text-[11px]"
+                data-menu-package-box
+                data-menu-package-category
+                style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
+              >
+                <span className="min-w-0 flex-1 break-words leading-tight">
+                  {menuLabels.categoryName(cat)}
+                </span>
+                <span className="shrink-0 pl-1 font-semibold tabular-nums">
+                  ₹{getCategoryExtraPrice(cat)}
+                  {t("menuPackageCard.perPlateShort")}
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
+
+        {plate.extras?.length ? (
+          <div
+            className="rounded px-1.5 py-1 text-[9px] leading-snug"
+            data-menu-package-box
+            style={{ border: BOX_BORDER, backgroundColor: "#fffef8", color: BROWN }}
+          >
+            {plate.extras.join(" · ")}
+          </div>
+        ) : null}
 
         <GoldDivider className="max-w-[180px]" />
 
@@ -257,98 +268,32 @@ const RecommendedPackageCardPreview = ({ pkg }: { pkg: RecommendedPackage }) => 
   );
 };
 
-const ElitePackageCardPreview = ({ plate }: { plate: PlatePackage }) => {
-  const { t } = useT();
-  const menuLabels = useMenuLabels();
-  const rateCategories = useMemo(() => getEliteRateCategories(), []);
-
-  return (
-    <div
-      className="overflow-hidden rounded-lg bg-white shadow-soft"
-      data-menu-package-box
-      style={{
-        border: BORDER_GOLD,
-        boxSizing: "border-box",
-        backgroundColor: CREAM,
-        fontFamily: CARD_FONT,
-      }}
-    >
-      <div className="flex flex-row items-stretch">
-        <div
-          className="flex w-[4.5rem] shrink-0 flex-col justify-center border-r px-2 py-2 text-center sm:w-24"
-          style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
-        >
-          <p className="text-xs font-bold leading-tight sm:text-sm" style={{ color: GOLD }}>
-            {plate.name}
-          </p>
-          <p className="mt-0.5 text-[10px] leading-tight" style={{ color: BROWN }}>
-            {t("menu.customPlate")}
-          </p>
-          {plate.minPax != null && (
-            <p className="mt-0.5 text-[9px] leading-tight opacity-80" style={{ color: BROWN }}>
-              {t("menu.minPax").replace("{n}", String(plate.minPax))}
-            </p>
-          )}
-        </div>
-
-        <div className="min-w-0 flex-1 px-2 py-2 sm:px-3">
-          <p
-            className="mb-1 text-[9px] font-bold uppercase tracking-[0.12em]"
-            style={{ color: GOLD }}
-          >
-            {t("menuPackageCard.categoryRates")}
-          </p>
-          <ul className="grid grid-cols-2 gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
-            {rateCategories.map((cat) => (
-              <li
-                key={cat}
-                className="flex min-w-0 flex-col gap-0.5 rounded px-1.5 py-1"
-                data-menu-package-box
-                style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
-              >
-                <span className="break-words text-[9px] leading-tight sm:text-[10px]">
-                  {menuLabels.categoryName(cat)}
-                </span>
-                <span className="text-[9px] font-semibold tabular-nums sm:text-[10px]">
-                  ₹{getCategoryExtraPrice(cat)}
-                  {t("menuPackageCard.perPlateShort")}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className="border-t px-2 py-1.5 text-center sm:px-3"
-        style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
-      >
-        <p
-          className="mb-0.5 text-[9px] font-bold uppercase tracking-[0.12em]"
-          style={{ color: GOLD }}
-        >
-          {t("menu.includedEvery")}
-        </p>
-        <p className="text-[9px] leading-snug sm:text-[10px]" style={{ color: BROWN }}>
-          {COMMON_PLATE_ITEMS.map(menuLabels.commonPlateName).join(" · ")}
-        </p>
-      </div>
-    </div>
-  );
-};
-
 const ExtraSection = () => (
   <ul className="grid grid-cols-3 gap-1">
     {MENU_PACKAGE_CARD_EXTRAS.map((item) => (
       <li
         key={item.id}
-        className="flex min-w-0 flex-col gap-0.5 rounded px-1.5 py-1"
+        className={`flex min-w-0 flex-col gap-0.5 rounded px-1.5 py-1${item.wide ? " col-span-3 py-1.5" : ""}`}
         data-menu-package-box
         style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
       >
-        <span className="break-words text-[9px] leading-tight sm:text-[10px]">{item.name}</span>
+        <span
+          className={
+            item.wide
+              ? "break-words text-[10px] leading-snug sm:text-[11px]"
+              : "break-words text-[9px] leading-tight sm:text-[10px]"
+          }
+        >
+          {item.name}
+        </span>
         {item.price != null || item.priceMax != null ? (
-          <span className="text-[9px] font-semibold tabular-nums sm:text-[10px]">
+          <span
+            className={
+              item.wide
+                ? "text-[10px] font-semibold tabular-nums sm:text-[11px]"
+                : "text-[9px] font-semibold tabular-nums sm:text-[10px]"
+            }
+          >
             {formatMenuPackageExtraPrice(item)}
           </span>
         ) : item.detail ? (
@@ -431,15 +376,7 @@ export const MenuPackageCards = () => {
   const { t } = useT();
   const menuLabels = useMenuLabels();
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
-
-  const standardPackages = useMemo(
-    () => PLATE_PACKAGES.filter((p) => p.id !== CUSTOM_PLATE_PACKAGE_ID),
-    [],
-  );
-  const elitePackage = useMemo(
-    () => PLATE_PACKAGES.find((p) => p.id === CUSTOM_PLATE_PACKAGE_ID),
-    [],
-  );
+  const [clientDetails, setClientDetails] = useState<ClientDetails>(emptyClientDetails);
 
   const commonPlateLine = `${t("menu.includedEvery")} ${COMMON_PLATE_ITEMS.map(menuLabels.commonPlateName).join(" · ")}`;
 
@@ -450,7 +387,9 @@ export const MenuPackageCards = () => {
       plate.name,
       plate.basePrice > 0
         ? `₹${plate.basePrice}${t("menuPackageCard.perPlate")}`
-        : t("menu.customPlate"),
+        : isElite
+          ? t("menuPackageCard.eliteSubtitle")
+          : t("menu.customPlate"),
       ...(plate.minPax != null
         ? [t("menu.minPax").replace("{n}", String(plate.minPax))]
         : []),
@@ -461,7 +400,9 @@ export const MenuPackageCards = () => {
           )
         : sortMenuCategories(Object.keys(plate.limits)).map((cat) => {
             const count = plate.limits[cat as keyof typeof plate.limits];
-            return count != null ? `${menuLabels.categoryName(cat)} — ${count}` : null;
+            return count != null
+              ? `${getPackageCategoryLabel(plate, cat, menuLabels.categoryName)} — ${count}`
+              : null;
           }).filter(Boolean) as string[]),
       ...(!isElite && plate.extras?.length ? plate.extras : []),
       commonPlateLine,
@@ -469,23 +410,8 @@ export const MenuPackageCards = () => {
     return lines.join("\n");
   };
 
-  const formatRecommendedShareBlock = (pkg: RecommendedPackage) => {
-    const lines = [
-      pkg.name,
-      ...(pkg.basePrice != null && pkg.basePrice > 0
-        ? [`₹${pkg.basePrice}${t("menuPackageCard.perPlate")}`]
-        : []),
-      t("menuPackageCard.includes"),
-      ...pkg.items,
-      commonPlateLine,
-    ];
-    return lines.join("\n");
-  };
-
   const buildShareText = () => {
-    const packageSection = standardPackages.map(formatPackageShareBlock).join("\n\n");
-    const eliteSection = elitePackage ? formatPackageShareBlock(elitePackage) : "";
-    const recommendedSection = RECOMMENDED_PACKAGES.map(formatRecommendedShareBlock).join("\n\n");
+    const packageSection = PLATE_PACKAGES.map(formatPackageShareBlock).join("\n\n");
 
     const venue = VENUE_OPTIONS[0];
     const hallLines = PACKAGES.map((pkg) => {
@@ -494,24 +420,20 @@ export const MenuPackageCards = () => {
       return `${slot.label}: ₹${(pkg.hourlyRate * slot.hours).toLocaleString("en-IN")}`;
     }).filter(Boolean);
 
+    const clientLines = formatClientDetailsBlock(clientDetails, t);
+
     return [
       VISITING_CARD_BUSINESS_NAME,
       VISITING_CARD_ADDRESS,
       "",
       ...VISITING_CARD_CONTACTS.flatMap((c) => [`${c.name}: ${c.phone}`]),
+      ...(clientLines.length
+        ? ["", t("menuPackageCard.client.title"), ...clientLines]
+        : []),
       "",
       t("menuPackageCard.section.packages"),
       t("menuPackageCard.packagesNote"),
       packageSection,
-      "",
-      t("menuPackageCard.section.customPackage"),
-      t("menuPackageCard.menuOnlyNote"),
-      eliteSection,
-      "",
-      t("menuPackageCard.section.recommendedPackages"),
-      t("menuPackageCard.menuOnlyNote"),
-      t("menuPackageCard.recommendedMinPaxNote"),
-      recommendedSection,
       "",
       t("menuPackageCard.section.extraAndDecoration"),
       MENU_PACKAGE_CARD_EXTRAS.map((item) => {
@@ -575,38 +497,19 @@ export const MenuPackageCards = () => {
 
   return (
     <div className="mx-auto max-w-[1400px] space-y-6">
-      <p className="no-print text-sm text-muted-foreground">{t("menuPackageCard.desc")}</p>
-
       <div id="menu-package-card-print-area" className="mx-auto w-full max-w-[210mm] space-y-1.5">
-        <BanquetHeader showContactActions />
+        <BanquetHeader showContactActions compact />
+        <ClientDetailsSection value={clientDetails} onChange={setClientDetails} />
 
         <SectionShell title={t("menuPackageCard.section.packages")} note={t("menuPackageCard.packagesNote")}>
           <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {standardPackages.map((plate) => (
+            {PLATE_PACKAGES.map((plate) => (
               <div key={plate.id} className="min-w-0">
-                <MenuPackageCardPreview plate={plate} />
-              </div>
-            ))}
-          </div>
-        </SectionShell>
-
-        {elitePackage ? (
-          <SectionShell title={t("menuPackageCard.section.customPackage")} note={t("menuPackageCard.menuOnlyNote")}>
-            <ElitePackageCardPreview plate={elitePackage} />
-          </SectionShell>
-        ) : null}
-
-        <SectionShell
-          title={t("menuPackageCard.section.recommendedPackages")}
-          notes={[
-            t("menuPackageCard.menuOnlyNote"),
-            t("menuPackageCard.recommendedMinPaxNote"),
-          ]}
-        >
-          <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {RECOMMENDED_PACKAGES.map((pkg) => (
-              <div key={pkg.id} className="min-w-0">
-                <RecommendedPackageCardPreview pkg={pkg} />
+                {plate.id === CUSTOM_PLATE_PACKAGE_ID ? (
+                  <ElitePackageCardPreview plate={plate} />
+                ) : (
+                  <MenuPackageCardPreview plate={plate} />
+                )}
               </div>
             ))}
           </div>

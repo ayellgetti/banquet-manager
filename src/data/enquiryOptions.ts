@@ -64,6 +64,8 @@ export type PlatePackage = {
   limits: Partial<Record<MenuCategory, number>>;
   /** When set for a category, only these menu item IDs can be chosen on this package. */
   allowedItems?: Partial<Record<MenuCategory, string[]>>;
+  /** Optional display label for a category on this package (e.g. Bronze sweets rule). */
+  categoryLabels?: Partial<Record<MenuCategory, string>>;
   extras?: string[];
 };
 
@@ -164,7 +166,7 @@ const slotPkg = (
   tagline: `${label} · ${hours}h`,
   pricePerPlate: 0,
   minPax: 100,
-  hourlyRate: 6000,
+  hourlyRate: 7500,
   slots: [{ id, label, hours }],
   perks: SILVER_PERKS,
 });
@@ -807,11 +809,19 @@ export function getMenuItemsForPackage(platePackageId: string, category: string)
   return items.filter((m) => allowed.includes(m.id));
 }
 
+export function getPackageCategoryLabel(
+  plate: PlatePackage,
+  category: string,
+  translate: (cat: string) => string,
+): string {
+  return plate.categoryLabels?.[category as MenuCategory] ?? translate(category);
+}
+
 export const PLATE_PACKAGES: PlatePackage[] = [
   {
     id: "plate-600",
     name: "Bronze",
-    basePrice: 650,
+    basePrice: 600,
     minPax: 100,
     limits: {
       "Welcome Drink": 1,
@@ -831,7 +841,8 @@ export const PLATE_PACKAGES: PlatePackage[] = [
   {
     id: "plate-750",
     name: "Silver",
-    basePrice: 800,
+    basePrice: 750,
+    minPax: 100,
     limits: {
       "Welcome Drink": 1,
       "Starters": 1,
@@ -842,38 +853,24 @@ export const PLATE_PACKAGES: PlatePackage[] = [
       "Farsan": 1,
       "Sweets & Ice Cream": 1,
     },
+    allowedItems: {
+      "Indian Breads": ["br1", "br2"],
+    },
+    extras: ["Indian Breads: Poori and Fulka only"],
   },
   {
     id: "plate-950",
     name: "Gold",
-    basePrice: 950,
+    basePrice: 875,
+    minPax: 100,
     limits: {
       "Welcome Drink": 2,
-      "Salads": 1,
       "Farsan": 1,
       "Starters": 2,
       "Main Course": 2,
       "Indian Breads": 2,
-      "Raita": 1,
       "Rice": 1,
       "Dal": 1,
-      "Sweets & Ice Cream": 2,
-    },
-  },
-  {
-    id: "plate-1150",
-    name: "Platinum",
-    basePrice: 1150,
-    limits: {
-      "Welcome Drink": 2,
-      "Salads": 1,
-      "Starters": 2,
-      "Main Course": 2,
-      "Indian Breads": 2,
-      "Raita": 1,
-      "Rice": 2,
-      "Dal": 2,
-      "Farsan": 1,
       "Sweets & Ice Cream": 2,
     },
   },
@@ -974,7 +971,7 @@ const FUNDRAISER = "Fundraiser Event";
 export const DECOR_OPTIONS: DecorOption[] = [
   { id: "d1", name: "Floral Entrance Arch", price: 8000, description: "Fresh flower entry gate", events: [WEDDING, ENGAGEMENT, SANGEET, MEHENDI, HALDI, NAMING, BABY_SHOWER, BRIDAL_SHOWER] },
   { id: "d2", name: "Fairy Light Canopy", price: 6000, description: "Warm fairy lights overhead", events: [WEDDING, ENGAGEMENT, SANGEET, MEHENDI, HALDI, BIRTHDAY, ANNIVERSARY, RETIREMENT, KITTY, KARAOKE] },
-  { id: "d3", name: "Balloon Décor", price: 12000, description: "Themed balloon arrangements", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, PRESCHOOL, SCHOOL, KITTY, KARAOKE] },
+  { id: "d3", name: "Balloon Décor", price: 15000, description: "Themed balloon arrangements", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, PRESCHOOL, SCHOOL, KITTY, KARAOKE] },
   { id: "d4", name: "Table Centerpieces", price: 3500, description: "Per 10 tables", events: [WEDDING, ENGAGEMENT, CORPORATE, GALA, AWARDS, SEMINAR, CHARITY, FUNDRAISER, NAMING, BABY_SHOWER, BRIDAL_SHOWER, BIRTHDAY, ANNIVERSARY, RETIREMENT] },
   { id: "d5", name: "Theme Backdrop", price: 7000, description: "Custom photo backdrop", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, KITTY, KARAOKE, PRESCHOOL, SCHOOL, SANGEET, MEHENDI, HALDI] },
   { id: "d6", name: "Mandap Floral Setup", price: 25000, description: "Traditional flower mandap", events: [WEDDING] },
@@ -1012,13 +1009,11 @@ export const CHAIR_OPTIONS: ChairOption[] = [
 ];
 
 export const EXTRA_SERVICES: ExtraService[] = [
-  { id: "e1", name: "Photography", price: 25000, unit: "package" },
-  { id: "e2", name: "Videography + Drone", price: 35000, unit: "package" },
+  { id: "e1", name: "Photography", price: 3000, unit: "hour", subtitle: "per hour" },
   { id: "e3", name: "DJ & Sound", price: 6000, unit: "event" },
   { id: "e5", name: "Valet Parking", price: 8000, unit: "event" },
-  { id: "e6", name: "Anchor / MC", price: 12000, unit: "event" },
-  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 15000, unit: "show" },
-  { id: "e8", name: "Return Gifts", price: 150, unit: "per guest" },
+  { id: "e6", name: "Anchor / MC", price: 3500, unit: "event" },
+  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 800, priceMax: 1000, unit: "show" },
   { id: "e9", name: "Projector", price: 3500, unit: "event" },
   { id: "e10", name: "Vidhi Mandap", price: 15000, priceMax: 25000, unit: "event" },
   {
@@ -1039,6 +1034,8 @@ export type MenuPackageCardExtra = {
   price?: number;
   priceMax?: number;
   detail?: string;
+  /** Full-width cell for long labels on the menu package card. */
+  wide?: boolean;
 };
 
 export function formatMenuPackageExtraPrice(item: MenuPackageCardExtra): string {
@@ -1053,19 +1050,17 @@ export function formatMenuPackageExtraPrice(item: MenuPackageCardExtra): string 
 export const MENU_PACKAGE_CARD_EXTRAS: MenuPackageCardExtra[] = [
   { id: "e3", name: "DJ & Sound", price: 6000 },
   { id: "extra-balloon", name: "Balloon Decoration", price: 15000 },
-  { id: "e1", name: "Photography", price: 25000 },
-  { id: "e2", name: "Videography + Drone", price: 35000 },
+  { id: "e1", name: "Photography", price: 3000, detail: "per hour" },
   { id: "e5", name: "Valet Parking", price: 8000 },
-  { id: "e6", name: "Anchor / MC", price: 12000 },
-  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 15000 },
-  { id: "e8", name: "Return Gifts", price: 150 },
+  { id: "e6", name: "Anchor / MC", price: 3500 },
+  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 800, priceMax: 1000, wide: true },
   { id: "e9", name: "Projector", price: 3500 },
   { id: "e10", name: "Vidhi Mandap", price: 15000, priceMax: 25000 },
   { id: "e11", name: "Digital Screen", price: 15000, priceMax: 25000, detail: "10' * 10' or 10' * 12'" },
 ];
 
 export const VENUE_OPTIONS: VenueOption[] = [
-  { id: "v1", name: "Main Banquet Hall", pricePerHour: 6000, description: "Indoor AC hall · up to 400 guests" },
+  { id: "v1", name: "Main Banquet Hall", pricePerHour: 7500, description: "Indoor AC hall · up to 400 guests" },
 ];
 
 export function getDefaultVenueId(): string {
