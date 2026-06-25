@@ -76,7 +76,7 @@ export type RecommendedPackage = {
   items: string[];
 };
 
-export type DecorOption = { id: string; name: string; price: number; description: string; events?: string[] };
+export type DecorOption = { id: string; name: string; price: number; priceMax?: number; description: string; events?: string[] };
 export type ChairOption = { id: string; name: string; pricePerUnit: number };
 export type ExtraService = {
   id: string;
@@ -971,7 +971,7 @@ const FUNDRAISER = "Fundraiser Event";
 export const DECOR_OPTIONS: DecorOption[] = [
   { id: "d1", name: "Floral Entrance Arch", price: 8000, description: "Fresh flower entry gate", events: [WEDDING, ENGAGEMENT, SANGEET, MEHENDI, HALDI, NAMING, BABY_SHOWER, BRIDAL_SHOWER] },
   { id: "d2", name: "Fairy Light Canopy", price: 6000, description: "Warm fairy lights overhead", events: [WEDDING, ENGAGEMENT, SANGEET, MEHENDI, HALDI, BIRTHDAY, ANNIVERSARY, RETIREMENT, KITTY, KARAOKE] },
-  { id: "d3", name: "Balloon Décor", price: 15000, description: "Themed balloon arrangements", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, PRESCHOOL, SCHOOL, KITTY, KARAOKE] },
+  { id: "d3", name: "Balloon Décor", price: 4500, priceMax: 15000, description: "Themed balloon arrangements", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, PRESCHOOL, SCHOOL, KITTY, KARAOKE] },
   { id: "d4", name: "Table Centerpieces", price: 3500, description: "Per 10 tables", events: [WEDDING, ENGAGEMENT, CORPORATE, GALA, AWARDS, SEMINAR, CHARITY, FUNDRAISER, NAMING, BABY_SHOWER, BRIDAL_SHOWER, BIRTHDAY, ANNIVERSARY, RETIREMENT] },
   { id: "d5", name: "Theme Backdrop", price: 7000, description: "Custom photo backdrop", events: [BIRTHDAY, ANNIVERSARY, RETIREMENT, NAMING, BABY_SHOWER, BRIDAL_SHOWER, KITTY, KARAOKE, PRESCHOOL, SCHOOL, SANGEET, MEHENDI, HALDI] },
   { id: "d6", name: "Mandap Floral Setup", price: 25000, description: "Traditional flower mandap", events: [WEDDING] },
@@ -1013,7 +1013,7 @@ export const EXTRA_SERVICES: ExtraService[] = [
   { id: "e3", name: "DJ & Sound", price: 6000, unit: "event" },
   { id: "e5", name: "Valet Parking", price: 8000, unit: "event" },
   { id: "e6", name: "Anchor / MC", price: 3500, unit: "event" },
-  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 800, priceMax: 1000, unit: "show" },
+  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 800, priceMax: 1000, unit: "show", subtitle: "per Pyro or Smoke Bubble Machine" },
   { id: "e9", name: "Projector", price: 3500, unit: "event" },
   { id: "e10", name: "Vidhi Mandap", price: 15000, priceMax: 25000, unit: "event" },
   {
@@ -1039,21 +1039,26 @@ export type MenuPackageCardExtra = {
 };
 
 export function formatMenuPackageExtraPrice(item: MenuPackageCardExtra): string {
+  let priceText: string;
   if (item.price != null && item.priceMax != null) {
-    return `₹${item.price.toLocaleString("en-IN")} – ₹${item.priceMax.toLocaleString("en-IN")}`;
+    priceText = `₹${item.price.toLocaleString("en-IN")} – ₹${item.priceMax.toLocaleString("en-IN")}`;
+  } else if (item.price != null) {
+    priceText = `₹${item.price.toLocaleString("en-IN")}`;
+  } else {
+    return item.detail ?? "";
   }
-  if (item.price != null) return `₹${item.price.toLocaleString("en-IN")}`;
-  return item.detail ?? "";
+  if (item.detail?.startsWith("per ")) return `${priceText} / ${item.detail}`;
+  return priceText;
 }
 
 /** Named add-ons for the menu package card (matches enquiry tab labels). */
 export const MENU_PACKAGE_CARD_EXTRAS: MenuPackageCardExtra[] = [
   { id: "e3", name: "DJ & Sound", price: 6000 },
-  { id: "extra-balloon", name: "Balloon Decoration", price: 15000 },
+  { id: "extra-balloon", name: "Balloon Decoration", price: 4500, priceMax: 15000 },
   { id: "e1", name: "Photography", price: 3000, detail: "per hour" },
   { id: "e5", name: "Valet Parking", price: 8000 },
   { id: "e6", name: "Anchor / MC", price: 3500 },
-  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 800, priceMax: 1000, wide: true },
+  { id: "e7", name: "Smoke & Cold Pyro Entry With Smoke Bubble Machine", price: 800, priceMax: 1000, detail: "per Pyro or Smoke Bubble Machine", wide: true },
   { id: "e9", name: "Projector", price: 3500 },
   { id: "e10", name: "Vidhi Mandap", price: 15000, priceMax: 25000 },
   { id: "e11", name: "Digital Screen", price: 15000, priceMax: 25000, detail: "10' * 10' or 10' * 12'" },
@@ -1062,6 +1067,9 @@ export const MENU_PACKAGE_CARD_EXTRAS: MenuPackageCardExtra[] = [
 export const VENUE_OPTIONS: VenueOption[] = [
   { id: "v1", name: "Main Banquet Hall", pricePerHour: 7500, description: "Indoor AC hall · up to 400 guests" },
 ];
+
+/** Charge per hour beyond the booked package slot. */
+export const HALL_EXTRA_HOUR_RATE = 10000;
 
 export function getDefaultVenueId(): string {
   return VENUE_OPTIONS.length === 1 ? VENUE_OPTIONS[0].id : "";

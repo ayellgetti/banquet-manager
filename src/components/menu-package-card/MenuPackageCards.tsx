@@ -6,6 +6,7 @@ import {
   COMMON_PLATE_ITEMS,
   CUSTOM_PLATE_PACKAGE_ID,
   formatMenuPackageExtraPrice,
+  HALL_EXTRA_HOUR_RATE,
   MENU_CATEGORY_ORDER,
   MENU_PACKAGE_CARD_EXTRAS,
   PACKAGES,
@@ -299,7 +300,7 @@ const ExtraSection = () => (
         ) : item.detail ? (
           <span className="break-words text-[8px] leading-tight sm:text-[9px]">{item.detail}</span>
         ) : null}
-        {item.detail && (item.price != null || item.priceMax != null) ? (
+        {item.detail && (item.price != null || item.priceMax != null) && !item.detail.startsWith("per ") ? (
           <span className="break-words text-[8px] leading-tight opacity-90 sm:text-[9px]">{item.detail}</span>
         ) : null}
       </li>
@@ -354,6 +355,17 @@ const HallRentSection = () => {
           );
         })}
       </ul>
+
+      <p
+        className="rounded px-2 py-1.5 text-center text-[9px] font-medium leading-snug sm:text-[10px]"
+        data-menu-package-box
+        style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
+      >
+        {t("menuPackageCard.extraHourNote").replace(
+          "{rate}",
+          HALL_EXTRA_HOUR_RATE.toLocaleString("en-IN"),
+        )}
+      </p>
 
       <ul
         className="grid grid-cols-1 gap-0.5 text-[9px] leading-snug sm:grid-cols-2 sm:text-[10px]"
@@ -437,13 +449,18 @@ export const MenuPackageCards = () => {
       "",
       t("menuPackageCard.section.extraAndDecoration"),
       MENU_PACKAGE_CARD_EXTRAS.map((item) => {
-        const sizes = item.detail ? ` (${item.detail})` : "";
+        const detailInline = item.detail?.startsWith("per ");
+        const sizes = item.detail && !detailInline ? ` (${item.detail})` : "";
         return `${item.name}${sizes}: ${formatMenuPackageExtraPrice(item)}`;
       }).join("\n"),
       "",
       t("menuPackageCard.section.hallRent"),
       venue ? `${venue.name}: ₹${venue.pricePerHour}/hr` : "",
       ...hallLines,
+      t("menuPackageCard.extraHourNote").replace(
+        "{rate}",
+        HALL_EXTRA_HOUR_RATE.toLocaleString("en-IN"),
+      ),
       "",
       t("visitingCard.qrScanLabel"),
       ...VISITING_CARD_QR_CODES.map((qr) => `${t(qr.labelKey)}: ${qr.href}`),

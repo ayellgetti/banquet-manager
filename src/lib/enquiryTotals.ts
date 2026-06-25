@@ -47,7 +47,13 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
 
   s.decorIds.forEach((id) => {
     const d = DECOR_OPTIONS.find((x) => x.id === id);
-    if (d) items.push({ label: `Decor: ${d.name}`, amount: d.price });
+    if (d) {
+      items.push({
+        label: `Decor: ${d.name}`,
+        detail: d.priceMax != null ? `${formatINR(d.price)} – ${formatINR(d.priceMax)}` : undefined,
+        amount: d.price,
+      });
+    }
   });
 
   const stage = STAGE_OPTIONS.find((x) => x.id === s.stageId);
@@ -82,7 +88,7 @@ export function buildLineItems(s: EnquiryState): LineItem[] {
       const detail = e.quoteOnly
         ? (e.subtitle ?? e.unit)
         : e.priceMax != null
-          ? `${formatINR(e.price)} – ${formatINR(e.priceMax)}`
+          ? `${formatINR(e.price)} – ${formatINR(e.priceMax)}${e.subtitle?.startsWith("per ") ? ` / ${e.subtitle}` : ""}`
           : e.unit === "hour"
             ? slotHours > 0
               ? `${slotHours}h × ₹${e.price.toLocaleString("en-IN")}/hr`
@@ -142,6 +148,8 @@ export function formatExtraPriceDisplay(e: {
   subtitle?: string;
 }): string | undefined {
   if (e.quoteOnly) return undefined;
-  if (e.priceMax != null) return `${formatINR(e.price)} – ${formatINR(e.priceMax)}`;
-  return formatINR(e.price);
+  const priceText =
+    e.priceMax != null ? `${formatINR(e.price)} – ${formatINR(e.priceMax)}` : formatINR(e.price);
+  if (e.subtitle?.startsWith("per ")) return `${priceText} / ${e.subtitle}`;
+  return priceText;
 }

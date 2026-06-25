@@ -321,7 +321,11 @@ export const SelectionsBreakdown = ({
           {decors.map((d) => (
             <li key={d.id} className="flex items-center justify-between">
               <span>{d.name}</span>
-              <span className="text-muted-foreground tabular-nums">{formatINR(d.price)}</span>
+              <span className="text-muted-foreground tabular-nums">
+                {d.priceMax != null
+                  ? `${formatINR(d.price)} – ${formatINR(d.priceMax)}`
+                  : formatINR(d.price)}
+              </span>
             </li>
           ))}
         </ul>
@@ -352,9 +356,11 @@ export const SelectionsBreakdown = ({
             <li key={e.id} className="flex items-center justify-between">
               <span>
                 {e.name}{" "}
-                <span className="text-xs text-muted-foreground">
-                  ({e.subtitle ?? e.unit})
-                </span>
+                {!(e.subtitle?.startsWith("per ")) && (
+                  <span className="text-xs text-muted-foreground">
+                    ({e.subtitle ?? e.unit})
+                  </span>
+                )}
               </span>
               <span className="text-muted-foreground tabular-nums">
                 {formatExtraPriceDisplay(e) ?? e.subtitle ?? "—"}

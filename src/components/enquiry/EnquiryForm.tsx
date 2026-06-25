@@ -797,7 +797,11 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                             onClick={() => update("decorIds", toggle(state.decorIds, d.id))}
                             title={d.name}
                             subtitle={d.description}
-                            price={formatINR(d.price)}
+                            price={
+                              d.priceMax != null
+                                ? `${formatINR(d.price)} – ${formatINR(d.priceMax)}`
+                                : formatINR(d.price)
+                            }
                           />
                         ))}
                       </div>
@@ -831,7 +835,11 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                         selected={state.extraIds.includes(e.id)}
                         onClick={() => update("extraIds", toggle(state.extraIds, e.id))}
                         title={e.name}
-                        subtitle={e.subtitle ?? e.unit}
+                        subtitle={
+                          e.subtitle?.startsWith("per ")
+                            ? undefined
+                            : (e.subtitle ?? e.unit)
+                        }
                         price={formatExtraPriceDisplay(e)}
                       />
                     ))}
