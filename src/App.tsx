@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { StandaloneLayout } from "@/components/layout/StandaloneLayout";
 import Home from "./pages/Home.tsx";
 import EnquiryPage from "./pages/EnquiryPage.tsx";
 import EnquiryPageV2 from "./pages/EnquiryPageV2.tsx";
@@ -11,6 +12,7 @@ import MenuSelectionPage from "./pages/MenuSelectionPage.tsx";
 import BillPage from "./pages/BillPage.tsx";
 import VisitingCardPage from "./pages/VisitingCardPage.tsx";
 import MenuPackageCardPage from "./pages/MenuPackageCardPage.tsx";
+import MenuPackagesDisplayPage from "./pages/MenuPackagesDisplayPage.tsx";
 import ProcurementPage from "./pages/ProcurementPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { LanguageProvider } from "@/i18n";
@@ -34,6 +36,9 @@ const App = () => (
               <Route path="/visiting-card" element={<VisitingCardPage />} />
               <Route path="/menu-package-card" element={<MenuPackageCardPage />} />
               <Route path="/procurement" element={<ProcurementPage />} />
+            </Route>
+            <Route element={<StandaloneLayout />}>
+              <Route path="/menu-packages" element={<MenuPackagesDisplayPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

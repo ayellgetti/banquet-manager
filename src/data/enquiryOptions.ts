@@ -847,7 +847,7 @@ export const PLATE_PACKAGES: PlatePackage[] = [
       "Welcome Drink": 1,
       "Starters": 1,
       "Main Course": 2,
-      "Indian Breads": 1,
+      "Indian Breads": 2,
       "Rice": 1,
       "Dal": 1,
       "Farsan": 1,
