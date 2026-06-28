@@ -1,0 +1,713 @@
+{
+  "customers": [
+    {
+      "id": "cust-rohan-neha",
+      "name": "Rohan & Neha",
+      "email": "rohan.neha.wedding@gmail.com",
+      "phone": "9876501234",
+      "notes": "Wedding clients — Sangeet and Reception booked.",
+      "createdAt": "2026-05-10"
+    },
+    {
+      "id": "cust-techcorp",
+      "name": "TechCorp India",
+      "email": "events@techcorp.in",
+      "phone": "9823456710",
+      "notes": "Corporate repeat client.",
+      "createdAt": "2026-04-02"
+    },
+    {
+      "id": "cust-kanva",
+      "name": "Kanva Mehta",
+      "email": "kanva.mehta@gmail.com",
+      "phone": "9812345678",
+      "notes": "Birthday enquiry — tentative slot.",
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "cust-patel",
+      "name": "Patel Family",
+      "email": "patel.reception@yahoo.com",
+      "phone": "9898765432",
+      "notes": "Reception confirmed for July.",
+      "createdAt": "2026-05-22"
+    },
+    {
+      "id": "cust-venture",
+      "name": "Venture Hub",
+      "email": "hello@venturehub.io",
+      "phone": "9900112233",
+      "notes": "Startup summit dinner enquiry.",
+      "createdAt": "2026-06-05"
+    },
+    {
+      "id": "cust-sharma",
+      "name": "Sharma Family",
+      "email": "sharma.anniversary@gmail.com",
+      "phone": "9765432109",
+      "notes": "Anniversary enquiry logged from walk-in.",
+      "createdAt": "2026-06-12"
+    },
+    {
+      "id": "cust-priya",
+      "name": "Priya Shah",
+      "email": "priya.shah@gmail.com",
+      "phone": "9876543210",
+      "notes": "Outdoor preferred. Vegetarian menu.",
+      "createdAt": "2026-06-15"
+    },
+    {
+      "id": "cust-vikram",
+      "name": "Vikram Menon",
+      "email": "vikram@studio.com",
+      "phone": "9123456780",
+      "notes": "Gallery style layout required.",
+      "createdAt": "2026-06-18"
+    },
+    {
+      "id": "cust-neha-k",
+      "name": "Neha Kapoor",
+      "email": "neha.k@agency.com",
+      "phone": "9988776655",
+      "notes": "Evening slot only. Minimal decor.",
+      "createdAt": "2026-06-20"
+    },
+    {
+      "id": "cust-arjun",
+      "name": "Arjun Desai",
+      "email": "arjun.desai@corp.in",
+      "phone": "9112233445",
+      "notes": "Need AV setup and valet parking.",
+      "createdAt": "2026-06-22"
+    },
+    {
+      "id": "cust-meera-karan",
+      "name": "Meera & Karan",
+      "email": "meera.karan.wedding@gmail.com",
+      "phone": "9001234567",
+      "notes": "Reception only. Gold theme decor.",
+      "createdAt": "2026-06-25"
+    }
+  ],
+  "enquiries": [
+    {
+      "id": "enq-1",
+      "customerId": "cust-priya",
+      "eventType": "Birthday",
+      "preferredDate": "2026-07-17",
+      "guests": 60,
+      "budget": 200000,
+      "status": "qualified",
+      "note": "Outdoor preferred. Vegetarian menu.",
+      "source": "Instagram",
+      "createdAt": "2026-06-16",
+      "nextFollowUpDate": "2026-06-30"
+    },
+    {
+      "id": "enq-2",
+      "customerId": "cust-vikram",
+      "eventType": "Press Preview",
+      "preferredDate": "2026-08-08",
+      "guests": 40,
+      "budget": 135000,
+      "status": "contacted",
+      "note": "Gallery style layout required. Non-veg.",
+      "source": "Referral",
+      "createdAt": "2026-06-19",
+      "nextFollowUpDate": "2026-06-30"
+    },
+    {
+      "id": "enq-3",
+      "customerId": "cust-neha-k",
+      "eventType": "Pop-up Brand",
+      "preferredDate": "2026-07-22",
+      "guests": 150,
+      "budget": 550000,
+      "status": "new",
+      "note": "Evening slot only. Minimal decor.",
+      "source": "Google",
+      "createdAt": "2026-06-21",
+      "nextFollowUpDate": "2026-07-02"
+    },
+    {
+      "id": "enq-4",
+      "customerId": "cust-arjun",
+      "eventType": "Corporate Gala",
+      "preferredDate": "2026-09-14",
+      "guests": 220,
+      "budget": 875000,
+      "status": "contacted",
+      "note": "Need AV setup and valet parking.",
+      "source": "Corporate tie-up",
+      "createdAt": "2026-06-23",
+      "nextFollowUpDate": "2026-07-01"
+    },
+    {
+      "id": "enq-5",
+      "customerId": "cust-meera-karan",
+      "eventType": "Wedding",
+      "preferredDate": "2026-10-03",
+      "guests": 380,
+      "budget": 1450000,
+      "status": "new",
+      "note": "Reception only. Gold theme decor.",
+      "source": "Walk-in",
+      "createdAt": "2026-06-26",
+      "nextFollowUpDate": "2026-07-05"
+    },
+    {
+      "id": "enq-6",
+      "customerId": "cust-kanva",
+      "eventType": "Birthday",
+      "preferredDate": "2026-06-24",
+      "guests": 80,
+      "budget": 120000,
+      "status": "booked",
+      "note": "Garden lawn preferred.",
+      "source": "WhatsApp",
+      "createdAt": "2026-06-02"
+    },
+    {
+      "id": "enq-7",
+      "customerId": "cust-sharma",
+      "eventType": "Anniversary",
+      "preferredDate": "2026-06-18",
+      "guests": 60,
+      "budget": 95000,
+      "status": "new",
+      "note": "Pearl Hall requested.",
+      "source": "Walk-in",
+      "createdAt": "2026-06-13",
+      "nextFollowUpDate": "2026-06-28"
+    },
+    {
+      "id": "enq-8",
+      "customerId": "cust-venture",
+      "eventType": "Corporate Dinner",
+      "preferredDate": "2026-07-12",
+      "guests": 120,
+      "budget": 420000,
+      "status": "booked",
+      "note": "Executive suite seating.",
+      "source": "Email",
+      "createdAt": "2026-06-06"
+    },
+    {
+      "id": "enq-9",
+      "customerId": "cust-rohan-neha",
+      "eventType": "Sangeet",
+      "preferredDate": "2026-06-29",
+      "guests": 320,
+      "budget": 1850000,
+      "status": "booked",
+      "note": "Gold menu package. Floral entrance and fairy light canopy.",
+      "source": "Referral",
+      "createdAt": "2026-05-10"
+    },
+    {
+      "id": "enq-10",
+      "customerId": "cust-rohan-neha",
+      "eventType": "Reception",
+      "preferredDate": "2026-06-30",
+      "guests": 450,
+      "budget": 2100000,
+      "status": "booked",
+      "note": "Elite menu. Mandap floral setup at Leela Palace lawn.",
+      "source": "Referral",
+      "createdAt": "2026-05-10"
+    },
+    {
+      "id": "enq-11",
+      "customerId": "cust-techcorp",
+      "eventType": "Corporate Gala",
+      "preferredDate": "2026-06-24",
+      "guests": 180,
+      "budget": 950000,
+      "status": "booked",
+      "note": "Repeat corporate client. Branding standee and stage podium required.",
+      "source": "Corporate tie-up",
+      "createdAt": "2026-04-02"
+    },
+    {
+      "id": "enq-12",
+      "customerId": "cust-patel",
+      "eventType": "Reception",
+      "preferredDate": "2026-07-05",
+      "guests": 250,
+      "budget": 1200000,
+      "status": "booked",
+      "note": "Royal Banquet Hall. Gold menu with floral entrance arch.",
+      "source": "Walk-in",
+      "createdAt": "2026-05-22"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "bkg-1",
+      "customerId": "cust-rohan-neha",
+      "enquiryId": "enq-9",
+      "title": "Rohan & Neha — Sangeet",
+      "eventType": "Sangeet",
+      "date": "2026-06-29",
+      "time": "18:00",
+      "endTime": "23:00",
+      "venue": "Grand Ballroom, Hall A",
+      "category": "wedding",
+      "status": "confirmed",
+      "guests": 320,
+      "revenue": 1850000,
+      "menuPackage": "Gold",
+      "decorations": ["Floral Entrance Arch", "Fairy Light Canopy"],
+      "requirements": [
+        { "id": "bkg-1-req-1", "label": "Stage design approved", "done": true },
+        { "id": "bkg-1-req-2", "label": "Lighting walkthrough", "done": false },
+        { "id": "bkg-1-req-3", "label": "Catering tasting", "done": true },
+        { "id": "bkg-1-req-4", "label": "Run-of-show signed", "done": false }
+      ],
+      "vendors": [
+        { "id": "bkg-1-vnd-1", "vendorId": "vnd-lumen", "name": "Lumen Light Co.", "category": "Lighting", "contact": "ops@lumen.co", "rating": 4.8, "rate": 450000 },
+        { "id": "bkg-1-vnd-2", "vendorId": "vnd-saffron", "name": "Saffron Catering", "category": "Catering", "contact": "hello@saffroncater.com", "rating": 4.9, "rate": 820000 },
+        { "id": "bkg-1-vnd-3", "vendorId": "vnd-maison", "name": "Maison Florals", "category": "Florals", "contact": "hello@maison.fl", "rating": 4.9, "rate": 165000 },
+        { "id": "bkg-1-vnd-4", "vendorId": "vnd-frame", "name": "Frame & Folk", "category": "Photography", "contact": "studio@frameandfolk.com", "rating": 4.9, "rate": 85000 }
+      ],
+      "createdAt": "2026-05-15"
+    },
+    {
+      "id": "bkg-2",
+      "customerId": "cust-rohan-neha",
+      "enquiryId": "enq-10",
+      "title": "Rohan & Neha — Reception",
+      "eventType": "Reception",
+      "date": "2026-06-30",
+      "time": "19:30",
+      "endTime": "00:30",
+      "venue": "The Leela Palace, Lawn",
+      "category": "wedding",
+      "status": "confirmed",
+      "guests": 450,
+      "revenue": 2100000,
+      "menuPackage": "Elite",
+      "decorations": ["Mandap Floral Setup", "Table Centerpieces"],
+      "requirements": [
+        { "id": "bkg-2-req-1", "label": "Stage design approved", "done": true },
+        { "id": "bkg-2-req-2", "label": "Lighting walkthrough", "done": true },
+        { "id": "bkg-2-req-3", "label": "Catering tasting", "done": true },
+        { "id": "bkg-2-req-4", "label": "Run-of-show signed", "done": false }
+      ],
+      "vendors": [
+        { "id": "bkg-2-vnd-1", "vendorId": "vnd-lumen", "name": "Lumen Light Co.", "category": "Lighting", "contact": "ops@lumen.co", "rating": 4.8, "rate": 520000 },
+        { "id": "bkg-2-vnd-2", "vendorId": "vnd-saffron", "name": "Saffron Catering", "category": "Catering", "contact": "hello@saffroncater.com", "rating": 4.9, "rate": 980000 },
+        { "id": "bkg-2-vnd-3", "vendorId": "vnd-maison", "name": "Maison Florals", "category": "Florals", "contact": "hello@maison.fl", "rating": 4.9, "rate": 210000 },
+        { "id": "bkg-2-vnd-4", "vendorId": "vnd-frame", "name": "Frame & Folk", "category": "Photography", "contact": "studio@frameandfolk.com", "rating": 4.9, "rate": 85000 }
+      ],
+      "createdAt": "2026-05-15"
+    },
+    {
+      "id": "bkg-3",
+      "customerId": "cust-techcorp",
+      "enquiryId": "enq-11",
+      "title": "TechCorp Annual Gala",
+      "eventType": "Corporate Gala",
+      "date": "2026-06-24",
+      "time": "18:00",
+      "endTime": "22:30",
+      "venue": "Crystal Hall",
+      "category": "corporate",
+      "status": "confirmed",
+      "guests": 180,
+      "revenue": 950000,
+      "menuPackage": "Silver",
+      "decorations": ["Corporate Branding Standee", "Stage Podium & Banner"],
+      "requirements": [
+        { "id": "bkg-3-req-1", "label": "AV checklist signed off", "done": true },
+        { "id": "bkg-3-req-2", "label": "Branding assets delivered", "done": true }
+      ],
+      "vendors": [
+        { "id": "bkg-3-vnd-1", "vendorId": "vnd-echo", "name": "Echo Sound", "category": "Audio", "contact": "team@echosound.in", "rating": 4.6, "rate": 185000 },
+        { "id": "bkg-3-vnd-2", "vendorId": "vnd-saffron", "name": "Saffron Catering", "category": "Catering", "contact": "hello@saffroncater.com", "rating": 4.9, "rate": 420000 }
+      ],
+      "createdAt": "2026-04-10"
+    },
+    {
+      "id": "bkg-4",
+      "customerId": "cust-patel",
+      "enquiryId": "enq-12",
+      "title": "Patel Family Reception",
+      "eventType": "Reception",
+      "date": "2026-07-05",
+      "time": "19:30",
+      "endTime": "23:30",
+      "venue": "Royal Banquet Hall",
+      "category": "wedding",
+      "status": "confirmed",
+      "guests": 250,
+      "revenue": 1200000,
+      "menuPackage": "Gold",
+      "decorations": ["Floral Entrance Arch"],
+      "requirements": [
+        { "id": "bkg-4-req-1", "label": "Stage design approved", "done": false },
+        { "id": "bkg-4-req-2", "label": "Catering tasting", "done": true },
+        { "id": "bkg-4-req-3", "label": "Run-of-show signed", "done": false }
+      ],
+      "vendors": [
+        { "id": "bkg-4-vnd-1", "vendorId": "vnd-maison", "name": "Maison Florals", "category": "Florals", "contact": "hello@maison.fl", "rating": 4.9, "rate": 95000 },
+        { "id": "bkg-4-vnd-2", "vendorId": "vnd-saffron", "name": "Saffron Catering", "category": "Catering", "contact": "hello@saffroncater.com", "rating": 4.9, "rate": 540000 },
+        { "id": "bkg-4-vnd-3", "vendorId": "vnd-lumen", "name": "Lumen Light Co.", "category": "Lighting", "contact": "ops@lumen.co", "rating": 4.8, "rate": 120000 },
+        { "id": "bkg-4-vnd-4", "vendorId": "vnd-frame", "name": "Frame & Folk", "category": "Photography", "contact": "studio@frameandfolk.com", "rating": 4.9, "rate": 85000 }
+      ],
+      "createdAt": "2026-05-25"
+    },
+    {
+      "id": "bkg-5",
+      "customerId": "cust-kanva",
+      "enquiryId": "enq-6",
+      "title": "Kanva Birthday Celebration",
+      "eventType": "Birthday",
+      "date": "2026-06-24",
+      "time": "18:00",
+      "endTime": "21:00",
+      "venue": "Garden Lawn",
+      "category": "private",
+      "status": "confirmed",
+      "guests": 80,
+      "revenue": 260000,
+      "menuPackage": "Bronze",
+      "decorations": ["Balloon Décor", "Cake Table Décor"],
+      "requirements": [
+        { "id": "bkg-5-req-1", "label": "Theme mock-up approved", "done": true },
+        { "id": "bkg-5-req-2", "label": "Cake tasting completed", "done": true }
+      ],
+      "vendors": [
+        { "id": "bkg-5-vnd-1", "vendorId": "vnd-mirage", "name": "Mirage Decor", "category": "Decor", "contact": "info@miragedecor.in", "rating": 4.5, "rate": 45000 },
+        { "id": "bkg-5-vnd-2", "vendorId": "vnd-frame", "name": "Frame & Folk", "category": "Photography", "contact": "studio@frameandfolk.com", "rating": 4.9, "rate": 28000 }
+      ],
+      "createdAt": "2026-06-10"
+    },
+    {
+      "id": "bkg-6",
+      "customerId": "cust-venture",
+      "enquiryId": "enq-8",
+      "title": "Startup Summit Dinner",
+      "eventType": "Corporate Dinner",
+      "date": "2026-07-12",
+      "time": "20:00",
+      "endTime": "23:00",
+      "venue": "Executive Suite",
+      "category": "corporate",
+      "status": "tentative",
+      "guests": 120,
+      "revenue": 400000,
+      "menuPackage": "Silver",
+      "decorations": ["Conference Table Setup"],
+      "requirements": [
+        { "id": "bkg-6-req-1", "label": "Menu selection confirmed", "done": false },
+        { "id": "bkg-6-req-2", "label": "Deposit received", "done": false }
+      ],
+      "vendors": [
+        { "id": "bkg-6-vnd-1", "vendorId": "vnd-saffron", "name": "Saffron Catering", "category": "Catering", "contact": "hello@saffroncater.com", "rating": 4.9, "rate": 280000 }
+      ],
+      "createdAt": "2026-06-08"
+    }
+  ],
+  "followUps": [
+    {
+      "id": "fu-1",
+      "enquiryId": "enq-2",
+      "comment": "Sent menu packages via email. Client is reviewing options.",
+      "status": "contacted",
+      "previousStatus": "new",
+      "nextFollowUpDate": "2026-06-30",
+      "createdAt": "2026-06-22"
+    },
+    {
+      "id": "fu-2",
+      "enquiryId": "enq-4",
+      "comment": "Discussed AV setup and valet parking. Quote shared.",
+      "status": "contacted",
+      "previousStatus": "new",
+      "nextFollowUpDate": "2026-07-01",
+      "createdAt": "2026-06-24"
+    },
+    {
+      "id": "fu-3",
+      "enquiryId": "enq-1",
+      "comment": "Site visit scheduled for garden lawn. Vegetarian menu confirmed.",
+      "status": "qualified",
+      "previousStatus": "contacted",
+      "nextFollowUpDate": "2026-06-30",
+      "createdAt": "2026-06-25"
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay-1",
+      "bookingId": "bkg-4",
+      "customerId": "cust-patel",
+      "amount": 90000,
+      "date": "2026-07-05",
+      "method": "bank",
+      "status": "due",
+      "note": "Balance due before event",
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "pay-2",
+      "bookingId": "bkg-6",
+      "customerId": "cust-venture",
+      "amount": 72500,
+      "date": "2026-07-12",
+      "method": "card",
+      "status": "overdue",
+      "createdAt": "2026-05-20"
+    },
+    {
+      "id": "pay-3",
+      "bookingId": "bkg-1",
+      "customerId": "cust-rohan-neha",
+      "amount": 75000,
+      "date": "2026-06-28",
+      "method": "card",
+      "status": "paid",
+      "createdAt": "2026-05-20"
+    },
+    {
+      "id": "pay-4",
+      "bookingId": "bkg-3",
+      "customerId": "cust-techcorp",
+      "amount": 445000,
+      "date": "2026-06-20",
+      "method": "bank",
+      "status": "paid",
+      "createdAt": "2026-04-15"
+    },
+    {
+      "id": "pay-5",
+      "bookingId": "bkg-2",
+      "customerId": "cust-rohan-neha",
+      "amount": 550000,
+      "date": "2026-06-22",
+      "method": "card",
+      "status": "paid",
+      "createdAt": "2026-05-20"
+    },
+    {
+      "id": "pay-6",
+      "bookingId": "bkg-2",
+      "customerId": "cust-rohan-neha",
+      "amount": 385000,
+      "date": "2026-07-01",
+      "method": "bank",
+      "status": "due",
+      "note": "Balance due before event",
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "pay-7",
+      "bookingId": "bkg-5",
+      "customerId": "cust-kanva",
+      "amount": 50000,
+      "date": "2026-06-18",
+      "method": "upi",
+      "status": "paid",
+      "createdAt": "2026-06-10"
+    },
+    {
+      "id": "pay-8",
+      "bookingId": "bkg-1",
+      "customerId": "cust-rohan-neha",
+      "amount": 475000,
+      "date": "2026-07-10",
+      "method": "bank",
+      "status": "due",
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "pay-9",
+      "bookingId": "bkg-3",
+      "customerId": "cust-techcorp",
+      "amount": 420000,
+      "date": "2026-06-24",
+      "method": "card",
+      "status": "paid",
+      "createdAt": "2026-04-20"
+    },
+    {
+      "id": "pay-10",
+      "bookingId": "bkg-4",
+      "customerId": "cust-patel",
+      "amount": 310000,
+      "date": "2026-05-25",
+      "method": "bank",
+      "status": "paid",
+      "createdAt": "2026-05-25"
+    }
+  ],
+  "vendors": [
+    {
+      "id": "vnd-lumen",
+      "name": "Lumen Light Co.",
+      "category": "Lighting",
+      "email": "ops@lumen.co",
+      "rating": 4.8,
+      "startingRate": 45000,
+      "createdAt": "2025-11-01"
+    },
+    {
+      "id": "vnd-saffron",
+      "name": "Saffron Catering",
+      "category": "Catering",
+      "email": "book@saffron.in",
+      "rating": 4.7,
+      "startingRate": 1250,
+      "createdAt": "2025-10-15"
+    },
+    {
+      "id": "vnd-maison",
+      "name": "Maison Florals",
+      "category": "Florals",
+      "email": "hello@maison.fl",
+      "rating": 4.9,
+      "startingRate": 60000,
+      "createdAt": "2025-12-01"
+    },
+    {
+      "id": "vnd-echo",
+      "name": "Echo Sound",
+      "category": "Audio",
+      "email": "team@echosound.in",
+      "rating": 4.6,
+      "startingRate": 38000,
+      "createdAt": "2026-01-20"
+    },
+    {
+      "id": "vnd-frame",
+      "name": "Frame & Folk",
+      "category": "Photography",
+      "email": "studio@frameandfolk.com",
+      "rating": 4.9,
+      "startingRate": 85000,
+      "createdAt": "2025-09-10"
+    },
+    {
+      "id": "vnd-mirage",
+      "name": "Mirage Decor",
+      "category": "Decor",
+      "email": "info@miragedecor.in",
+      "rating": 4.5,
+      "startingRate": 120000,
+      "createdAt": "2025-11-18"
+    }
+  ],
+  "inventory": [
+    {
+      "id": "inv-1",
+      "name": "Basmati Rice",
+      "vendorName": "Daawat Traders",
+      "category": "rice",
+      "quantity": 120,
+      "unit": "kg",
+      "reorderLevel": 30,
+      "costPerUnit": 95,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-2",
+      "name": "Sona Masoori",
+      "vendorName": "Sri Krishna Mills",
+      "category": "rice",
+      "quantity": 80,
+      "unit": "kg",
+      "reorderLevel": 25,
+      "costPerUnit": 72,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-3",
+      "name": "Toor Dal",
+      "vendorName": "Anand Pulses",
+      "category": "dal",
+      "quantity": 45,
+      "unit": "kg",
+      "reorderLevel": 15,
+      "costPerUnit": 140,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-4",
+      "name": "Moong Dal",
+      "vendorName": "Anand Pulses",
+      "category": "dal",
+      "quantity": 18,
+      "unit": "kg",
+      "reorderLevel": 20,
+      "costPerUnit": 155,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-5",
+      "name": "Chana Dal",
+      "vendorName": "Anand Pulses",
+      "category": "dal",
+      "quantity": 32,
+      "unit": "kg",
+      "reorderLevel": 15,
+      "costPerUnit": 130,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-6",
+      "name": "Sunflower Oil",
+      "vendorName": "Fortune Foods",
+      "category": "kirana",
+      "quantity": 40,
+      "unit": "L",
+      "reorderLevel": 10,
+      "costPerUnit": 185,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-7",
+      "name": "Garam Masala",
+      "vendorName": "Everest Spices",
+      "category": "masala",
+      "quantity": 12,
+      "unit": "kg",
+      "reorderLevel": 5,
+      "costPerUnit": 420,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-8",
+      "name": "Turmeric Powder",
+      "vendorName": "Everest Spices",
+      "category": "masala",
+      "quantity": 8,
+      "unit": "kg",
+      "reorderLevel": 10,
+      "costPerUnit": 280,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-9",
+      "name": "Sugar",
+      "vendorName": "Fortune Foods",
+      "category": "kirana",
+      "quantity": 60,
+      "unit": "kg",
+      "reorderLevel": 20,
+      "costPerUnit": 48,
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": "inv-10",
+      "name": "Salt (Iodized)",
+      "vendorName": "Fortune Foods",
+      "category": "kirana",
+      "quantity": 25,
+      "unit": "kg",
+      "reorderLevel": 10,
+      "costPerUnit": 22,
+      "createdAt": "2026-06-01"
+    }
+  ]
+}

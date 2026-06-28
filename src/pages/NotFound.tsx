@@ -20,7 +20,7 @@ const NotFound = () => {
         <h1 className="mt-2 font-display text-4xl font-bold">404</h1>
         <p className="mt-3 text-muted-foreground">{t("notFound.message")}</p>
         <Button asChild className="mt-6 bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">
-          <Link to="/">{t("notFound.home")}</Link>
+          <Link to="/calendar">{t("notFound.home")}</Link>
         </Button>
       </div>
     </div>

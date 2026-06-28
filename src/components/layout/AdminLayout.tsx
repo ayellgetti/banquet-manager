@@ -16,10 +16,10 @@ export const AdminLayout = () => {
   const appName = t("app.title");
 
   const sidebar = (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <Link
-        to="/"
-        className="mb-6 flex items-center gap-3 rounded-xl px-2 py-1 transition-opacity hover:opacity-90"
+        to="/calendar"
+        className="mb-6 flex shrink-0 items-center gap-3 rounded-xl px-2 py-1 transition-opacity hover:opacity-90"
         onClick={() => setMobileOpen(false)}
       >
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-gold text-base font-bold text-primary-foreground shadow-gold">
@@ -30,8 +30,12 @@ export const AdminLayout = () => {
           <p className="truncate text-[11px] uppercase tracking-wider text-white/50">{t("admin.badge")}</p>
         </div>
       </Link>
-      <AdminNavLinks onNavigate={() => setMobileOpen(false)} className="flex-1" />
-      <div className="mt-6 border-t border-white/10 pt-4">
+
+      <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <AdminNavLinks onNavigate={() => setMobileOpen(false)} />
+      </div>
+
+      <div className="mt-4 shrink-0 border-t border-white/10 pt-4">
         <Select value={lang} onValueChange={(v) => setLang(v as typeof lang)}>
           <SelectTrigger
             aria-label={t("lang.label")}
@@ -54,7 +58,7 @@ export const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop sidebar */}
-      <aside className="no-print fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border/70 bg-gradient-noir p-5 md:flex">
+      <aside className="no-print fixed inset-y-0 left-0 z-40 hidden h-svh w-64 flex-col overflow-hidden border-r border-border/70 bg-gradient-noir p-5 md:flex">
         {sidebar}
       </aside>
 
@@ -68,7 +72,7 @@ export const AdminLayout = () => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-72 border-r bg-gradient-noir p-5 text-white">
+              <SheetContent side="left" className="flex h-full w-72 flex-col overflow-hidden border-r bg-gradient-noir p-5 text-white">
                 <SheetHeader className="sr-only">
                   <SheetTitle>{t("admin.nav.label")}</SheetTitle>
                 </SheetHeader>

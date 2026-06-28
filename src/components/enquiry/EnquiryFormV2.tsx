@@ -28,6 +28,7 @@ import {
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, formatINR } from "@/lib/enquiryTotals";
 import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
+import { getMinEventDateISO, validateEventDate } from "@/lib/eventDateValidation";
 import { openEnquiryWhatsApp, WHATSAPP_NUMBER } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import { ArrowLeft, Loader2, Printer, Send } from "lucide-react";
@@ -76,12 +77,7 @@ export const EnquiryFormV2 = () => {
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const totals = calcTotals(state);
 
-  const tomorrowISO = (() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString().slice(0, 10);
-  })();
+  const minEventDate = getMinEventDateISO();
 
   const invalidateSubmit = () => {
     setState((s) => (s.leadApiResponse ? { ...s, leadApiResponse: null } : s));
@@ -118,11 +114,7 @@ export const EnquiryFormV2 = () => {
     name: validateName(state.basics.customerName, t),
     phone: validatePhone(state.basics.phone, t),
     eventType: !state.basics.eventType.trim() ? t("validate.eventTypeRequired") : null,
-    eventDate: !state.basics.eventDate
-      ? t("validate.eventDateRequired")
-      : state.basics.eventDate < tomorrowISO
-        ? t("validate.eventDateFuture")
-        : null,
+    eventDate: validateEventDate(state.basics.eventDate, t),
     guests:
       !state.basics.guestCount || state.basics.guestCount < 1
         ? t("validate.guestsRequired")
@@ -321,7 +313,7 @@ export const EnquiryFormV2 = () => {
                   <Input
                     id="v2-eventDate"
                     type="date"
-                    min={tomorrowISO}
+                    min={minEventDate}
                     value={state.basics.eventDate}
                     onChange={(e) => updateBasic("eventDate", e.target.value)}
                     aria-invalid={!!show("eventDate")}

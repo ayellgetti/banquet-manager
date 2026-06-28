@@ -1,12 +1,20 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  CalendarDays,
   ClipboardList,
   ClipboardPen,
   Contact,
+  CreditCard,
   LayoutGrid,
-  LayoutDashboard,
+  ScrollText,
+  Package,
   Receipt,
   ShoppingBasket,
+  Sparkles,
+  Store,
+  UserRound,
+  CalendarCheck,
+  PhoneForwarded,
   UtensilsCrossed,
 } from "lucide-react";
 
@@ -21,13 +29,80 @@ export type AdminNavItem = {
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
-    id: "dashboard",
-    path: "/",
-    icon: LayoutDashboard,
-    titleKey: "admin.dashboard.title",
-    subtitleKey: "admin.dashboard.subtitle",
-    descKey: "admin.dashboard.desc",
+    id: "calendar",
+    path: "/calendar",
+    icon: CalendarDays,
+    titleKey: "module.calendar.title",
+    subtitleKey: "module.calendar.subtitle",
+    descKey: "module.calendar.desc",
   },
+  {
+    id: "enquiries",
+    path: "/enquiries",
+    icon: ClipboardList,
+    titleKey: "module.enquiries.title",
+    subtitleKey: "module.enquiries.subtitle",
+    descKey: "module.enquiries.desc",
+  },
+  {
+    id: "follow-up",
+    path: "/follow-up",
+    icon: PhoneForwarded,
+    titleKey: "module.followUp.title",
+    subtitleKey: "module.followUp.subtitle",
+    descKey: "module.followUp.desc",
+  },
+  {
+    id: "customers",
+    path: "/customers",
+    icon: UserRound,
+    titleKey: "module.customers.title",
+    subtitleKey: "module.customers.subtitle",
+    descKey: "module.customers.desc",
+  },
+  {
+    id: "bookings",
+    path: "/bookings",
+    icon: CalendarCheck,
+    titleKey: "module.bookings.title",
+    subtitleKey: "module.bookings.subtitle",
+    descKey: "module.bookings.desc",
+  },
+  {
+    id: "vendors",
+    path: "/vendors",
+    icon: Store,
+    titleKey: "module.vendors.title",
+    subtitleKey: "module.vendors.subtitle",
+    descKey: "module.vendors.desc",
+  },
+  {
+    id: "inventory",
+    path: "/inventory",
+    icon: Package,
+    titleKey: "module.inventory.title",
+    subtitleKey: "module.inventory.subtitle",
+    descKey: "module.inventory.desc",
+  },
+  {
+    id: "payments",
+    path: "/payments",
+    icon: CreditCard,
+    titleKey: "module.payments.title",
+    subtitleKey: "module.payments.subtitle",
+    descKey: "module.payments.desc",
+  },
+  {
+    id: "extra",
+    path: "/extra",
+    icon: Sparkles,
+    titleKey: "module.extra.title",
+    subtitleKey: "module.extra.subtitle",
+    descKey: "module.extra.desc",
+  },
+];
+
+export const EXTRA_NAV_ITEMS: AdminNavItem[] = [
   {
     id: "enquiry",
     path: "/enquiry",
@@ -77,6 +152,14 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     descKey: "module.menuPackageCard.desc",
   },
   {
+    id: "menu-catalog",
+    path: "/menu-catalog",
+    icon: ScrollText,
+    titleKey: "module.menuCatalog.title",
+    subtitleKey: "module.menuCatalog.subtitle",
+    descKey: "module.menuCatalog.desc",
+  },
+  {
     id: "procurement",
     path: "/procurement",
     icon: ShoppingBasket,
@@ -86,11 +169,17 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   },
 ];
 
+const ALL_NAV_ITEMS = [...ADMIN_NAV_ITEMS, ...EXTRA_NAV_ITEMS];
+
+export function isExtraNavPath(pathname: string): boolean {
+  return pathname === "/extra" || EXTRA_NAV_ITEMS.some((item) => isAdminNavActive(pathname, item));
+}
+
 export function getAdminNavItem(pathname: string): AdminNavItem {
-  const exact = ADMIN_NAV_ITEMS.find((item) => item.path === pathname);
+  const exact = ALL_NAV_ITEMS.find((item) => item.path === pathname);
   if (exact) return exact;
 
-  const nested = ADMIN_NAV_ITEMS.filter((item) => item.path !== "/").find((item) =>
+  const nested = ALL_NAV_ITEMS.filter((item) => item.path !== "/").find((item) =>
     pathname.startsWith(item.path),
   );
   return nested ?? ADMIN_NAV_ITEMS[0];

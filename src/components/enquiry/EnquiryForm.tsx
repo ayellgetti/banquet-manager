@@ -25,6 +25,7 @@ import {
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, calcMenuPerPlate, formatExtraPriceDisplay, formatINR } from "@/lib/enquiryTotals";
 import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
+import { getMinEventDateISO, isPastEventDate, validateEventDate } from "@/lib/eventDateValidation";
 import { openEnquiryWhatsApp } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
 import {
@@ -116,24 +117,12 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
   const phoneError = validatePhone(state.basics.phone, t);
   const b = state.basics;
   const showBasics = attempted.has("basics");
-  const tomorrowISO = (() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString().slice(0, 10);
-  })();
-  const isPastOrToday = (v: string) => !!v && v < tomorrowISO;
+  const minEventDate = getMinEventDateISO();
   const err = {
     name:      (touched.customerName || showBasics) ? nameError : null,
     phone:     (touched.phone || showBasics)        ? phoneError : null,
     eventType: !isMenuSelection && showBasics && !b.eventType  ? t("validate.eventTypeRequired") : null,
-    eventDate: showBasics
-      ? (!b.eventDate
-          ? t("validate.eventDateRequired")
-          : isPastOrToday(b.eventDate)
-            ? t("validate.eventDateFuture")
-            : null)
-      : null,
+    eventDate: showBasics ? validateEventDate(b.eventDate, t) : null,
     guests:    showBasics && !b.guestCount ? t("validate.guestsRequired")    : null,
     source:    !isMenuSelection && showBasics && !b.source     ? t("validate.sourceRequired")    : null,
   };
@@ -165,7 +154,7 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
         if (phoneError) errs.push(phoneError);
         if (!isMenuSelection && !b.eventType)  errs.push(t("validate.eventTypeRequired"));
         if (!b.eventDate)  errs.push(t("validate.eventDateRequired"));
-        else if (isPastOrToday(b.eventDate)) errs.push(t("validate.eventDateFuture"));
+        else if (isPastEventDate(b.eventDate)) errs.push(t("validate.eventDatePast"));
         if (!b.guestCount) errs.push(t("validate.guestsRequired"));
         if (!isMenuSelection && !b.source)     errs.push(t("validate.sourceRequired"));
         break;
@@ -428,7 +417,7 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                 <Label>{t("basics.eventDate")}<Req /></Label>
                 <Input
                   type="date"
-                  min={tomorrowISO}
+                  min={minEventDate}
                   value={state.basics.eventDate}
                   onChange={(e) => updateBasic("eventDate", e.target.value)}
                   aria-invalid={!!err.eventDate}
