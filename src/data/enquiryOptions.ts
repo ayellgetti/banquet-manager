@@ -764,6 +764,10 @@ export const MENU_ITEMS: MenuItem[] = [
   { id: "lc-pz4", name: "Al Fungi Pizza", category: "Live Counters", subcategory: "Pizza", price: 0 },
   // Live Counters — South Indian
   { id: "lc-si1", name: "Assorted Dosa / Uttapam", category: "Live Counters", subcategory: "South Indian Counter", price: 0 },
+  { id: "lc-si2", name: "Masala Dosa", category: "Live Counters", subcategory: "South Indian Counter", price: 0 },
+  { id: "lc-si3", name: "Plain Dosa", category: "Live Counters", subcategory: "South Indian Counter", price: 0 },
+  { id: "lc-si4", name: "Onion Uttapam (+₹25 Extra)", category: "Live Counters", subcategory: "South Indian Counter", price: 25 },
+  { id: "lc-si5", name: "Rava Dosa", category: "Live Counters", subcategory: "South Indian Counter", price: 0 },
   // Live Counters — Chinese / Oriental
   { id: "lc-ch1", name: "Veg Fried Rice", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },
   { id: "lc-ch2", name: "Basil Rice", category: "Live Counters", subcategory: "Chinese / Oriental Counter", price: 0 },

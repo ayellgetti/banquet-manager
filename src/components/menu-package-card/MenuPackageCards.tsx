@@ -20,12 +20,6 @@ import {
 } from "@/data/enquiryOptions";
 import { VISITING_CARD_ADDRESS, VISITING_CARD_BUSINESS_NAME, VISITING_CARD_CONTACTS, VISITING_CARD_QR_CODES } from "@/data/visitingCard";
 import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
-import {
-  ClientDetailsSection,
-  emptyClientDetails,
-  formatClientDetailsBlock,
-  type ClientDetails,
-} from "@/components/menu-package-card/ClientDetailsSection";
 import { GoldDivider } from "@/components/visiting-card/GoldDivider";
 import {
   BORDER_GOLD,
@@ -388,7 +382,6 @@ export const MenuPackageCards = () => {
   const { t } = useT();
   const menuLabels = useMenuLabels();
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
-  const [clientDetails, setClientDetails] = useState<ClientDetails>(emptyClientDetails);
 
   const commonPlateLine = `${t("menu.includedEvery")} ${COMMON_PLATE_ITEMS.map(menuLabels.commonPlateName).join(" · ")}`;
 
@@ -432,16 +425,11 @@ export const MenuPackageCards = () => {
       return `${slot.label}: ₹${(pkg.hourlyRate * slot.hours).toLocaleString("en-IN")}`;
     }).filter(Boolean);
 
-    const clientLines = formatClientDetailsBlock(clientDetails, t);
-
     return [
       VISITING_CARD_BUSINESS_NAME,
       VISITING_CARD_ADDRESS,
       "",
       ...VISITING_CARD_CONTACTS.flatMap((c) => [`${c.name}: ${c.phone}`]),
-      ...(clientLines.length
-        ? ["", t("menuPackageCard.client.title"), ...clientLines]
-        : []),
       "",
       t("menuPackageCard.section.packages"),
       t("menuPackageCard.packagesNote"),
@@ -516,7 +504,6 @@ export const MenuPackageCards = () => {
     <div className="mx-auto max-w-[1400px] space-y-6">
       <div id="menu-package-card-print-area" className="mx-auto w-full max-w-[210mm] space-y-1.5">
         <BanquetHeader showContactActions compact />
-        <ClientDetailsSection value={clientDetails} onChange={setClientDetails} />
 
         <SectionShell title={t("menuPackageCard.section.packages")} note={t("menuPackageCard.packagesNote")}>
           <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-4">

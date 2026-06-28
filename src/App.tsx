@@ -53,11 +53,11 @@ const App = () => (
               <Route path="/bill" element={<BillPage />} />
               <Route path="/visiting-card" element={<VisitingCardPage />} />
               <Route path="/menu-package-card" element={<MenuPackageCardPage />} />
-              <Route path="/menu-catalog" element={<MenuCatalogPage />} />
               <Route path="/procurement" element={<ProcurementPage />} />
             </Route>
             <Route element={<StandaloneLayout />}>
               <Route path="/menu-packages" element={<MenuPackagesDisplayPage />} />
+              <Route path="/menu-catalog" element={<MenuCatalogPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

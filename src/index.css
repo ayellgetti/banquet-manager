@@ -225,7 +225,8 @@ body.printing #visiting-card-print-area img {
   max-width: 300px !important;
 }
 
-body.printing #menu-package-card-print-area {
+body.printing #menu-package-card-print-area,
+body.printing #menu-catalog-print-area {
   width: 190mm !important;
   max-width: 190mm !important;
   margin: 0 auto !important;
@@ -235,7 +236,9 @@ body.printing #menu-package-card-print-area {
 
 body.printing #menu-package-card-print-area .menu-package-section,
 body.printing #menu-package-card-print-area header[data-menu-package-header],
-body.printing #menu-package-card-print-area [data-menu-package-box] {
+body.printing #menu-package-card-print-area [data-menu-package-box],
+body.printing #menu-catalog-print-area .menu-package-section,
+body.printing #menu-catalog-print-area [data-menu-package-box] {
   overflow: hidden !important;
   border-radius: 0.5rem !important;
 }
@@ -247,19 +250,23 @@ body.printing #menu-package-card-print-area [data-menu-package-category] span:fi
   text-overflow: unset !important;
 }
 
-body.printing #menu-package-card-print-area .shadow-soft {
+body.printing #menu-package-card-print-area .shadow-soft,
+body.printing #menu-catalog-print-area .shadow-soft {
   box-shadow: none !important;
 }
 
-body.printing #menu-package-card-print-area .menu-package-section > div:last-child {
+body.printing #menu-package-card-print-area .menu-package-section > div:last-child,
+body.printing #menu-catalog-print-area .menu-package-section > div:last-child {
   padding: 6px !important;
 }
 
-body.printing #menu-package-card-print-area .menu-package-section h2 {
+body.printing #menu-package-card-print-area .menu-package-section h2,
+body.printing #menu-catalog-print-area .menu-package-section h2 {
   font-size: 11px !important;
 }
 
-body.printing #menu-package-card-print-area [data-menu-package-box] {
+body.printing #menu-package-card-print-area [data-menu-package-box],
+body.printing #menu-catalog-print-area [data-menu-package-box] {
   border-style: solid !important;
 }
 
@@ -269,75 +276,91 @@ body.printing #menu-package-card-print-area .menu-package-section img {
   max-width: 56px !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-compact {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-compact,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-compact {
   grid-template-columns: minmax(0, 1fr) minmax(0, 32%) !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-brand {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-brand,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-brand {
   padding: 2px 4px !important;
   gap: 3px !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-logo {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-logo,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-logo {
   width: 56px !important;
   max-width: 56px !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-brand p:last-child {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-brand p:last-child,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-brand p:last-child {
   margin-top: 1px !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contacts {
   padding: 2px 4px !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts > p {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts > p,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contacts > p {
   margin-bottom: 1px !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts ul {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contacts ul,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contacts ul {
   gap: 0 !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contact {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-contact,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contact {
   gap: 0 !important;
   padding: 0 !important;
 }
 
-body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-phone {
+body.printing #menu-package-card-print-area [data-banquet-header][data-compact] .banquet-header-phone,
+body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-phone {
   font-size: 11px !important;
   font-weight: 700 !important;
 }
 
-body.printing #menu-package-card-print-area > * + * {
+body.printing #menu-package-card-print-area > * + *,
+body.printing #menu-catalog-print-area > * + * {
   margin-top: 3px !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-header {
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-header,
+body.printing #menu-catalog-print-area [data-client-details-section] .client-detail-header {
   padding: 1px 4px !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-header p {
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-header p,
+body.printing #menu-catalog-print-area [data-client-details-section] .client-detail-header p {
   font-size: 10px !important;
   line-height: 1.1 !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-body {
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-body,
+body.printing #menu-catalog-print-area [data-client-details-section] .client-detail-body {
   padding: 1px 3px !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-field {
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-field,
+body.printing #menu-catalog-print-area [data-client-details-section] .client-detail-field {
   gap: 0 !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-label {
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-label,
+body.printing #menu-catalog-print-area [data-client-details-section] .client-detail-label {
   font-size: 7.5px !important;
   letter-spacing: 0.05em !important;
   line-height: 1 !important;
   margin-bottom: 1px !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-input {
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-input,
+body.printing #menu-catalog-print-area [data-client-details-section] .client-detail-input {
   height: 14px !important;
   min-height: 14px !important;
   padding: 0 2px !important;
@@ -345,33 +368,16 @@ body.printing #menu-package-card-print-area [data-client-details-section] .clien
   line-height: 1.1 !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-phone {
+body.printing #menu-package-card-print-area [data-client-details-section] .client-detail-phone,
+body.printing #menu-catalog-print-area [data-client-details-section] .client-detail-phone {
   font-size: 9.5px !important;
   font-weight: 600 !important;
   letter-spacing: 0.02em !important;
 }
 
-body.printing #menu-package-card-print-area [data-client-details-section] .grid {
+body.printing #menu-package-card-print-area [data-client-details-section] .grid,
+body.printing #menu-catalog-print-area [data-client-details-section] .grid {
   gap: 1px !important;
-}
-
-body.printing #menu-catalog-print-area {
-  width: 190mm !important;
-  max-width: 190mm !important;
-  margin: 0 auto !important;
-  font-size: 9px !important;
-  line-height: 1.3 !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-page {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding: 3px !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  break-inside: avoid !important;
-  page-break-inside: avoid !important;
 }
 
 body.printing #menu-catalog-print-area [data-menu-catalog-page="1"] {
@@ -379,37 +385,8 @@ body.printing #menu-catalog-print-area [data-menu-catalog-page="1"] {
   page-break-after: always !important;
 }
 
-body.printing #menu-catalog-print-area .menu-catalog-category,
-body.printing #menu-catalog-print-area [data-menu-catalog-box] {
-  overflow: hidden !important;
-  border-radius: 0.4rem !important;
-  border-style: solid !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-category > div:first-child {
-  padding: 2px 6px !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-category > div:last-child {
-  padding: 3px 4px !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-category h2 {
-  font-size: 11px !important;
-  line-height: 1.25 !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-title {
-  padding: 3px 6px !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-title h1 {
-  font-size: 13px !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-title p {
-  font-size: 9px !important;
-  margin-top: 2px !important;
+body.printing #menu-catalog-print-area .menu-catalog-page > * + * {
+  margin-top: 3px !important;
 }
 
 body.printing #menu-catalog-print-area .menu-catalog-items {
@@ -418,25 +395,105 @@ body.printing #menu-catalog-print-area .menu-catalog-items {
   gap: 2px !important;
 }
 
-body.printing #menu-catalog-print-area .menu-catalog-row {
+body.printing #menu-catalog-print-area .menu-catalog-subcards {
   display: flex !important;
-  flex-wrap: nowrap !important;
-  align-items: flex-start !important;
-  gap: 4px !important;
-  padding: 3px 4px !important;
-  break-inside: avoid !important;
-  page-break-inside: avoid !important;
+  flex-wrap: wrap !important;
+  align-items: stretch !important;
+  gap: 3px !important;
 }
 
-body.printing #menu-catalog-print-area .menu-catalog-sub-label {
-  width: 20mm !important;
-  flex-shrink: 0 !important;
+body.printing #menu-catalog-print-area .menu-catalog-subcards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-main-course {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-sweets {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-welcome-drink {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-welcome-drink-pair {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-catalog-print-area [data-welcome-drink-basic] {
+  flex: 13.1 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area [data-welcome-drink-fresh-fruit] {
+  flex: 13.8 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-sweets-ice {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 3px !important;
+  align-items: stretch !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-main-course-vertical {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-catalog-print-area [data-menu-catalog-paneer] {
+  flex: 12 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area [data-menu-catalog-rajasthani] {
+  flex: 9.4 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-main-course-vertical [data-menu-catalog-subcard]:not([data-menu-catalog-paneer]):not([data-menu-catalog-rajasthani]) {
+  flex: 8 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area [data-menu-catalog-full-width] {
+  width: 100% !important;
+  flex: none !important;
+}
+
+body.printing #menu-catalog-print-area [data-menu-catalog-subcard] {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  min-width: 0 !important;
+}
+
+body.printing #menu-catalog-print-area [data-menu-catalog-subcard] > div:first-child {
+  padding: 2px 4px !important;
+}
+
+body.printing #menu-catalog-print-area [data-menu-catalog-subcard] > div:first-child p {
   font-size: 7.5px !important;
   line-height: 1.15 !important;
 }
 
+body.printing #menu-catalog-print-area [data-menu-catalog-subcard] > div:last-child {
+  padding: 2px !important;
+}
+
 body.printing #menu-catalog-print-area .menu-catalog-body {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
+  padding: 3px 4px !important;
 }
 
 body.printing #menu-catalog-print-area .menu-catalog-item-card,
@@ -452,60 +509,52 @@ body.printing #menu-catalog-print-area [data-menu-catalog-item] {
   border-radius: 0.2rem !important;
 }
 
-body.printing #menu-catalog-print-area .shadow-soft {
-  box-shadow: none !important;
+body.printing #menu-catalog-print-area .menu-catalog-categories > * + * {
+  margin-top: 2px !important;
 }
 
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-compact {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 32%) !important;
+body.printing #menu-catalog-print-area .menu-catalog-pair {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 3px !important;
+  align-items: stretch !important;
 }
 
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-brand {
-  padding: 2px 4px !important;
+body.printing #menu-catalog-print-area .menu-catalog-triple {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 3px !important;
+  align-items: stretch !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-breads-stack {
+  display: flex !important;
+  flex-direction: column !important;
   gap: 3px !important;
 }
 
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-logo {
-  width: 56px !important;
-  max-width: 56px !important;
-}
-
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-brand p:last-child {
-  margin-top: 1px !important;
-}
-
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contacts {
-  padding: 2px 4px !important;
-}
-
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contacts > p {
-  margin-bottom: 1px !important;
-}
-
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contacts ul {
-  gap: 0 !important;
-}
-
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-contact {
+body.printing #menu-catalog-print-area [data-menu-catalog-horizontal] {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
   gap: 0 !important;
   padding: 0 !important;
 }
 
-body.printing #menu-catalog-print-area [data-banquet-header][data-compact] .banquet-header-phone {
-  font-size: 11px !important;
-  font-weight: 700 !important;
+body.printing #menu-catalog-print-area [data-menu-catalog-horizontal] .menu-catalog-horizontal-header {
+  background-color: #ffffff !important;
+  border-right: 1px solid #d4b06a !important;
+  padding: 3px 4px !important;
 }
 
-body.printing #menu-catalog-print-area > * + * {
-  margin-top: 0 !important;
+body.printing #menu-catalog-print-area [data-menu-catalog-horizontal] h2 {
+  width: 14mm !important;
+  font-size: 8px !important;
+  line-height: 1.15 !important;
 }
 
-body.printing #menu-catalog-print-area .menu-catalog-page > * + * {
-  margin-top: 3px !important;
-}
-
-body.printing #menu-catalog-print-area .menu-catalog-categories > * + * {
-  margin-top: 2px !important;
+body.printing #menu-catalog-print-area [data-menu-catalog-horizontal] > div:last-child {
+  padding: 3px 4px !important;
 }
 
 @layer utilities {
