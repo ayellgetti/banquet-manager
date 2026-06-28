@@ -438,7 +438,45 @@ body.printing #menu-catalog-print-area [data-welcome-drink-basic] {
 }
 
 body.printing #menu-catalog-print-area [data-welcome-drink-fresh-fruit] {
-  flex: 13.8 1 0 !important;
+  flex: 14.2 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-starters {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 3px !important;
+}
+
+body.printing #menu-catalog-print-area [data-starters-veg] {
+  flex: 14.2 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area [data-starters-paneer] {
+  flex: 14.8 1 0 !important;
+}
+
+body.printing #menu-catalog-print-area [data-welcome-drink-fresh-fruit-layout] .menu-catalog-item-columns {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 2px !important;
+}
+
+body.printing #menu-catalog-print-area [data-welcome-drink-fresh-fruit-layout] .menu-catalog-items {
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+}
+
+body.printing #menu-catalog-print-area .menu-catalog-fresh-fruit-pair {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 2px !important;
+  width: 100% !important;
+}
+
+body.printing #menu-catalog-print-area [data-menu-catalog-paired] {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
 }
 
 body.printing #menu-catalog-print-area .menu-catalog-sweets-ice {

@@ -22,7 +22,6 @@ import { useT } from "@/i18n";
 import { useMenuLabels } from "@/i18n/menuLabels";
 import { toast } from "sonner";
 
-const PAGE_COUNT = 2;
 
 /** Catalog display order — custom sequence for print layout. */
 const MENU_CATALOG_CATEGORY_ORDER: MenuCategory[] = [
@@ -41,6 +40,9 @@ const MENU_CATALOG_CATEGORY_ORDER: MenuCategory[] = [
   "Live Counters",
   "Breakfast",
 ];
+
+/** Page 2 begins here — Indian Breads, Rice, Dal, Farsan and all categories after. */
+const PAGE_2_START_CATEGORY: MenuCategory = "Indian Breads";
 
 const LIVE_COUNTERS_SUBCATEGORY_ORDER = [
   "Chaat Counter",
@@ -74,11 +76,22 @@ const WELCOME_DRINK_HORIZONTAL_SUB = "Mocktails (+₹20 Extra)";
 const WELCOME_DRINK_BASIC_SUB = "Basic";
 const WELCOME_DRINK_FRESH_FRUIT_SUB = "Fresh Fruit Juice";
 
+/** Side-by-side pairs within Fresh Fruit Juice (full-width rows). */
+const FRESH_FRUIT_JUICE_PAIRS: [string, string][] = [
+  ["wd-f8", "wd-f9"],
+  ["wd-f10", "wd-f11"],
+];
+
 const WELCOME_DRINK_SUBCATEGORY_ORDER = [
   "Basic",
   "Fresh Fruit Juice",
   "Mocktails (+₹20 Extra)",
 ];
+
+const STARTERS_VEG_SUB = "Veg Starter";
+const STARTERS_PANEER_SUB = "Paneer Starter";
+
+const STARTERS_SUBCATEGORY_ORDER = [STARTERS_VEG_SUB, STARTERS_PANEER_SUB];
 
 /** Categories rendered in one horizontal row (left to right). */
 const SIDE_BY_SIDE_PAIRS: MenuCategory[][] = [["Raita", "Salads"]];
@@ -126,7 +139,23 @@ function welcomeDrinkPairFlexStyle(sub: string, itemCount: number): CSSPropertie
     minExtra = -6;
   } else if (sub === WELCOME_DRINK_FRESH_FRUIT_SUB) {
     weight = itemCount * 1.25;
-    minExtra = 12;
+    minExtra = 14;
+  }
+
+  const minWidth = Math.max(SUBCARD_MIN_WIDTH_PX, 48 + itemCount * 6 + minExtra);
+  return { flex: `${weight} 1 ${minWidth}px` };
+}
+
+function startersPairFlexStyle(sub: string, itemCount: number): CSSProperties {
+  let weight = itemCount;
+  let minExtra = 0;
+
+  if (sub === STARTERS_VEG_SUB) {
+    weight = itemCount * 0.86;
+    minExtra = -4;
+  } else if (sub === STARTERS_PANEER_SUB) {
+    weight = itemCount * 1.35;
+    minExtra = 18;
   }
 
   const minWidth = Math.max(SUBCARD_MIN_WIDTH_PX, 48 + itemCount * 6 + minExtra);
@@ -149,24 +178,13 @@ function splitCategoriesForPages(
   byCategory: Map<MenuCategory, MenuItem[]>,
 ): MenuCategory[][] {
   const nonEmpty = categories.filter((cat) => (byCategory.get(cat)?.length ?? 0) > 0);
-  const total = nonEmpty.reduce((sum, cat) => sum + (byCategory.get(cat)?.length ?? 0), 0);
-  const target = Math.ceil(total / PAGE_COUNT);
+  const page2Start = nonEmpty.indexOf(PAGE_2_START_CATEGORY);
 
-  const pages: MenuCategory[][] = [[]];
-  let currentCount = 0;
-
-  for (const cat of nonEmpty) {
-    const count = byCategory.get(cat)?.length ?? 0;
-    if (pages.length < PAGE_COUNT && currentCount >= target && pages[0].length > 0) {
-      pages.push([]);
-      currentCount = 0;
-    }
-    pages[pages.length - 1].push(cat);
-    currentCount += count;
+  if (page2Start <= 0) {
+    return page2Start === 0 ? [[], nonEmpty] : [nonEmpty, []];
   }
 
-  while (pages.length < PAGE_COUNT) pages.push([]);
-  return pages.slice(0, PAGE_COUNT);
+  return [nonEmpty.slice(0, page2Start), nonEmpty.slice(page2Start)];
 }
 
 function groupBySubcategory(items: MenuItem[]): { sub: string; items: MenuItem[] }[] {
@@ -193,7 +211,9 @@ function sortSubGroups(
           ? SWEETS_SUBCATEGORY_ORDER
           : category === "Welcome Drink"
             ? WELCOME_DRINK_SUBCATEGORY_ORDER
-            : null;
+            : category === "Starters"
+              ? STARTERS_SUBCATEGORY_ORDER
+              : null;
 
   if (!order) return groups;
 
@@ -236,15 +256,16 @@ function buildCatalogRows(categories: MenuCategory[]): CatalogRow[] {
   return rows;
 }
 
-const MenuItemChip = ({ item }: { item: MenuItem }) => {
+const MenuItemChip = ({ item, paired = false }: { item: MenuItem; paired?: boolean }) => {
   const menuLabels = useMenuLabels();
 
   return (
     <li
-      className="menu-catalog-item inline-flex max-w-full items-center rounded-md px-2 py-1 text-[10px] leading-snug sm:text-[11px]"
+      className={`menu-catalog-item inline-flex max-w-full items-center rounded-md px-2 py-1 text-[10px] leading-snug sm:text-[11px]${paired ? " min-w-0 flex-1" : ""}`}
       data-menu-catalog-item
       data-menu-catalog-box
       data-menu-package-box
+      data-menu-catalog-paired={paired || undefined}
       style={{ border: BOX_BORDER, backgroundColor: "#ffffff", color: BROWN }}
     >
       <span className="whitespace-normal break-words">{menuLabels.itemName(item)}</span>
@@ -260,20 +281,65 @@ const MenuItemFlow = ({ items }: { items: MenuItem[] }) => (
   </ul>
 );
 
+function splitItemsInHalf(items: MenuItem[]): [MenuItem[], MenuItem[]] {
+  const mid = Math.ceil(items.length / 2);
+  return [items.slice(0, mid), items.slice(mid)];
+}
+
+function partitionFreshFruitItems(items: MenuItem[]) {
+  const pairedIds = new Set(FRESH_FRUIT_JUICE_PAIRS.flat());
+  const regular = items.filter((item) => !pairedIds.has(item.id));
+  const pairs = FRESH_FRUIT_JUICE_PAIRS.map(([leftId, rightId]) => {
+    const left = items.find((item) => item.id === leftId);
+    const right = items.find((item) => item.id === rightId);
+    return left && right ? ([left, right] as const) : null;
+  }).filter((pair): pair is readonly [MenuItem, MenuItem] => pair != null);
+
+  return { regular, pairs };
+}
+
+const FreshFruitJuiceItemsLayout = ({ items }: { items: MenuItem[] }) => {
+  const { regular, pairs } = partitionFreshFruitItems(items);
+  const [leftItems, rightItems] = splitItemsInHalf(regular);
+
+  return (
+    <div className="menu-catalog-fresh-fruit-layout space-y-1.5">
+      {regular.length > 0 ? (
+        <div className="menu-catalog-item-columns grid min-w-0 grid-cols-2 gap-1.5">
+          <MenuItemFlow items={leftItems} />
+          <MenuItemFlow items={rightItems} />
+        </div>
+      ) : null}
+      {pairs.map(([left, right]) => (
+        <ul
+          key={`${left.id}-${right.id}`}
+          className="menu-catalog-fresh-fruit-pair flex min-w-0 list-none gap-1.5 p-0"
+        >
+          <MenuItemChip item={left} paired />
+          <MenuItemChip item={right} paired />
+        </ul>
+      ))}
+    </div>
+  );
+};
+
 const SubcategoryCard = ({
   sub,
   items,
   equalColumns = false,
   fullWidth = false,
+  itemColumns = 1,
   flexStyle,
 }: {
   sub: string;
   items: MenuItem[];
   equalColumns?: boolean;
   fullWidth?: boolean;
+  itemColumns?: 1 | 2;
   flexStyle?: CSSProperties;
 }) => {
   const menuLabels = useMenuLabels();
+  const [leftItems, rightItems] = itemColumns === 2 ? splitItemsInHalf(items) : [[], []];
 
   return (
     <article
@@ -286,6 +352,9 @@ const SubcategoryCard = ({
       data-menu-catalog-rajasthani={sub === MAIN_COURSE_RAJASTHANI_SUB || undefined}
       data-welcome-drink-basic={sub === WELCOME_DRINK_BASIC_SUB || undefined}
       data-welcome-drink-fresh-fruit={sub === WELCOME_DRINK_FRESH_FRUIT_SUB || undefined}
+      data-welcome-drink-fresh-fruit-layout={sub === WELCOME_DRINK_FRESH_FRUIT_SUB || undefined}
+      data-starters-veg={sub === STARTERS_VEG_SUB || undefined}
+      data-starters-paneer={sub === STARTERS_PANEER_SUB || undefined}
       style={{
         border: BOX_BORDER,
         backgroundColor: "#ffffff",
@@ -306,7 +375,16 @@ const SubcategoryCard = ({
         </div>
       ) : null}
       <div className="flex-1 p-1.5 sm:p-2">
-        <MenuItemFlow items={items} />
+        {sub === WELCOME_DRINK_FRESH_FRUIT_SUB ? (
+          <FreshFruitJuiceItemsLayout items={items} />
+        ) : itemColumns === 2 ? (
+          <div className="menu-catalog-item-columns grid min-w-0 grid-cols-2 gap-1.5">
+            <MenuItemFlow items={leftItems} />
+            <MenuItemFlow items={rightItems} />
+          </div>
+        ) : (
+          <MenuItemFlow items={items} />
+        )}
       </div>
     </article>
   );
@@ -340,6 +418,21 @@ const SubcategoryCards = ({
         {horizontalGroup ? (
           <SubcategoryCard sub={horizontalGroup.sub} items={horizontalGroup.items} fullWidth />
         ) : null}
+      </div>
+    );
+  }
+
+  if (category === "Starters") {
+    return (
+      <div className="menu-catalog-starters flex items-stretch gap-2">
+        {subGroups.map(({ sub, items }) => (
+          <SubcategoryCard
+            key={sub || "__default"}
+            sub={sub}
+            items={items}
+            flexStyle={startersPairFlexStyle(sub, items.length)}
+          />
+        ))}
       </div>
     );
   }
