@@ -10,7 +10,7 @@ import { ListSearchInput } from "@/components/common/ListSearchInput";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  getDashboardStats,
+  getDashboardStatsFromEvents,
   getInitialCalendarMonth,
   getUpcomingEvents,
 } from "@/data/banquetData";
@@ -56,7 +56,7 @@ const CalendarPage = () => {
       ),
     [upcoming, upcomingSearch],
   );
-  const stats = useMemo(() => getDashboardStats(), [events]);
+  const stats = useMemo(() => getDashboardStatsFromEvents(events ?? []), [events]);
 
   const handleNewBooking = () => {
     setMonth(new Date());

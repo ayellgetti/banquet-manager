@@ -1,10 +1,11 @@
 import { format, parseISO } from "date-fns";
-import { ArrowUpRight, Pencil } from "lucide-react";
+import { ArrowUpRight, Eye, Pencil } from "lucide-react";
 import {
   formatEnquiryBudget,
   getFollowUpUrgency,
   type FollowUpEnquiryRecord,
 } from "@/data/banquetData";
+import { formatFollowUpDateTime } from "@/lib/followUpDateTime";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -27,10 +28,11 @@ const urgencyClass: Record<ReturnType<typeof getFollowUpUrgency>, string> = {
 
 type Props = {
   enquiries: FollowUpEnquiryRecord[];
+  onView: (enquiry: FollowUpEnquiryRecord) => void;
   onEdit: (enquiry: FollowUpEnquiryRecord) => void;
 };
 
-export const FollowUpTable = ({ enquiries, onEdit }: Props) => {
+export const FollowUpTable = ({ enquiries, onView, onEdit }: Props) => {
   const { t } = useT();
 
   if (enquiries.length === 0) {
@@ -78,10 +80,12 @@ export const FollowUpTable = ({ enquiries, onEdit }: Props) => {
                     <p className="text-sm text-muted-foreground">{enquiry.email}</p>
                   </div>
                 </TableCell>
-                <TableCell className="min-w-[12rem] py-4">
+                <TableCell className="min-w-[12rem] max-w-[16rem] py-4 align-top">
                   <div className="flex items-start gap-1">
                     <div className="min-w-0">
-                      <p className="font-medium text-foreground">{enquiry.eventType}</p>
+                      <p className="whitespace-normal break-words font-medium leading-snug text-foreground">
+                        {enquiry.eventType}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {format(parseISO(enquiry.preferredDate), "MMM d, yyyy")} ·{" "}
                         {formatEnquiryBudget(enquiry.budget)}
@@ -93,15 +97,13 @@ export const FollowUpTable = ({ enquiries, onEdit }: Props) => {
                     <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
                   </div>
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-sm text-foreground">
-                  {enquiry.lastFollowUpAt
-                    ? format(parseISO(enquiry.lastFollowUpAt), "MMM d, yyyy")
-                    : "—"}
+                <TableCell className="min-w-[9rem] text-sm text-foreground">
+                  {enquiry.lastFollowUpAt ? formatFollowUpDateTime(enquiry.lastFollowUpAt) : "—"}
                 </TableCell>
-                <TableCell className="whitespace-nowrap">
+                <TableCell className="min-w-[9rem]">
                   {enquiry.nextFollowUpDate ? (
                     <span className={cn("text-sm", urgencyClass[urgency])}>
-                      {format(parseISO(enquiry.nextFollowUpDate), "MMM d, yyyy")}
+                      {formatFollowUpDateTime(enquiry.nextFollowUpDate)}
                     </span>
                   ) : (
                     <span className="text-sm text-muted-foreground">—</span>
@@ -131,16 +133,28 @@ export const FollowUpTable = ({ enquiries, onEdit }: Props) => {
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="h-9 w-9 shrink-0"
-                    aria-label={t("followUp.edit")}
-                    onClick={() => onEdit(enquiry)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9 shrink-0"
+                      aria-label={t("followUp.view")}
+                      onClick={() => onView(enquiry)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9 shrink-0"
+                      aria-label={t("followUp.edit")}
+                      onClick={() => onEdit(enquiry)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             );

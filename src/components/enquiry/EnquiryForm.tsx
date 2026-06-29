@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,11 @@ import {
 } from "@/data/enquiryOptions";
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, calcMenuPerPlate, formatExtraPriceDisplay, formatINR } from "@/lib/enquiryTotals";
-import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
+import { buildEnquiryLeadPayload } from "@/lib/enquiryApi";
+import { banquetQueryKeys } from "@/lib/banquetApi";
+import { fetchEventByIdFromApi, saveMenuSelectionViaApi } from "@/lib/eventsApi";
+import { buildMenuPackageLabel, mapEventToMenuEnquiryState } from "@/lib/menuSelectionMapper";
+import { submitEnquiryLeadDualWrite } from "@/lib/leadSubmitService";
 import { getMinEventDateISO, isPastEventDate, validateEventDate } from "@/lib/eventDateValidation";
 import { openEnquiryWhatsApp } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
@@ -37,7 +42,7 @@ import {
   SelectionsBreakdown,
   SummaryField,
 } from "./EnquiryPdfSummary";
-import { ArrowLeft, ArrowRight, Printer, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Printer, Save, Sparkles } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
@@ -85,8 +90,15 @@ const validatePhone = (raw: string, t: (k: string) => string): string | null => 
   return null;
 };
 
-export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVariant }) => {
+export const EnquiryForm = ({
+  variant = "enquiry",
+  eventId,
+}: {
+  variant?: EnquiryFormVariant;
+  eventId?: string;
+}) => {
   const { t } = useT();
+  const queryClient = useQueryClient();
   const menuLabels = useMenuLabels();
   const TAB_ORDER = (variant === "menu-selection" ? MENU_SELECTION_TABS : ENQUIRY_TABS) as readonly TabKey[];
   const isMenuSelection = variant === "menu-selection";
@@ -102,9 +114,40 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
   const [attempted, setAttempted] = useState<Set<TabKey>>(new Set());
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [isSavingMenu, setIsSavingMenu] = useState(false);
+  const [isLoadingEvent, setIsLoadingEvent] = useState(false);
+  const [linkedEventId, setLinkedEventId] = useState<string | undefined>(eventId);
   const totals = calcTotals(state);
   const menuPerPlate = calcMenuPerPlate(state);
   const isCustomPlate = isCustomPlatePackage(state.platePackageId);
+  const isBookingMenu = isMenuSelection && !!linkedEventId;
+
+  useEffect(() => {
+    setLinkedEventId(eventId);
+  }, [eventId]);
+
+  useEffect(() => {
+    if (!eventId || !isMenuSelection) return;
+
+    let cancelled = false;
+    setIsLoadingEvent(true);
+    void fetchEventByIdFromApi(eventId)
+      .then((event) => {
+        if (!cancelled) {
+          setState(mapEventToMenuEnquiryState(event));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) toast.error(t("menuSelection.loadError"));
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingEvent(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [eventId, isMenuSelection, t]);
 
   const update = <K extends keyof EnquiryState>(key: K, value: EnquiryState[K]) =>
     setState((s) => ({ ...s, [key]: value }));
@@ -126,15 +169,13 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
     guests:    showBasics && !b.guestCount ? t("validate.guestsRequired")    : null,
     source:    !isMenuSelection && showBasics && !b.source     ? t("validate.sourceRequired")    : null,
   };
-  const invalidVenue   = attempted.has("venue")   && !state.venueId;
   const invalidPackage = attempted.has("package") && !state.packageId;
   const invalidStage   = attempted.has("stage")   && !state.stageId;
-  const menuPlateMissing = attempted.has("menu") && !state.platePackageId;
   const selectedPlate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
   const selectedPlateLimits = (selectedPlate?.limits ?? {}) as Record<string, number>;
   const swappablePool = getSwappablePoolStatus(state.menuItemIds, selectedPlateLimits);
   const invalidCats = new Set<string>();
-  if (attempted.has("menu") && !state.selectMenuLater && state.platePackageId) {
+  if (attempted.has("menu") && state.platePackageId && !state.selectMenuLater) {
     if (!swappablePool.isComplete) {
       SWAPPABLE_MENU_CATEGORIES.forEach((cat) => invalidCats.add(cat));
     }
@@ -159,13 +200,11 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
         if (!isMenuSelection && !b.source)     errs.push(t("validate.sourceRequired"));
         break;
       }
-      case "venue":   if (!state.venueId)   errs.push(t("toast.needVenue"));   break;
+      case "venue":
+        break;
       case "package": if (!state.packageId) errs.push(t("toast.needPackage")); break;
       case "menu": {
-        if (!state.platePackageId) {
-          errs.push(t("toast.needPlatePackage"));
-          break;
-        }
+        if (!state.platePackageId) break;
         if (state.selectMenuLater && !isMenuSelection) break;
         if (state.menuItemIds.length === 0) errs.push(t("toast.needPlate"));
         const plate = PLATE_PACKAGES.find((p) => p.id === state.platePackageId);
@@ -240,9 +279,14 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
     if (leavingMenuForward && variant === "enquiry" && !state.leadApiResponse) {
       setIsSubmittingLead(true);
       try {
-        const response = await submitEnquiryLead(buildEnquiryLeadPayload(state));
-        setState((s) => ({ ...s, leadApiResponse: response }));
-        setTab(next);
+        const payload = buildEnquiryLeadPayload(state);
+        const result = await submitEnquiryLeadDualWrite(payload);
+        if (result.sheetOk || result.crmOk) {
+          await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.enquiries() });
+          await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.openEnquiries() });
+          setState((s) => ({ ...s, leadApiResponse: { success: true } }));
+          setTab(next);
+        }
       } catch {
         toast.error(t("toast.leadSubmitFailed"));
       } finally {
@@ -310,6 +354,49 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
       setIsPdfGenerating(false);
     }
   };
+
+  const handleSaveMenu = async () => {
+    if (!linkedEventId) return;
+    const menuErrs = validateTab("menu");
+    if (menuErrs.length) {
+      setAttempted((prev) => new Set(prev).add("menu"));
+      toast.error(t("toast.fixErrors"), {
+        description: (
+          <ul className="ml-4 list-disc space-y-0.5 text-white">
+            {menuErrs.map((e, i) => (
+              <li key={i}>{e}</li>
+            ))}
+          </ul>
+        ),
+      });
+      return;
+    }
+
+    setIsSavingMenu(true);
+    try {
+      await saveMenuSelectionViaApi(linkedEventId, {
+        platePackageId: state.platePackageId,
+        menuItemIds: state.menuItemIds,
+        menuPackage: buildMenuPackageLabel(state.platePackageId),
+        guestCount: state.basics.guestCount || null,
+      });
+      await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.bookings() });
+      toast.success(t("menuSelection.saved"));
+    } catch {
+      toast.error(t("menuSelection.saveError"));
+    } finally {
+      setIsSavingMenu(false);
+    }
+  };
+
+  if (isLoadingEvent) {
+    return (
+      <div className="flex min-h-[20rem] items-center justify-center text-sm text-muted-foreground">
+        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        {t("menuSelection.loading")}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -471,11 +558,8 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
         {/* VENUE */}
         {!isMenuSelection && (
         <TabsContent value="venue" className="mt-6">
-          <SectionCard title={t("venue.title")} description={t("venue.desc")} required>
-            {invalidVenue && (
-              <p className="mb-3 text-sm text-destructive">{t("toast.needVenue")}</p>
-            )}
-            <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${invalidVenue ? "rounded-lg p-2 ring-2 ring-destructive/60" : ""}`}>
+          <SectionCard title={t("venue.title")} description={t("venue.desc")}>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {VENUE_OPTIONS.map((v) => (
                 <SelectableCard
                   key={v.id}
@@ -492,24 +576,30 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
 
         {/* MENU */}
         <TabsContent value="menu" className="mt-6">
-          <SectionCard title={t("menu.title")} description={t("menu.desc")} required>
-            {!state.platePackageId && !menuPlateMissing && (
+          <SectionCard
+            title={t("menu.title")}
+            description={isBookingMenu && state.platePackageId ? t("menuSelection.menuDesc") : t("menu.desc")}
+          >
+            {!(isBookingMenu && state.platePackageId) && !state.platePackageId && (
               <p className="mb-3 text-sm text-muted-foreground">{t("menu.selectPlatePackage")}</p>
             )}
-            {menuPlateMissing && (
-              <p className="mb-3 text-sm text-destructive">{t("toast.needPlatePackage")}</p>
+            {isBookingMenu && state.platePackageId && (
+              <p className="mb-3 text-sm text-muted-foreground">{t("menuSelection.plateLocked")}</p>
             )}
             <div className="mb-6">
               <PlatePackageComparison
                 selectedId={state.platePackageId}
-                invalid={menuPlateMissing}
-                onSelect={(newId) => {
-                  update("platePackageId", newId);
-                  update(
-                    "menuItemIds",
-                    newId ? filterMenuIdsForPackage(state.menuItemIds, newId) : [],
-                  );
-                }}
+                {...(isBookingMenu && state.platePackageId
+                  ? {}
+                  : {
+                      onSelect: (newId) => {
+                        update("platePackageId", newId);
+                        update(
+                          "menuItemIds",
+                          newId ? filterMenuIdsForPackage(state.menuItemIds, newId) : [],
+                        );
+                      },
+                    })}
               />
             </div>
 
@@ -845,6 +935,15 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
         <TabsContent value="summary" className="mt-6">
           <SectionCard title={t("summary.title")} description={t("summary.desc")}>
             <div id="print-area" className="space-y-6">
+              {isBookingMenu && (
+                <div className="grid gap-4 rounded-lg bg-muted/40 p-4 sm:grid-cols-2">
+                  <SummaryField label={t("summary.customer")} value={state.basics.customerName || "—"} />
+                  <SummaryField label={t("summary.phone")} value={state.basics.phone || "—"} />
+                  <SummaryField label={t("summary.event")} value={state.basics.eventType || "—"} />
+                  <SummaryField label={t("summary.date")} value={formatEventDate(state.basics.eventDate)} highlight />
+                  <SummaryField label={t("summary.guests")} value={String(state.basics.guestCount || 0)} />
+                </div>
+              )}
               {!isMenuSelection && (
               <div className="grid gap-4 rounded-lg bg-muted/40 p-4 sm:grid-cols-2">
                 <SummaryField label={t("summary.customer")} value={state.basics.customerName || "—"} />
@@ -988,6 +1087,21 @@ export const EnquiryForm = ({ variant = "enquiry" }: { variant?: EnquiryFormVari
                   className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
                 >
                   <WhatsAppIcon className="mr-1 h-4 w-4" /> {t("whatsapp.send")}
+                </Button>
+              )}
+              {isBookingMenu && (
+                <Button
+                  variant="outline"
+                  onClick={() => void handleSaveMenu()}
+                  disabled={isSavingMenu}
+                  className="gap-2"
+                >
+                  {isSavingMenu ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  {isSavingMenu ? t("common.saving") : t("menuSelection.save")}
                 </Button>
               )}
               <Button onClick={handleDownloadPdf} disabled={isPdfGenerating} className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95">

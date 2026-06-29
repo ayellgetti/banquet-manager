@@ -1,0 +1,57 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { login as loginRequest, logout as logoutRequest } from "@/lib/authApi";
+import {
+  getStoredUser,
+  isAuthenticated as checkAuthenticated,
+  type StoredUser,
+} from "@/lib/authStorage";
+
+type AuthContextValue = {
+  user: StoredUser | null;
+  isAuthenticated: boolean;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+};
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<StoredUser | null>(() => getStoredUser());
+
+  const login = useCallback(async (username: string, password: string) => {
+    const result = await loginRequest(username, password);
+    setUser(result.user);
+  }, []);
+
+  const logout = useCallback(async () => {
+    await logoutRequest();
+    setUser(null);
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated: Boolean(user) && checkAuthenticated(),
+      login,
+      logout,
+    }),
+    [user, login, logout],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return ctx;
+}

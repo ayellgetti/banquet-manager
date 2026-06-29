@@ -1,14 +1,19 @@
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PaymentCard } from "@/components/payments/PaymentCard";
+import { RecordPaymentModal } from "@/components/payments/RecordPaymentModal";
 import { PaymentsTable } from "@/components/payments/PaymentsTable";
 import { DataLoadingState } from "@/components/common/DataLoadingState";
 import { ListSearchEmpty } from "@/components/common/ListSearchEmpty";
 import { ListSearchInput } from "@/components/common/ListSearchInput";
 import { ListPagination } from "@/components/common/ListPagination";
+import { ListViewGrid } from "@/components/common/ListViewGrid";
+import { ViewModeToggle } from "@/components/common/ViewModeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPaymentAmount, getPaymentStats } from "@/data/banquetData";
 import { usePaymentsQuery } from "@/hooks/useBanquetData";
+import { useListViewMode } from "@/hooks/useListViewMode";
 import { useListPagination } from "@/hooks/useListPagination";
 import { useT } from "@/i18n";
 import { matchesListSearch } from "@/lib/listSearch";
@@ -18,6 +23,8 @@ const PaymentsPage = () => {
   const { t } = useT();
   const { data: payments, isLoading, isError } = usePaymentsQuery();
   const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [view, setView] = useListViewMode("payments", "list");
 
   const filtered = useMemo(() => {
     if (!payments) return [];
@@ -25,8 +32,9 @@ const PaymentsPage = () => {
       matchesListSearch(
         search,
         payment.clientName,
-        payment.email,
         payment.bookingTitle,
+        payment.vendorName,
+        payment.paymentType,
         payment.method,
         payment.status,
         payment.note,
@@ -35,12 +43,15 @@ const PaymentsPage = () => {
   }, [payments, search]);
 
   const pagination = useListPagination(filtered, {
-    pageSize: LIST_PAGE_SIZE.table,
-    resetKey: search,
+    pageSize: view === "grid" ? LIST_PAGE_SIZE.card : LIST_PAGE_SIZE.table,
+    resetKey: `${search}|${view}`,
   });
 
   const stats = useMemo(
-    () => (payments ? getPaymentStats(payments) : { collected: 0, outstanding: 0, overdue: 0 }),
+    () =>
+      payments
+        ? getPaymentStats(payments)
+        : { collected: 0, expenses: 0, outstanding: 0, overdue: 0 },
     [payments],
   );
 
@@ -67,11 +78,13 @@ const PaymentsPage = () => {
           {t("payments.section")}
         </p>
         <div className="flex shrink-0 flex-nowrap items-center gap-2">
+          <ViewModeToggle value={view} onChange={setView} />
           <ListSearchInput value={search} onChange={setSearch} placeholder={t("payments.search")} />
           <Button
             type="button"
             size="sm"
             className="gap-2 bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
+            onClick={() => setModalOpen(true)}
           >
             <Plus className="h-4 w-4" />
             {t("payments.recordPayment")}
@@ -93,20 +106,20 @@ const PaymentsPage = () => {
         <Card className="rounded-xl border-border/70 shadow-soft">
           <CardContent className="p-5">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {t("payments.stat.outstanding")}
+              {t("payments.stat.expenses")}
             </p>
-            <p className="mt-2 font-display text-3xl font-bold tracking-tight">
-              {formatPaymentAmount(stats.outstanding)}
+            <p className="mt-2 font-display text-3xl font-bold tracking-tight text-amber-700 dark:text-amber-400">
+              {formatPaymentAmount(stats.expenses)}
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-border/70 shadow-soft">
           <CardContent className="p-5">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {t("payments.stat.overdue")}
+              {t("payments.stat.net")}
             </p>
-            <p className="mt-2 font-display text-3xl font-bold tracking-tight text-destructive">
-              {formatPaymentAmount(stats.overdue)}
+            <p className="mt-2 font-display text-3xl font-bold tracking-tight">
+              {formatPaymentAmount(stats.collected - stats.expenses)}
             </p>
           </CardContent>
         </Card>
@@ -117,7 +130,15 @@ const PaymentsPage = () => {
           <ListSearchEmpty />
         ) : (
           <div className="space-y-4">
-            <PaymentsTable payments={pagination.items} onEdit={() => {}} />
+            {view === "grid" ? (
+              <ListViewGrid>
+                {pagination.items.map((payment) => (
+                  <PaymentCard key={payment.id} payment={payment} onEdit={() => {}} />
+                ))}
+              </ListViewGrid>
+            ) : (
+              <PaymentsTable payments={pagination.items} onEdit={() => {}} />
+            )}
             <ListPagination
               page={pagination.page}
               totalPages={pagination.totalPages}
@@ -127,6 +148,7 @@ const PaymentsPage = () => {
             />
           </div>
         ))}
+      <RecordPaymentModal open={modalOpen} onOpenChange={setModalOpen} />
     </div>
   );
 };

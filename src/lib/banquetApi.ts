@@ -1,29 +1,44 @@
+import {
+  fetchEnquiriesFromApi,
+  fetchEnquiryViewDetailFromApi,
+  fetchOpenEnquiriesFromApi,
+} from "@/lib/enquiriesApi";
+import { fetchBookingsFromApi, convertEnquiryToBookingViaApi } from "@/lib/bookingsApi";
+import { fetchCustomersFromApi } from "@/lib/customersApi";
+import { fetchAllCalendarEventsFromApi } from "@/lib/eventsApi";
+import {
+  fetchFollowUpEnquiriesFromApi,
+  fetchFollowUpHistoryFromApi,
+  logFollowUpViaApi,
+} from "@/lib/followupsApi";
+import { fetchInventoryFromApi, fetchVendorsFromApi } from "@/lib/catalogApi";
+import {
+  createInventoryOrderViaApi,
+  fetchInventoryOrderByIdFromApi,
+  fetchInventoryOrdersFromApi,
+  type CreateInventoryOrderInput,
+} from "@/lib/inventoryOrdersApi";
+import { fetchPaymentsFromApi, createPaymentViaApi, type CreatePaymentInput } from "@/lib/paymentsApi";
+import {
+  createInvoiceViaApi,
+  fetchInvoiceByIdFromApi,
+  fetchInvoicesFromApi,
+  updateInvoiceViaApi,
+  type CreateInvoiceInput,
+  type InvoiceListRecord,
+  type UpdateInvoiceInput,
+} from "@/lib/invoicesApi";
 import { format } from "date-fns";
 import {
-  convertEnquiryToBooking as storeConvertEnquiry,
-  getBanquetStore,
-  getOpenEnquiries,
-  logFollowUp as storeLogFollowUp,
   type ConvertEnquiryInput,
   type LogFollowUpInput,
 } from "@/data/banquetStore";
 import {
-  getCalendarEvents,
   getCalendarStats,
-  getFollowUpsForEnquiry,
   getUpcomingEvents,
-  inferEventCategory,
-  toBookingRecords,
-  toCustomerRecords,
-  toEnquiryRecords,
-  toInventoryRecords,
-  toFollowUpEnquiryRecords,
-  toPaymentRecords,
-  toVendorRecords,
   type BanquetDummyData,
   type BookingRecord,
   type CalendarEvent,
-  type CustomerRecord,
   type CustomerListRecord,
   type EnquiryRecord,
   type FollowUpEnquiryRecord,
@@ -32,8 +47,6 @@ import {
   type PaymentRecord,
   type VendorRecord,
 } from "@/data/banquetData";
-
-const API_DELAY_MS = 350;
 
 export type ApiResponse<T> = {
   success: true;
@@ -50,51 +63,76 @@ export type CalendarOverview = {
   };
 };
 
-function delay(ms = API_DELAY_MS) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+export const banquetQueryKeys = {
+  all: ["banquet"] as const,
+  customers: () => [...banquetQueryKeys.all, "customers"] as const,
+  enquiries: () => [...banquetQueryKeys.all, "enquiries"] as const,
+  enquiryDetail: (enquiryId: string) => [...banquetQueryKeys.all, "enquiries", "detail", enquiryId] as const,
+  openEnquiries: () => [...banquetQueryKeys.all, "enquiries", "open"] as const,
+  followUpEnquiries: () => [...banquetQueryKeys.all, "follow-up", "enquiries"] as const,
+  followUpHistory: (enquiryId: string) => [...banquetQueryKeys.all, "follow-up", "history", enquiryId] as const,
+  bookings: () => [...banquetQueryKeys.all, "bookings"] as const,
+  payments: () => [...banquetQueryKeys.all, "payments"] as const,
+  invoices: () => [...banquetQueryKeys.all, "invoices"] as const,
+  invoiceDetail: (invoiceId: string) => [...banquetQueryKeys.all, "invoices", "detail", invoiceId] as const,
+  vendors: () => [...banquetQueryKeys.all, "vendors"] as const,
+  inventory: () => [...banquetQueryKeys.all, "inventory"] as const,
+  inventoryOrders: () => [...banquetQueryKeys.all, "inventory-orders"] as const,
+  inventoryOrderDetail: (orderId: string) =>
+    [...banquetQueryKeys.all, "inventory-orders", "detail", orderId] as const,
+  calendarEvents: () => [...banquetQueryKeys.all, "calendar", "events"] as const,
+  calendarOverview: (monthKey: string) => [...banquetQueryKeys.all, "calendar", "overview", monthKey] as const,
+};
 
-async function asApiResponse<T>(data: T): Promise<ApiResponse<T>> {
-  await delay();
-  return { success: true, data };
-}
-
-/** Simulates GET /api/banquet — full dummy JSON payload. */
+/** Legacy aggregate payload — returns empty structure; use entity API hooks instead. */
 export async function fetchBanquetData(): Promise<ApiResponse<BanquetDummyData>> {
-  return asApiResponse(getBanquetStore());
+  return {
+    success: true,
+    data: {
+      customers: [],
+      enquiries: [],
+      bookings: [],
+      followUps: [],
+      payments: [],
+      vendors: [],
+      inventory: [],
+    },
+  };
 }
 
-/** Simulates GET /api/customers */
+/** GET /api/customers */
 export async function fetchCustomers(): Promise<ApiResponse<CustomerListRecord[]>> {
-  return asApiResponse(toCustomerRecords());
+  return { success: true, data: await fetchCustomersFromApi() };
 }
 
-/** Simulates GET /api/enquiries — pipeline rows with customer joined. */
+/** GET /enquiries — pipeline rows with customer joined. */
 export async function fetchEnquiries(): Promise<ApiResponse<EnquiryRecord[]>> {
-  return asApiResponse(toEnquiryRecords());
+  return { success: true, data: await fetchEnquiriesFromApi() };
 }
 
 /** Open enquiries available for conversion to booking. */
 export async function fetchOpenEnquiries(): Promise<ApiResponse<EnquiryRecord[]>> {
-  const openIds = new Set(getOpenEnquiries().map((e) => e.id));
-  const records = toEnquiryRecords().filter((e) => openIds.has(e.id));
-  return asApiResponse(records);
+  return { success: true, data: await fetchOpenEnquiriesFromApi() };
 }
 
-/** Simulates GET /api/bookings — booking log rows with customer joined. */
+/** GET /enquiries/:id — full enquiry detail for read-only view. */
+export async function fetchEnquiryViewDetail(enquiryId: string) {
+  return { success: true as const, data: await fetchEnquiryViewDetailFromApi(enquiryId) };
+}
+
+/** GET /api/bookings */
 export async function fetchBookings(): Promise<ApiResponse<BookingRecord[]>> {
-  return asApiResponse(toBookingRecords());
+  return { success: true, data: await fetchBookingsFromApi() };
 }
 
-/** Simulates GET /api/calendar/events */
+/** GET /api/calendar/events */
 export async function fetchCalendarEvents(): Promise<ApiResponse<CalendarEvent[]>> {
-  return asApiResponse(getCalendarEvents());
+  return { success: true, data: await fetchAllCalendarEventsFromApi() };
 }
 
-/** Simulates GET /api/calendar/overview?month=YYYY-MM */
+/** GET /api/calendar/overview?month=YYYY-MM */
 export async function fetchCalendarOverview(month = new Date()): Promise<ApiResponse<CalendarOverview>> {
-  await delay();
-  const events = getCalendarEvents();
+  const events = await fetchAllCalendarEventsFromApi();
   return {
     success: true,
     data: {
@@ -105,70 +143,87 @@ export async function fetchCalendarOverview(month = new Date()): Promise<ApiResp
   };
 }
 
-export const banquetQueryKeys = {
-  all: ["banquet"] as const,
-  customers: () => [...banquetQueryKeys.all, "customers"] as const,
-  enquiries: () => [...banquetQueryKeys.all, "enquiries"] as const,
-  openEnquiries: () => [...banquetQueryKeys.all, "enquiries", "open"] as const,
-  followUpEnquiries: () => [...banquetQueryKeys.all, "follow-up", "enquiries"] as const,
-  followUpHistory: (enquiryId: string) => [...banquetQueryKeys.all, "follow-up", "history", enquiryId] as const,
-  bookings: () => [...banquetQueryKeys.all, "bookings"] as const,
-  payments: () => [...banquetQueryKeys.all, "payments"] as const,
-  vendors: () => [...banquetQueryKeys.all, "vendors"] as const,
-  inventory: () => [...banquetQueryKeys.all, "inventory"] as const,
-  calendarEvents: () => [...banquetQueryKeys.all, "calendar", "events"] as const,
-  calendarOverview: (monthKey: string) => [...banquetQueryKeys.all, "calendar", "overview", monthKey] as const,
-};
-
 export function getMonthKey(month: Date) {
   return format(month, "yyyy-MM");
 }
 
-/** Simulates GET /api/follow-up/enquiries */
+/** GET /api/follow-up/enquiries */
 export async function fetchFollowUpEnquiries(): Promise<ApiResponse<FollowUpEnquiryRecord[]>> {
-  return asApiResponse(toFollowUpEnquiryRecords());
+  return { success: true, data: await fetchFollowUpEnquiriesFromApi() };
 }
 
-/** Simulates GET /api/follow-up/history?enquiryId= */
+/** GET /api/follow-up/history?enquiryId= */
 export async function fetchFollowUpHistory(enquiryId: string): Promise<ApiResponse<FollowUpLogEntry[]>> {
-  return asApiResponse(getFollowUpsForEnquiry(enquiryId));
+  return { success: true, data: await fetchFollowUpHistoryFromApi(enquiryId) };
 }
 
-/** Simulates POST /api/follow-up/log */
+/** POST /api/follow-up/log */
 export async function postLogFollowUp(input: LogFollowUpInput): Promise<ApiResponse<FollowUpLogEntry>> {
-  await delay();
-  return { success: true, data: storeLogFollowUp(input) };
+  return { success: true, data: await logFollowUpViaApi(input) };
 }
 
-/** Simulates GET /api/payments */
+/** GET /api/payments */
 export async function fetchPayments(): Promise<ApiResponse<PaymentRecord[]>> {
-  return asApiResponse(toPaymentRecords());
+  return { success: true, data: await fetchPaymentsFromApi() };
 }
 
-/** Simulates GET /api/vendors */
+/** POST /payments — record income payment */
+export async function createPayment(input: CreatePaymentInput): Promise<ApiResponse<PaymentRecord>> {
+  return { success: true, data: await createPaymentViaApi(input) };
+}
+
+/** GET /invoices */
+export async function fetchInvoices(): Promise<ApiResponse<InvoiceListRecord[]>> {
+  return { success: true, data: await fetchInvoicesFromApi() };
+}
+
+/** GET /invoices/:id */
+export async function fetchInvoiceDetail(invoiceId: string) {
+  return { success: true as const, data: await fetchInvoiceByIdFromApi(invoiceId) };
+}
+
+/** POST /invoices */
+export async function createInvoice(input: CreateInvoiceInput) {
+  return { success: true as const, data: await createInvoiceViaApi(input) };
+}
+
+/** PATCH /invoices/:id */
+export async function updateInvoice(invoiceId: string, input: UpdateInvoiceInput) {
+  return { success: true as const, data: await updateInvoiceViaApi(invoiceId, input) };
+}
+
+/** GET /api/vendors */
 export async function fetchVendors(): Promise<ApiResponse<VendorRecord[]>> {
-  return asApiResponse(toVendorRecords());
+  return { success: true, data: await fetchVendorsFromApi() };
 }
 
-/** Simulates GET /api/inventory */
+/** GET /api/inventory */
 export async function fetchInventory(): Promise<ApiResponse<InventoryRecord[]>> {
-  return asApiResponse(toInventoryRecords());
+  return { success: true, data: await fetchInventoryFromApi() };
+}
+
+/** GET /inventory-orders */
+export async function fetchInventoryOrders() {
+  return { success: true as const, data: await fetchInventoryOrdersFromApi() };
+}
+
+/** GET /inventory-orders/:id */
+export async function fetchInventoryOrder(orderId: string) {
+  return { success: true as const, data: await fetchInventoryOrderByIdFromApi(orderId) };
+}
+
+/** POST /inventory-orders */
+export async function createInventoryOrder(input: CreateInventoryOrderInput) {
+  return { success: true as const, data: await createInventoryOrderViaApi(input) };
 }
 
 export type ConvertEnquiryPayload = Omit<ConvertEnquiryInput, "category"> & {
   eventType: string;
 };
 
-/** Simulates POST /api/bookings/convert — enquiry → booking, status → booked. */
+/** POST /api/bookings/convert — enquiry → booking */
 export async function convertEnquiryToBooking(
   payload: ConvertEnquiryPayload,
 ): Promise<ApiResponse<BookingRecord>> {
-  await delay();
-  const booking = storeConvertEnquiry({
-    ...payload,
-    category: inferEventCategory(payload.eventType),
-  });
-  const record = toBookingRecords().find((b) => b.id === booking.id);
-  if (!record) throw new Error("Booking not found after convert");
-  return { success: true, data: record };
+  return { success: true, data: await convertEnquiryToBookingViaApi(payload) };
 }

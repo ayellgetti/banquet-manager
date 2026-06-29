@@ -13,7 +13,7 @@ export {
   getCustomerFromBooking,
 } from "./banquetData";
 
-import { toEnquiryRecords } from "./banquetData";
+import type { EnquiryRecord } from "./banquetData";
 
-/** Pipeline table rows with customer name & email joined from dummy JSON. */
-export const ENQUIRY_RECORDS = toEnquiryRecords();
+/** Empty fallback — enquiry lists load from the API. */
+export const ENQUIRY_RECORDS: EnquiryRecord[] = [];

@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useT } from "@/i18n";
+import { formatFollowUpDateTime } from "@/lib/followUpDateTime";
 import { matchesListSearch } from "@/lib/listSearch";
 
 const statusClass: Record<FollowUpEnquiryRecord["status"], string> = {
@@ -101,7 +102,7 @@ export const FollowUpEnquiryPickerList = ({ enquiries, onSelect }: Props) => {
                     <p className={cn("text-xs", urgencyClass[urgency])}>
                       {t("followUp.nextOn").replace(
                         "{date}",
-                        format(parseISO(enquiry.nextFollowUpDate), "MMM d, yyyy"),
+                        formatFollowUpDateTime(enquiry.nextFollowUpDate),
                       )}
                     </p>
                   )}

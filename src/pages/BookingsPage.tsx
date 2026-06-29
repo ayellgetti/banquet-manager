@@ -2,13 +2,16 @@ import { Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BookingsList } from "@/components/bookings/BookingsList";
+import { BookingsTable } from "@/components/bookings/BookingsTable";
 import { QuickBookingModal } from "@/components/bookings/QuickBookingModal";
 import { DataLoadingState } from "@/components/common/DataLoadingState";
 import { ListSearchEmpty } from "@/components/common/ListSearchEmpty";
 import { ListSearchInput } from "@/components/common/ListSearchInput";
 import { ListPagination } from "@/components/common/ListPagination";
+import { ViewModeToggle } from "@/components/common/ViewModeToggle";
 import { Button } from "@/components/ui/button";
 import { useBookingsQuery } from "@/hooks/useBanquetData";
+import { useListViewMode } from "@/hooks/useListViewMode";
 import { useListPagination } from "@/hooks/useListPagination";
 import { useT } from "@/i18n";
 import { matchesListSearch } from "@/lib/listSearch";
@@ -20,10 +23,12 @@ const BookingsPage = () => {
   const [searchParams] = useSearchParams();
   const { data: bookings, isLoading, isError } = useBookingsQuery();
   const [search, setSearch] = useState("");
+  const [view, setView] = useListViewMode("bookings", "grid");
 
   const fromEnquiry = searchParams.get("fromEnquiry");
   const prefillDate = searchParams.get("date");
   const customerId = searchParams.get("customerId");
+  const focusBooking = searchParams.get("focusBooking");
 
   const [bookingOpen, setBookingOpen] = useState(false);
 
@@ -45,8 +50,8 @@ const BookingsPage = () => {
   }, [bookings, search]);
 
   const pagination = useListPagination(filtered, {
-    pageSize: LIST_PAGE_SIZE.booking,
-    resetKey: search,
+    pageSize: view === "grid" ? LIST_PAGE_SIZE.booking : LIST_PAGE_SIZE.table,
+    resetKey: `${search}|${view}`,
   });
 
   useEffect(() => {
@@ -80,6 +85,7 @@ const BookingsPage = () => {
             )}
           </div>
           <div className="flex shrink-0 flex-nowrap items-center gap-2">
+            <ViewModeToggle value={view} onChange={setView} />
             <ListSearchInput value={search} onChange={setSearch} placeholder={t("bookings.search")} />
             <Button
               type="button"
@@ -104,7 +110,11 @@ const BookingsPage = () => {
             <ListSearchEmpty />
           ) : (
             <div className="space-y-4">
-              <BookingsList bookings={pagination.items} />
+              {view === "grid" ? (
+                <BookingsList bookings={pagination.items} initialExpandedId={focusBooking} />
+              ) : (
+                <BookingsTable bookings={pagination.items} />
+              )}
               <ListPagination
                 page={pagination.page}
                 totalPages={pagination.totalPages}

@@ -1,6 +1,11 @@
 import { format, parseISO } from "date-fns";
-import { ArrowUpRight, Pencil } from "lucide-react";
-import { formatPaymentAmount, type PaymentRecord, type PaymentStatus } from "@/data/banquetData";
+import { ArrowDownLeft, ArrowUpRight, Pencil } from "lucide-react";
+import {
+  formatPaymentAmount,
+  type PaymentRecord,
+  type PaymentStatus,
+  type PaymentType,
+} from "@/data/banquetData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,6 +21,11 @@ const statusClass: Record<PaymentStatus, string> = {
   paid: "text-foreground",
   due: "text-foreground",
   overdue: "border-destructive/25 bg-destructive/10 font-semibold text-destructive",
+};
+
+const typeBadgeClass: Record<PaymentType, string> = {
+  income: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  expense: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400",
 };
 
 export const PaymentsTable = ({ payments, onEdit }: Props) => {
@@ -35,10 +45,13 @@ export const PaymentsTable = ({ payments, onEdit }: Props) => {
         <TableHeader>
           <TableRow className="border-border/60 bg-muted/40 hover:bg-muted/40">
             <TableHead className="h-11 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {t("payments.col.client")}
+              {t("payments.col.type")}
             </TableHead>
             <TableHead className="h-11 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {t("payments.col.booking")}
+              {t("payments.col.party")}
+            </TableHead>
+            <TableHead className="h-11 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("payments.col.reference")}
             </TableHead>
             <TableHead className="h-11 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               {t("payments.col.date")}
@@ -58,12 +71,22 @@ export const PaymentsTable = ({ payments, onEdit }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {payments.map((payment) => (
+          {payments.map((payment) => {
+            const isExpense = payment.paymentType === "expense";
+
+            return (
             <TableRow key={payment.id} className="border-border/50">
+              <TableCell className="whitespace-nowrap py-4">
+                <Badge variant="outline" className={cn("capitalize", typeBadgeClass[payment.paymentType])}>
+                  {t(`payments.type.${payment.paymentType}`)}
+                </Badge>
+              </TableCell>
               <TableCell className="min-w-[14rem] py-4">
                 <div className="space-y-1">
                   <p className="font-medium text-foreground">{payment.clientName}</p>
-                  <p className="text-sm text-muted-foreground">{payment.email}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {isExpense ? t("payments.party.vendor") : t("payments.party.client")}
+                  </p>
                 </div>
               </TableCell>
               <TableCell className="min-w-[12rem] py-4">
@@ -74,7 +97,11 @@ export const PaymentsTable = ({ payments, onEdit }: Props) => {
                       <p className="mt-1 line-clamp-1 text-xs italic text-muted-foreground">{payment.note}</p>
                     )}
                   </div>
-                  <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
+                  {isExpense ? (
+                    <ArrowDownLeft className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600/70" />
+                  ) : (
+                    <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600/70" />
+                  )}
                 </div>
               </TableCell>
               <TableCell className="whitespace-nowrap text-sm text-foreground">
@@ -84,7 +111,10 @@ export const PaymentsTable = ({ payments, onEdit }: Props) => {
                 {t(`payments.method.${payment.method}`)}
               </TableCell>
               <TableCell className="whitespace-nowrap text-sm font-medium text-foreground">
-                {formatPaymentAmount(payment.amount)}
+                <span className={cn(isExpense && "text-amber-700 dark:text-amber-400")}>
+                  {isExpense ? "−" : "+"}
+                  {formatPaymentAmount(payment.amount)}
+                </span>
               </TableCell>
               <TableCell>
                 {payment.status === "overdue" ? (
@@ -110,7 +140,8 @@ export const PaymentsTable = ({ payments, onEdit }: Props) => {
                 </Button>
               </TableCell>
             </TableRow>
-          ))}
+            );
+          })}
         </TableBody>
       </Table>
     </div>

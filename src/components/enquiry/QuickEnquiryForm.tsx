@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { DecorationMultiSelect } from "@/components/enquiry/DecorationMultiSelect";
 import { Button } from "@/components/ui/button";
@@ -15,14 +16,19 @@ import {
   VENUE_OPTIONS,
   getDefaultVenueId,
 } from "@/data/enquiryOptions";
-import { submitEnquiryLead, type EnquiryLeadPayload } from "@/lib/enquiryApi";
+import { type EnquiryLeadPayload } from "@/lib/enquiryApi";
+import { fetchEnquiryFormValues, updateEnquiryFromQuickForm } from "@/lib/enquiriesApi";
+import { banquetQueryKeys } from "@/lib/banquetApi";
+import { submitQuickEnquiryDualWrite } from "@/lib/leadSubmitService";
 import {
   getMinEventDateISO,
   sanitizeEventDate,
   validateEventDate,
 } from "@/lib/eventDateValidation";
+import type { EnquiryRecord } from "@/data/banquetData";
 import { useT } from "@/i18n";
 import { toast } from "sonner";
+import type { EnquiryEditContext } from "@/lib/enquiryEditMapper";
 
 export type QuickEnquiryFormValues = {
   customerName: string;
@@ -61,22 +67,62 @@ const Req = () => (
 const NAME_RE = /^[\p{L}\p{M}\s.\-']+$/u;
 
 type Props = {
+  enquiry?: EnquiryRecord | null;
   defaultDate?: string;
   onSubmitted?: () => void;
   onCancel?: () => void;
 };
 
-export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) => {
+export const QuickEnquiryForm = ({ enquiry, defaultDate, onSubmitted, onCancel }: Props) => {
   const { t } = useT();
+  const queryClient = useQueryClient();
+  const isEdit = Boolean(enquiry);
   const [form, setForm] = useState<QuickEnquiryFormValues>(() => emptyForm(defaultDate));
+  const [editContext, setEditContext] = useState<EnquiryEditContext | null>(null);
+  const [isLoadingEdit, setIsLoadingEdit] = useState(false);
   const [touched, setTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (defaultDate) {
+    if (!enquiry) {
+      setForm(emptyForm(defaultDate));
+      setEditContext(null);
+      setTouched(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      setIsLoadingEdit(true);
+      try {
+        const { values, context } = await fetchEnquiryFormValues(enquiry.id);
+        if (!cancelled) {
+          setForm(values);
+          setEditContext(context);
+          setTouched(false);
+        }
+      } catch {
+        if (!cancelled) {
+          toast.error(t("enquiries.error"));
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingEdit(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [enquiry, defaultDate, t]);
+
+  useEffect(() => {
+    if (!enquiry && defaultDate) {
       setForm((current) => ({ ...current, eventDate: sanitizeEventDate(defaultDate) }));
     }
-  }, [defaultDate]);
+  }, [defaultDate, enquiry]);
 
   const minEventDate = getMinEventDateISO();
 
@@ -106,9 +152,7 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
     eventDate: validateEventDate(form.eventDate, t),
     timeSlot: !form.timeSlotId ? t("validate.timeSlotRequired") : null,
     guests: !form.guestCount || form.guestCount < 1 ? t("validate.guestsRequired") : null,
-    venue: !form.venueId ? t("validate.venueRequired") : null,
     source: !form.source.trim() ? t("validate.sourceRequired") : null,
-    menu: !form.menuPackageId ? t("quickEnquiry.validate.menu") : null,
   };
 
   const show = (key: keyof typeof errors) => touched && errors[key];
@@ -141,7 +185,6 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
         `Source: ${form.source}`,
         form.approxBudget ? `Approx budget: ${form.approxBudget}` : "",
         decorations.length ? `Decoration: ${decorations.join(", ")}` : "",
-        "Module: Quick Enquiry Modal",
       ]
         .filter(Boolean)
         .join("\n"),
@@ -149,17 +192,54 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
 
     setIsSubmitting(true);
     try {
-      await submitEnquiryLead(payload);
-      toast.success(t("enquiryV2.submitSuccess"));
-      setForm(emptyForm(defaultDate));
-      setTouched(false);
-      onSubmitted?.();
+      if (isEdit && enquiry && editContext) {
+        await updateEnquiryFromQuickForm(editContext, form);
+        await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.all });
+        toast.success(t("enquiryV2.saveSuccess"));
+        onSubmitted?.();
+        return;
+      }
+
+      const result = await submitQuickEnquiryDualWrite(
+        {
+          customerName: form.customerName.trim(),
+          phone: form.phone.trim(),
+          eventType: form.eventType,
+          eventDate: form.eventDate,
+          timeSlotId: form.timeSlotId,
+          timeSlotLabel: timeSlot?.slots?.[0]?.label ?? timeSlot?.name ?? "",
+          guestCount: form.guestCount,
+          venueName: venue?.name ?? "",
+          source: form.source,
+          approxBudget: form.approxBudget,
+          menuPackageLabel: menu ? `${menu.name} (₹${menu.basePrice}/plate)` : "",
+          decorationNames: decorations,
+        },
+        payload,
+      );
+
+      if (result.sheetOk || result.crmOk) {
+        await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.enquiries() });
+        await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.openEnquiries() });
+        setForm(emptyForm(defaultDate));
+        setTouched(false);
+        onSubmitted?.();
+      }
     } catch {
       toast.error(t("toast.leadSubmitFailed"));
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoadingEdit) {
+    return (
+      <div className="flex min-h-[12rem] items-center justify-center text-sm text-muted-foreground">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        {t("enquiries.loading")}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -283,10 +363,9 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
           <div className="space-y-2">
             <Label>
               {t("venue.title")}
-              <Req />
             </Label>
             <Select value={form.venueId} onValueChange={(v) => update("venueId", v)}>
-              <SelectTrigger aria-invalid={!!show("venue")} className={show("venue") ? "border-destructive" : ""}>
+              <SelectTrigger>
                 <SelectValue placeholder={t("enquiryV2.venue.ph")} />
               </SelectTrigger>
               <SelectContent>
@@ -297,7 +376,6 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
                 ))}
               </SelectContent>
             </Select>
-            {show("venue") && <p className="text-xs text-destructive">{errors.venue}</p>}
           </div>
 
           <div className="space-y-2">
@@ -339,12 +417,9 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>
-              {t("quickEnquiry.menu")}
-              <Req />
-            </Label>
+            <Label>{t("quickEnquiry.menu")}</Label>
             <Select value={form.menuPackageId} onValueChange={(v) => update("menuPackageId", v)}>
-              <SelectTrigger aria-invalid={!!show("menu")} className={show("menu") ? "border-destructive" : ""}>
+              <SelectTrigger>
                 <SelectValue placeholder={t("quickEnquiry.menu.ph")} />
               </SelectTrigger>
               <SelectContent>
@@ -355,7 +430,6 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
                 ))}
               </SelectContent>
             </Select>
-            {show("menu") && <p className="text-xs text-destructive">{errors.menu}</p>}
           </div>
 
           <div className="space-y-2">
@@ -385,7 +459,13 @@ export const QuickEnquiryForm = ({ defaultDate, onSubmitted, onCancel }: Props) 
           onClick={() => void handleSubmit()}
         >
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isSubmitting ? t("enquiryV2.submitting") : t("enquiryV2.submit")}
+          {isSubmitting
+            ? isEdit
+              ? t("enquiryV2.saving")
+              : t("enquiryV2.submitting")
+            : isEdit
+              ? t("enquiryV2.save")
+              : t("enquiryV2.submit")}
         </Button>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { getAdminNavItem } from "@/config/adminNav";
 import { AdminNavLinks } from "@/components/layout/AdminNavLinks";
+import { SidebarProfileMenu } from "@/components/layout/SidebarProfileMenu";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,7 +36,8 @@ export const AdminLayout = () => {
         <AdminNavLinks onNavigate={() => setMobileOpen(false)} />
       </div>
 
-      <div className="mt-4 shrink-0 border-t border-white/10 pt-4">
+      <div className="mt-4 shrink-0 space-y-3 border-t border-white/10 pt-4">
+        <SidebarProfileMenu onNavigate={() => setMobileOpen(false)} />
         <Select value={lang} onValueChange={(v) => setLang(v as typeof lang)}>
           <SelectTrigger
             aria-label={t("lang.label")}

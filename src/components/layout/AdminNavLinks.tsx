@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import { ADMIN_NAV_ITEMS, EXTRA_NAV_ITEMS, isAdminNavActive, isExtraNavPath } from "@/config/adminNav";
+import { ADMIN_NAV_ITEMS, EXTRA_NAV_ITEMS, isAdminNavActive, isExtraNavPath, isGenerateInvoicePath } from "@/config/adminNav";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -44,7 +44,9 @@ export const AdminNavLinks = ({ onNavigate, className }: Props) => {
           key={item.id}
           to={item.path}
           onClick={onNavigate}
-          className={({ isActive }) => linkClass(isActive)}
+          className={({ isActive }) =>
+            linkClass(item.id === "generate-invoice" ? isActive || isGenerateInvoicePath(pathname) : isActive)
+          }
         >
           <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span className="truncate">{t(item.titleKey)}</span>

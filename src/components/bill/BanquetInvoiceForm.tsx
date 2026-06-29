@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,9 +17,15 @@ import { SectionCard } from "@/components/enquiry/SectionCard";
 import { InvoicePreview } from "@/components/bill/InvoicePreview";
 import { createInvoiceLineItem, initialInvoice, saveInvoiceBusinessProfile, type InvoiceState } from "@/types/invoice";
 import { calcInvoiceTotals } from "@/lib/invoiceTotals";
+import { mapApiInvoiceToState, mapInvoiceStateToCreateInput } from "@/lib/invoicesApi";
+import {
+  useCreateInvoiceMutation,
+  useInvoiceDetailQuery,
+  useUpdateInvoiceMutation,
+} from "@/hooks/useBanquetData";
 import { formatINR } from "@/lib/enquiryTotals";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
-import { ArrowLeft, ArrowRight, Plus, Printer, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Plus, Printer, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
 
@@ -29,12 +36,33 @@ const Req = () => <span aria-hidden="true" className="ml-0.5 text-destructive">*
 
 export const BanquetInvoiceForm = () => {
   const { t } = useT();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const invoiceId = searchParams.get("id") ?? undefined;
+  const { data: invoiceDetail, isLoading: isLoadingInvoice } = useInvoiceDetailQuery(invoiceId);
+  const createMutation = useCreateInvoiceMutation();
+  const updateMutation = useUpdateInvoiceMutation();
   const [tab, setTab] = useState<TabKey>("invoice");
-  const [state, setState] = useState<InvoiceState>(initialInvoice);
+  const [state, setState] = useState<InvoiceState>(() => initialInvoice());
+  const [savedInvoiceId, setSavedInvoiceId] = useState<string | undefined>(invoiceId);
   const [touched, setTouched] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const totals = calcInvoiceTotals(state);
   const idx = TABS.indexOf(tab);
+  const isPersisting = createMutation.isPending || updateMutation.isPending || isSaving;
+
+  useEffect(() => {
+    if (!invoiceId) {
+      setState(initialInvoice());
+      setSavedInvoiceId(undefined);
+      return;
+    }
+
+    if (invoiceDetail) {
+      setState(mapApiInvoiceToState(invoiceDetail));
+      setSavedInvoiceId(invoiceDetail.id);
+    }
+  }, [invoiceId, invoiceDetail]);
 
   const update = <K extends keyof InvoiceState>(key: K, value: InvoiceState[K]) =>
     setState((s) => {
@@ -97,8 +125,43 @@ export const BanquetInvoiceForm = () => {
     setTab(next);
   };
 
+  const handleSaveInvoice = async (): Promise<string | undefined> => {
+    if (!validate()) return undefined;
+
+    setIsSaving(true);
+    try {
+      const input = mapInvoiceStateToCreateInput(state);
+      const activeId = savedInvoiceId ?? invoiceId;
+
+      if (activeId) {
+        const updated = await updateMutation.mutateAsync({ id: activeId, input });
+        setSavedInvoiceId(updated.id);
+        if (!invoiceId) {
+          setSearchParams({ id: updated.id });
+        }
+        toast.success(t("invoice.save.success"));
+        return updated.id;
+      }
+
+      const created = await createMutation.mutateAsync(input);
+      setSavedInvoiceId(created.id);
+      setSearchParams({ id: created.id });
+      toast.success(t("invoice.save.success"));
+      return created.id;
+    } catch {
+      toast.error(t("invoice.save.failed"));
+      return undefined;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleDownloadPdf = async () => {
     if (!validate()) return;
+
+    const savedId = await handleSaveInvoice();
+    if (!savedId) return;
+
     const element = document.getElementById("invoice-print-area");
     if (!element) return;
 
@@ -122,6 +185,10 @@ export const BanquetInvoiceForm = () => {
   };
 
   const showCustomerError = touched && !state.customerName.trim();
+
+  if (invoiceId && isLoadingInvoice) {
+    return <div className="py-16 text-center text-sm text-muted-foreground">{t("invoices.loading")}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -498,10 +565,19 @@ export const BanquetInvoiceForm = () => {
           <Button variant="outline" onClick={() => tryChangeTab(TABS[idx - 1])} disabled={idx === 0}>
             <ArrowLeft className="mr-1 h-4 w-4" /> {t("common.back")}
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => void handleSaveInvoice()}
+            disabled={isPersisting}
+            className="gap-2"
+          >
+            {isPersisting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {isPersisting ? t("invoice.save.submitting") : t("invoice.save.submit")}
+          </Button>
           {tab === "preview" ? (
             <Button
               onClick={() => void handleDownloadPdf()}
-              disabled={isPdfGenerating}
+              disabled={isPdfGenerating || isPersisting}
               className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
             >
               <Printer className="mr-1 h-4 w-4" />

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookingCard } from "@/components/bookings/BookingCard";
 import { getBookingDisplayStatus, type BookingRecord } from "@/data/banquetData";
 import { useT } from "@/i18n";
@@ -6,9 +6,10 @@ import { useT } from "@/i18n";
 type Props = {
   bookings: BookingRecord[];
   onEdit?: (booking: BookingRecord) => void;
+  initialExpandedId?: string | null;
 };
 
-export const BookingsList = ({ bookings, onEdit }: Props) => {
+export const BookingsList = ({ bookings, onEdit, initialExpandedId }: Props) => {
   const { t } = useT();
 
   const sorted = useMemo(
@@ -17,11 +18,20 @@ export const BookingsList = ({ bookings, onEdit }: Props) => {
   );
 
   const defaultExpandedId = useMemo(() => {
+    if (initialExpandedId && sorted.some((b) => b.id === initialExpandedId)) {
+      return initialExpandedId;
+    }
     const upcoming = sorted.find((b) => getBookingDisplayStatus(b) === "confirmed");
     return upcoming?.id ?? sorted[0]?.id ?? null;
-  }, [sorted]);
+  }, [sorted, initialExpandedId]);
 
   const [expandedId, setExpandedId] = useState<string | null>(defaultExpandedId);
+
+  useEffect(() => {
+    if (initialExpandedId && sorted.some((b) => b.id === initialExpandedId)) {
+      setExpandedId(initialExpandedId);
+    }
+  }, [initialExpandedId, sorted]);
 
   if (sorted.length === 0) {
     return (

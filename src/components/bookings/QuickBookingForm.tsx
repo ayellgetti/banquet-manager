@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { type EnquiryRecord } from "@/data/banquetData";
 import { EVENT_TYPES, PACKAGES, PLATE_PACKAGES, VENUE_OPTIONS, getDefaultVenueId } from "@/data/enquiryOptions";
 import { useConvertEnquiryMutation } from "@/hooks/useBanquetData";
+import { buildBookingTitle } from "@/lib/mappers/enquiryMapper";
+import { matchMenuPackageId } from "@/lib/enquiryEditMapper";
 import {
   getMinEventDateISO,
   sanitizeEventDate,
@@ -63,7 +65,6 @@ const Req = () => (
 type Props = {
   enquiry: EnquiryRecord;
   defaultDate?: string;
-  defaultTitle?: string;
   onSubmitted?: () => void;
   onCancel?: () => void;
 };
@@ -71,7 +72,6 @@ type Props = {
 export const QuickBookingForm = ({
   enquiry,
   defaultDate,
-  defaultTitle,
   onSubmitted,
   onCancel,
 }: Props) => {
@@ -80,23 +80,24 @@ export const QuickBookingForm = ({
   const [form, setForm] = useState<QuickBookingFormValues>(() => ({
     ...emptyForm(defaultDate ?? enquiry.preferredDate),
     eventType: enquiry.eventType,
-    title: defaultTitle ?? "",
-    guestCount: enquiry.guests,
+    title: buildBookingTitle(enquiry),
+    guestCount: enquiry.guests > 0 ? enquiry.guests : 100,
+    menuPackageId: matchMenuPackageId(enquiry.menuPackage ?? null),
   }));
   const [touched, setTouched] = useState(false);
   const minEventDate = getMinEventDateISO();
 
   useEffect(() => {
-    if (defaultDate) {
-      setForm((current) => ({ ...current, eventDate: sanitizeEventDate(defaultDate) }));
-    }
-  }, [defaultDate]);
-
-  useEffect(() => {
-    if (defaultTitle) {
-      setForm((current) => ({ ...current, title: defaultTitle }));
-    }
-  }, [defaultTitle]);
+    setForm((current) => ({
+      ...current,
+      title: buildBookingTitle(enquiry),
+      eventType: enquiry.eventType,
+      guestCount: enquiry.guests > 0 ? enquiry.guests : current.guestCount,
+      eventDate: sanitizeEventDate(defaultDate ?? enquiry.preferredDate),
+      menuPackageId:
+        current.menuPackageId || matchMenuPackageId(enquiry.menuPackage ?? null),
+    }));
+  }, [enquiry.id, enquiry.clientName, enquiry.eventType, enquiry.guests, enquiry.phone, enquiry.preferredDate, enquiry.menuPackage, defaultDate]);
 
   const update = <K extends keyof QuickBookingFormValues>(key: K, value: QuickBookingFormValues[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -108,8 +109,6 @@ export const QuickBookingForm = ({
     eventDate: validateEventDate(form.eventDate, t),
     timeSlot: !form.timeSlotId ? t("validate.timeSlotRequired") : null,
     guests: !form.guestCount || form.guestCount < 1 ? t("validate.guestsRequired") : null,
-    venue: !form.venueId ? t("validate.venueRequired") : null,
-    menu: !form.menuPackageId ? t("quickEnquiry.validate.menu") : null,
   };
 
   const show = (key: keyof typeof errors) => touched && errors[key];
@@ -136,11 +135,12 @@ export const QuickBookingForm = ({
         date: form.eventDate,
         time,
         endTime,
-        venue: venue?.name ?? "",
+        venue: venue?.name || undefined,
         status: form.status,
         guests: form.guestCount,
         revenue: enquiry.budget,
-        menuPackage: menu?.name,
+        menuPackage: menu ? `${menu.name} (₹${menu.basePrice}/plate)` : undefined,
+        platePackageId: form.menuPackageId || undefined,
       });
       toast.success(t("bookings.submitSuccess"));
       onSubmitted?.();
@@ -244,12 +244,9 @@ export const QuickBookingForm = ({
         </div>
 
         <div className="space-y-2">
-          <Label>
-            {t("venue.title")}
-            <Req />
-          </Label>
+          <Label>{t("venue.title")}</Label>
           <Select value={form.venueId} onValueChange={(v) => update("venueId", v)}>
-            <SelectTrigger aria-invalid={!!show("venue")} className={show("venue") ? "border-destructive" : ""}>
+            <SelectTrigger>
               <SelectValue placeholder={t("enquiryV2.venue.ph")} />
             </SelectTrigger>
             <SelectContent>
@@ -260,16 +257,12 @@ export const QuickBookingForm = ({
               ))}
             </SelectContent>
           </Select>
-          {show("venue") && <p className="text-xs text-destructive">{errors.venue}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label>
-            {t("quickEnquiry.menu")}
-            <Req />
-          </Label>
+          <Label>{t("quickEnquiry.menu")}</Label>
           <Select value={form.menuPackageId} onValueChange={(v) => update("menuPackageId", v)}>
-            <SelectTrigger aria-invalid={!!show("menu")} className={show("menu") ? "border-destructive" : ""}>
+            <SelectTrigger>
               <SelectValue placeholder={t("quickEnquiry.menu.ph")} />
             </SelectTrigger>
             <SelectContent>
@@ -280,7 +273,6 @@ export const QuickBookingForm = ({
               ))}
             </SelectContent>
           </Select>
-          {show("menu") && <p className="text-xs text-destructive">{errors.menu}</p>}
         </div>
 
         <div className="space-y-2">

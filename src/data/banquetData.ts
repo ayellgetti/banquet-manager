@@ -1,4 +1,9 @@
 import { format } from "date-fns";
+import {
+  getFollowUpUrgency as computeFollowUpUrgency,
+  isFollowUpDueThisWeek,
+  isFollowUpOverdue,
+} from "@/lib/followUpDateTime";
 import rawData from "./dummy-banquet-data.json";
 import { getBanquetStore, getMutableBookings, getMutableEnquiries } from "./banquetStore";
 
@@ -81,6 +86,10 @@ export type BookingLogEntry = {
   guests: number;
   revenue?: number;
   menuPackage?: string;
+  eventId?: string;
+  menuItemCount?: number;
+  menuSavedAt?: string | null;
+  platePackageId?: string | null;
   decorations?: string[];
   requirements?: BookingRequirement[];
   vendors?: BookingVendor[];
@@ -89,6 +98,7 @@ export type BookingLogEntry = {
 
 export type PaymentStatus = "paid" | "due" | "overdue";
 export type PaymentMethod = "card" | "bank" | "upi" | "cash";
+export type PaymentType = "income" | "expense";
 
 export type PaymentLogEntry = {
   id: string;
@@ -155,9 +165,12 @@ export type VendorRecord = VendorLogEntry & {
 };
 
 export type PaymentRecord = PaymentLogEntry & {
+  paymentType: PaymentType;
   clientName: string;
   email: string;
   bookingTitle: string;
+  vendorId?: string;
+  vendorName?: string;
 };
 
 export const BANQUET_DATA = rawData as BanquetDummyData;
@@ -316,26 +329,20 @@ export function toFollowUpEnquiryRecords(): FollowUpEnquiryRecord[] {
 }
 
 export function getFollowUpStats(records = toFollowUpEnquiryRecords(), today = new Date()) {
-  const todayKey = format(today, "yyyy-MM-dd");
-  const weekEnd = format(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7), "yyyy-MM-dd");
-
   const open = records.length;
-  const overdue = records.filter((r) => r.nextFollowUpDate && r.nextFollowUpDate < todayKey).length;
-  const dueThisWeek = records.filter(
-    (r) => r.nextFollowUpDate && r.nextFollowUpDate >= todayKey && r.nextFollowUpDate <= weekEnd,
-  ).length;
+  const overdue = records.filter((record) => isFollowUpOverdue(record.nextFollowUpDate, today)).length;
+  const dueThisWeek = records.filter((record) => isFollowUpDueThisWeek(record.nextFollowUpDate, today)).length;
 
   return { open, dueThisWeek, overdue };
 }
 
 export type FollowUpUrgency = "none" | "scheduled" | "due" | "overdue";
 
-export function getFollowUpUrgency(nextFollowUpDate: string | undefined, today = new Date()): FollowUpUrgency {
-  if (!nextFollowUpDate) return "none";
-  const todayKey = format(today, "yyyy-MM-dd");
-  if (nextFollowUpDate < todayKey) return "overdue";
-  if (nextFollowUpDate === todayKey) return "due";
-  return "scheduled";
+export function getFollowUpUrgency(
+  nextFollowUpDate: string | undefined,
+  today = new Date(),
+): FollowUpUrgency {
+  return computeFollowUpUrgency(nextFollowUpDate, today);
 }
 
 export function toBookingRecords(entries = getBookingLogs()): BookingRecord[] {
@@ -446,17 +453,25 @@ export function getCalendarStats(events = getCalendarEvents(), month = new Date(
 }
 
 export function getDashboardStats(today = new Date()) {
+  return getDashboardStatsFromEvents(getCalendarEvents(), today);
+}
+
+export function getDashboardStatsFromEvents(events: CalendarEvent[] = [], today = new Date()) {
   const monthKey = format(today, "yyyy-MM-dd").slice(0, 7);
 
-  const newLeads = getEnquiryLogs().filter((entry) => entry.status === "new").length;
-  const openFollowUps = toFollowUpEnquiryRecords().length;
-  const currentMonthBookings = getBookingLogs().filter(
-    (booking) => booking.date.startsWith(monthKey) && booking.status !== "cancelled",
+  const newLeads = events.filter((entry) => entry.status === "enquiry").length;
+  const openFollowUps = events.filter(
+    (entry) => entry.status === "enquiry" || entry.status === "tentative",
+  ).length;
+  const currentMonthBookings = events.filter(
+    (booking) => booking.date.startsWith(monthKey) && booking.status === "confirmed",
   ).length;
 
-  const monthEnquiries = getEnquiryLogs().filter((entry) => entry.createdAt.startsWith(monthKey));
-  const monthLeads = monthEnquiries.length;
-  const monthConversions = monthEnquiries.filter((entry) => entry.status === "booked").length;
+  const monthEnquiries = events.filter((entry) => entry.date.startsWith(monthKey));
+  const monthLeads = monthEnquiries.filter(
+    (entry) => entry.status === "enquiry" || entry.status === "tentative",
+  ).length;
+  const monthConversions = monthEnquiries.filter((entry) => entry.status === "confirmed").length;
   const conversionRate = monthLeads > 0 ? Math.round((monthConversions / monthLeads) * 100) : 0;
 
   return {
@@ -563,6 +578,7 @@ export function toPaymentRecords(entries = getPaymentLogs()): PaymentRecord[] {
     const booking = getBookingById(entry.bookingId);
     return {
       ...entry,
+      paymentType: "income" as const,
       clientName: customer.name,
       email: customer.email,
       bookingTitle: booking?.title ?? booking?.eventType ?? "—",
@@ -571,10 +587,15 @@ export function toPaymentRecords(entries = getPaymentLogs()): PaymentRecord[] {
 }
 
 export function getPaymentStats(records = toPaymentRecords()) {
-  const collected = records.filter((r) => r.status === "paid").reduce((sum, r) => sum + r.amount, 0);
+  const collected = records
+    .filter((r) => r.paymentType === "income" && r.status === "paid")
+    .reduce((sum, r) => sum + r.amount, 0);
+  const expenses = records
+    .filter((r) => r.paymentType === "expense" && r.status === "paid")
+    .reduce((sum, r) => sum + r.amount, 0);
   const outstanding = records.filter((r) => r.status === "due").reduce((sum, r) => sum + r.amount, 0);
   const overdue = records.filter((r) => r.status === "overdue").reduce((sum, r) => sum + r.amount, 0);
-  return { collected, outstanding, overdue };
+  return { collected, expenses, outstanding, overdue };
 }
 
 export const formatPaymentAmount = formatEnquiryBudget;

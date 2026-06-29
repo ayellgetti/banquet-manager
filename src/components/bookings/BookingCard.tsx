@@ -8,6 +8,8 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { BookingMenuSelection } from "@/components/bookings/BookingMenuSelection";
+import { BookingSummaryPdfButton } from "@/components/bookings/BookingSummaryPdfButton";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   formatEnquiryBudget,
@@ -110,6 +112,7 @@ export const BookingCard = ({ booking, expanded, onExpandedChange, onEdit }: Pro
               )}
             </div>
             <div className="flex items-center gap-1">
+              <BookingSummaryPdfButton booking={booking} size="icon" showLabel={false} />
               {onEdit && (
                 <Button
                   type="button"
@@ -237,17 +240,11 @@ export const BookingCard = ({ booking, expanded, onExpandedChange, onEdit }: Pro
                 )}
               </TabsContent>
 
-              <TabsContent value="menu" className="mt-4">
-                {booking.menuPackage ? (
-                  <div className="rounded-lg border border-border/60 bg-muted/20 px-4 py-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t("bookings.menuPackage")}
-                    </p>
-                    <p className="mt-1 font-medium text-foreground">{booking.menuPackage}</p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">{t("bookings.tabEmpty")}</p>
-                )}
+              <TabsContent value="menu" className="mt-4 space-y-4">
+                <div className="flex justify-end">
+                  <BookingSummaryPdfButton booking={booking} />
+                </div>
+                <BookingMenuSelection booking={booking} />
               </TabsContent>
 
               <TabsContent value="inventory" className="mt-4">

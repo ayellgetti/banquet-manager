@@ -11,7 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getCustomerForLog, type EnquiryRecord } from "@/data/banquetData";
+import { type EnquiryRecord } from "@/data/banquetData";
+import { getEnquiryCustomerName } from "@/lib/mappers/enquiryMapper";
 import { useOpenEnquiriesQuery } from "@/hooks/useBanquetData";
 import { useT } from "@/i18n";
 
@@ -60,7 +61,7 @@ export const QuickBookingModal = ({ open, onOpenChange, defaultDate, initialEnqu
     setSelectedEnquiry(null);
   };
 
-  const customerName = selectedEnquiry ? getCustomerForLog(selectedEnquiry.customerId).name : "";
+  const customerName = selectedEnquiry ? getEnquiryCustomerName(selectedEnquiry) : "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -106,7 +107,6 @@ export const QuickBookingModal = ({ open, onOpenChange, defaultDate, initialEnqu
               <QuickBookingForm
                 enquiry={selectedEnquiry}
                 defaultDate={defaultDate ?? selectedEnquiry.preferredDate}
-                defaultTitle={`${customerName} — ${selectedEnquiry.eventType}`}
                 onCancel={() => onOpenChange(false)}
                 onSubmitted={() => onOpenChange(false)}
               />

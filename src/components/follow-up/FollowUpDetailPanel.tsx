@@ -1,14 +1,18 @@
 import { format, parseISO } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FollowUpHistoryList } from "@/components/follow-up/FollowUpHistoryList";
 import {
   formatEnquiryBudget,
   type EnquiryStatus,
   type FollowUpEnquiryRecord,
-  type FollowUpLogEntry,
 } from "@/data/banquetData";
 import { useFollowUpHistoryQuery, useLogFollowUpMutation } from "@/hooks/useBanquetData";
 import { getMinEventDateISO, validateEventDate } from "@/lib/eventDateValidation";
+import {
+  combineFollowUpDateTime,
+  splitFollowUpDateTime,
+} from "@/lib/followUpDateTime";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,22 +43,25 @@ export const FollowUpDetailPanel = ({ enquiry, compact, onSaved }: Props) => {
   const { data: history, isLoading: historyLoading } = useFollowUpHistoryQuery(enquiry.id);
   const logMutation = useLogFollowUpMutation();
 
+  const initialSchedule = splitFollowUpDateTime(enquiry.nextFollowUpDate);
   const [status, setStatus] = useState<EnquiryStatus>(enquiry.status);
   const [comment, setComment] = useState("");
-  const [nextFollowUpDate, setNextFollowUpDate] = useState(enquiry.nextFollowUpDate ?? "");
+  const [nextDate, setNextDate] = useState(initialSchedule.date);
+  const [nextTime, setNextTime] = useState(initialSchedule.time);
   const [touched, setTouched] = useState(false);
   const minDate = getMinEventDateISO();
 
   useEffect(() => {
+    const schedule = splitFollowUpDateTime(enquiry.nextFollowUpDate);
     setStatus(enquiry.status);
-    setNextFollowUpDate(enquiry.nextFollowUpDate ?? "");
+    setNextDate(schedule.date);
+    setNextTime(schedule.time);
     setComment("");
     setTouched(false);
   }, [enquiry.id, enquiry.status, enquiry.nextFollowUpDate]);
 
   const commentError = touched && !comment.trim() ? t("followUp.validate.comment") : null;
-  const dateError =
-    touched && nextFollowUpDate ? validateEventDate(nextFollowUpDate, t) : null;
+  const dateError = touched && nextDate ? validateEventDate(nextDate, t) : null;
 
   const handleSubmit = async () => {
     setTouched(true);
@@ -62,7 +69,7 @@ export const FollowUpDetailPanel = ({ enquiry, compact, onSaved }: Props) => {
       toast.error(t("followUp.validate.comment"));
       return;
     }
-    if (nextFollowUpDate && validateEventDate(nextFollowUpDate, t)) {
+    if (nextDate && validateEventDate(nextDate, t)) {
       toast.error(t("toast.fixErrors"));
       return;
     }
@@ -72,7 +79,7 @@ export const FollowUpDetailPanel = ({ enquiry, compact, onSaved }: Props) => {
         enquiryId: enquiry.id,
         comment: comment.trim(),
         status,
-        nextFollowUpDate: nextFollowUpDate || undefined,
+        nextFollowUpDate: nextDate ? combineFollowUpDateTime(nextDate, nextTime) : undefined,
       });
       toast.success(t("followUp.saved"));
       setComment("");
@@ -183,12 +190,23 @@ export const FollowUpDetailPanel = ({ enquiry, compact, onSaved }: Props) => {
               id="fu-next-date"
               type="date"
               min={minDate}
-              value={nextFollowUpDate}
-              onChange={(e) => setNextFollowUpDate(e.target.value)}
+              value={nextDate}
+              onChange={(e) => setNextDate(e.target.value)}
               aria-invalid={!!dateError}
               className={dateError ? "border-destructive" : ""}
             />
             {dateError && <p className="text-xs text-destructive">{dateError}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="fu-next-time">{t("followUp.nextTime")}</Label>
+            <Input
+              id="fu-next-time"
+              type="time"
+              value={nextTime}
+              onChange={(e) => setNextTime(e.target.value)}
+              disabled={!nextDate}
+            />
           </div>
 
           <div className="space-y-2 sm:col-span-2">
@@ -225,47 +243,10 @@ export const FollowUpDetailPanel = ({ enquiry, compact, onSaved }: Props) => {
         {!historyLoading && (!history || history.length === 0) && (
           <p className="mt-3 text-sm text-muted-foreground">{t("followUp.historyEmpty")}</p>
         )}
-        {history && history.length > 0 && (
-          <ul className="mt-4 space-y-4">
-            {history.map((entry) => (
-              <FollowUpHistoryItem key={entry.id} entry={entry} />
-            ))}
-          </ul>
+        {!historyLoading && history && history.length > 0 && (
+          <FollowUpHistoryList entries={history} />
         )}
       </div>
     </div>
   );
 };
-
-function FollowUpHistoryItem({ entry }: { entry: FollowUpLogEntry }) {
-  const { t } = useT();
-
-  return (
-    <li className="relative border-l-2 border-primary/20 pl-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <time className="text-xs font-medium text-muted-foreground">
-          {format(parseISO(entry.createdAt), "MMM d, yyyy")}
-        </time>
-        <Badge variant="outline" className={cn("text-[10px] capitalize", statusClass[entry.status])}>
-          {t(`enquiries.status.${entry.status}`)}
-        </Badge>
-        {entry.previousStatus !== entry.status && (
-          <span className="text-[11px] text-muted-foreground">
-            {t("followUp.statusChanged")
-              .replace("{from}", t(`enquiries.status.${entry.previousStatus}`))
-              .replace("{to}", t(`enquiries.status.${entry.status}`))}
-          </span>
-        )}
-      </div>
-      <p className="mt-2 text-sm leading-relaxed text-foreground">{entry.comment}</p>
-      {entry.nextFollowUpDate && (
-        <p className="mt-1 text-xs text-muted-foreground">
-          {t("followUp.nextScheduled").replace(
-            "{date}",
-            format(parseISO(entry.nextFollowUpDate), "MMM d, yyyy"),
-          )}
-        </p>
-      )}
-    </li>
-  );
-}

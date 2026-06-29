@@ -1,5 +1,5 @@
 import { format, parseISO } from "date-fns";
-import { ArrowRight, Pencil } from "lucide-react";
+import { ArrowRight, Eye, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatEnquiryBudget, type EnquiryRecord } from "@/data/enquiries";
 import { Badge } from "@/components/ui/badge";
@@ -18,9 +18,11 @@ const statusClass: Record<EnquiryRecord["status"], string> = {
 type Props = {
   enquiries: EnquiryRecord[];
   onConvert?: (enquiry: EnquiryRecord) => void;
+  onEdit?: (enquiry: EnquiryRecord) => void;
+  onView?: (enquiry: EnquiryRecord) => void;
 };
 
-export const EnquiriesTable = ({ enquiries, onConvert }: Props) => {
+export const EnquiriesTable = ({ enquiries, onConvert, onEdit, onView }: Props) => {
   const { t } = useT();
   const navigate = useNavigate();
 
@@ -62,7 +64,9 @@ export const EnquiriesTable = ({ enquiries, onConvert }: Props) => {
                   {enquiry.note && <p className="text-sm italic text-muted-foreground">{enquiry.note}</p>}
                 </div>
               </TableCell>
-              <TableCell className="whitespace-nowrap text-foreground">{enquiry.eventType}</TableCell>
+              <TableCell className="min-w-[8rem] max-w-[14rem] py-4 align-top text-foreground">
+                <p className="whitespace-normal break-words leading-snug">{enquiry.eventType}</p>
+              </TableCell>
               <TableCell className="whitespace-nowrap text-foreground">
                 {format(parseISO(enquiry.preferredDate), "MMM d, yyyy")}
               </TableCell>
@@ -119,8 +123,18 @@ export const EnquiriesTable = ({ enquiries, onConvert }: Props) => {
                     variant="outline"
                     size="icon"
                     className="h-9 w-9 shrink-0"
+                    aria-label={t("enquiries.view")}
+                    onClick={() => onView?.(enquiry)}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 shrink-0"
                     aria-label={t("enquiries.edit")}
-                    onClick={() => navigate(`/enquiry-v2?id=${enquiry.id}&date=${enquiry.preferredDate}&customerId=${enquiry.customerId}`)}
+                    onClick={() => onEdit?.(enquiry)}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>

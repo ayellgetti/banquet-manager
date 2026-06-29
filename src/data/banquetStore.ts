@@ -109,6 +109,7 @@ export type ConvertEnquiryInput = {
   guests: number;
   revenue?: number;
   menuPackage?: string;
+  platePackageId?: string;
 };
 
 export function convertEnquiryToBooking(input: ConvertEnquiryInput): BookingLogEntry {

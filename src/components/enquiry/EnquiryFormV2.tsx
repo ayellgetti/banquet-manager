@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,13 +10,8 @@ import { SectionCard } from "./SectionCard";
 import { PlatePackageComparison } from "./PlatePackageComparison";
 import {
   buildEnquiryPdfFilename,
-  DjPdfSuggestion,
-  formatEventDate,
-  formatTiming,
-  Row,
-  SelectionsBreakdown,
-  SummaryField,
 } from "./EnquiryPdfSummary";
+import { EnquirySummaryFooter, EnquirySummaryPanel } from "./EnquirySummaryPanel";
 import {
   PACKAGES,
   VENUE_OPTIONS,
@@ -23,16 +19,16 @@ import {
   EVENT_TYPES,
   SOURCES,
   APPROX_BUDGET_RANGES,
-  DJ_EXTRA_ID,
 } from "@/data/enquiryOptions";
 import { initialEnquiry, type EnquiryState } from "@/types/enquiry";
 import { calcTotals, formatINR } from "@/lib/enquiryTotals";
-import { buildEnquiryLeadPayload, submitEnquiryLead } from "@/lib/enquiryApi";
+import { buildEnquiryLeadPayload } from "@/lib/enquiryApi";
+import { banquetQueryKeys } from "@/lib/banquetApi";
+import { submitEnquiryLeadDualWrite } from "@/lib/leadSubmitService";
 import { getMinEventDateISO, validateEventDate } from "@/lib/eventDateValidation";
 import { openEnquiryWhatsApp, WHATSAPP_NUMBER } from "@/lib/whatsappEnquiry";
 import { downloadPdfFromElement } from "@/lib/downloadPdf";
-import { ArrowLeft, Loader2, Printer, Send } from "lucide-react";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { ArrowLeft, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/i18n";
 
@@ -70,6 +66,7 @@ const emptyV2State = (): EnquiryState => ({
 
 export const EnquiryFormV2 = () => {
   const { t } = useT();
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState<V2Tab>("form");
   const [state, setState] = useState<EnquiryState>(emptyV2State);
   const [touched, setTouched] = useState(false);
@@ -120,8 +117,6 @@ export const EnquiryFormV2 = () => {
         ? t("validate.guestsRequired")
         : null,
     source: !state.basics.source.trim() ? t("validate.sourceRequired") : null,
-    venue: !state.venueId ? t("validate.venueRequired") : null,
-    platePackage: !state.platePackageId ? t("validate.platePackageRequired") : null,
     timeSlot: !state.packageId ? t("validate.timeSlotRequired") : null,
   };
 
@@ -164,8 +159,13 @@ export const EnquiryFormV2 = () => {
       .filter(Boolean)
       .join("\n");
 
-    const response = await submitEnquiryLead(payload);
-    const submittedState = { ...state, leadApiResponse: response };
+    const result = await submitEnquiryLeadDualWrite(payload);
+    if (result.sheetOk || result.crmOk) {
+      await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.enquiries() });
+      await queryClient.invalidateQueries({ queryKey: banquetQueryKeys.openEnquiries() });
+    }
+
+    const submittedState = { ...state, leadApiResponse: { success: result.sheetOk || result.crmOk } };
     setState(submittedState);
     return submittedState;
   };
@@ -175,9 +175,11 @@ export const EnquiryFormV2 = () => {
 
     setIsSubmitting(true);
     try {
-      await submitLeadToSheet();
-      toast.success(t("enquiryV2.submitSuccess"));
-      setTab("summary");
+      const submitted = await submitLeadToSheet();
+      if (submitted.leadApiResponse) {
+        toast.success(t("enquiryV2.submitSuccess"));
+        setTab("summary");
+      }
     } catch {
       toast.error(t("toast.leadSubmitFailed"));
     } finally {
@@ -359,9 +361,9 @@ export const EnquiryFormV2 = () => {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <div className="space-y-2">
-                  <Label>{t("venue.title")}<Req /></Label>
+                  <Label>{t("venue.title")}</Label>
                   <Select value={state.venueId} onValueChange={(v) => updateForm("venueId", v)}>
-                    <SelectTrigger aria-invalid={!!show("venue")} className={show("venue") ? "border-destructive" : ""}>
+                    <SelectTrigger>
                       <SelectValue placeholder={t("enquiryV2.venue.ph")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -370,7 +372,6 @@ export const EnquiryFormV2 = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {show("venue") && <p className="text-xs text-destructive">{errors.venue}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -406,14 +407,12 @@ export const EnquiryFormV2 = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>{t("enquiryV2.platePackage")}<Req /></Label>
+                <Label>{t("enquiryV2.platePackage")}</Label>
                 <p className="text-sm text-muted-foreground">{t("menu.selectPlatePackage")}</p>
                 <PlatePackageComparison
                   selectedId={state.platePackageId}
-                  invalid={!!show("platePackage")}
                   onSelect={selectPlatePackage}
                 />
-                {show("platePackage") && <p className="text-xs text-destructive">{errors.platePackage}</p>}
               </div>
 
               <div className="space-y-2">
@@ -431,120 +430,37 @@ export const EnquiryFormV2 = () => {
         </TabsContent>
 
         <TabsContent value="summary" className="mt-6">
-          <SectionCard title={t("summary.title")} description={t("summary.desc")}>
-            <div id="print-area-v2" className="space-y-6">
-              <div className="grid gap-4 rounded-lg bg-muted/40 p-4 sm:grid-cols-2">
-                <SummaryField label={t("summary.customer")} value={state.basics.customerName || "—"} />
-                <SummaryField label={t("summary.phone")} value={state.basics.phone || "—"} />
-                <SummaryField label={t("summary.event")} value={state.basics.eventType || "—"} />
-                <SummaryField label={t("summary.date")} value={formatEventDate(state.basics.eventDate)} highlight />
-                <SummaryField label={t("summary.timing")} value={formatTiming(state)} highlight />
-                <SummaryField label={t("summary.guests")} value={String(state.basics.guestCount || 0)} />
-                <SummaryField label={t("summary.source")} value={state.basics.source || "—"} />
-                <SummaryField
-                  label={t("summary.approxBudget")}
-                  value={state.basics.approxBudget || "—"}
-                />
-              </div>
-
-              <SelectionsBreakdown state={state} />
-
-              <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-noir p-6 text-white shadow-gold [&_.text-muted-foreground]:text-white/70 [&_.tabular-nums]:text-white">
-                <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-gold opacity-20 blur-3xl" />
-                <Row label={t("summary.subtotal")} value={formatINR(totals.subtotal)} />
-                <div className="mt-1 flex items-center justify-between gap-3 py-1">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{t("summary.discount").replace(" (%)", "")}</span>
-                    <div className="inline-flex overflow-hidden rounded-md border border-white/20 no-print">
-                      <button
-                        type="button"
-                        onClick={() => updateSummary("discountType", "percent")}
-                        className={`h-7 px-2 text-xs font-semibold transition-colors ${state.discountType === "percent" ? "bg-gradient-gold text-primary-foreground" : "bg-white/5 text-white/80 hover:bg-white/10"}`}
-                      >%</button>
-                      <button
-                        type="button"
-                        onClick={() => updateSummary("discountType", "fixed")}
-                        className={`h-7 px-2 text-xs font-semibold transition-colors ${state.discountType === "fixed" ? "bg-gradient-gold text-primary-foreground" : "bg-white/5 text-white/80 hover:bg-white/10"}`}
-                      >₹</button>
-                    </div>
-                    {state.discountType === "percent" ? (
-                      <Input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={state.discountPercent}
-                        onChange={(e) => updateSummary("discountPercent", Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
-                        className="h-7 w-20 border-white/20 bg-white/10 text-right text-white placeholder:text-white/40 focus-visible:ring-primary/50 no-print"
-                      />
-                    ) : (
-                      <Input
-                        type="number"
-                        min={0}
-                        value={state.discountAmount}
-                        onChange={(e) => updateSummary("discountAmount", Math.max(0, Number(e.target.value) || 0))}
-                        className="h-7 w-24 border-white/20 bg-white/10 text-right text-white placeholder:text-white/40 focus-visible:ring-primary/50 no-print"
-                      />
-                    )}
-                  </div>
-                  <span className="text-sm font-medium tabular-nums text-white/90">- {formatINR(totals.discount)}</span>
-                </div>
-                <div className="mt-3 flex items-center justify-between border-t border-white/15 pt-3">
-                  <span className="font-display text-base font-semibold uppercase tracking-wider text-white/80">
-                    {t("summary.grandTotal")}
-                  </span>
-                  <span className="font-display text-3xl font-bold text-gradient-gold tabular-nums">
-                    {formatINR(totals.total)}
-                  </span>
-                </div>
-              </div>
-
-              {state.notes.trim() && (
-                <div className="space-y-2">
-                  <Label>{t("summary.notes")}</Label>
-                  <p className="rounded-md border p-3 text-sm whitespace-pre-wrap">{state.notes.trim()}</p>
-                </div>
-              )}
-
-              {!state.extraIds.includes(DJ_EXTRA_ID) && <DjPdfSuggestion />}
-            </div>
-          </SectionCard>
+          <EnquirySummaryPanel
+            state={state}
+            onUpdateState={updateSummary}
+            printAreaId="print-area-v2"
+          />
         </TabsContent>
       </Tabs>
 
-      <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-soft">
-        {state.platePackageId ? (
-          <div className="text-sm">
-            <span className="text-muted-foreground">{t("common.runningTotal")} </span>
-            <span className="font-display text-lg font-bold text-gradient-gold">{formatINR(totals.total)}</span>
-          </div>
-        ) : (
-          <div />
-        )}
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={goPrev} disabled={idx === 0}>
-            <ArrowLeft className="mr-1 h-4 w-4" /> {t("common.back")}
-          </Button>
-          {tab === "summary" ? (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => void handleWhatsApp()}
-                disabled={isSubmitting}
-                className="border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
-              >
-                {isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <WhatsAppIcon className="mr-1 h-4 w-4" />}
-                {isSubmitting ? t("enquiryV2.submitting") : t("whatsapp.send")}
-              </Button>
-              <Button
-                onClick={() => void handleDownloadPdf()}
-                disabled={isPdfGenerating}
-                className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-95"
-              >
-                <Printer className="mr-1 h-4 w-4" />
-                {isPdfGenerating ? t("toast.pdfGenerating") : t("common.downloadPdf")}
-              </Button>
-            </>
+      {tab === "summary" ? (
+        <EnquirySummaryFooter
+          state={state}
+          onBack={goPrev}
+          onDownloadPdf={() => void handleDownloadPdf()}
+          onWhatsApp={() => void handleWhatsApp()}
+          isPdfGenerating={isPdfGenerating}
+          isWhatsAppLoading={isSubmitting}
+        />
+      ) : (
+        <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-soft">
+          {state.platePackageId ? (
+            <div className="text-sm">
+              <span className="text-muted-foreground">{t("common.runningTotal")} </span>
+              <span className="font-display text-lg font-bold text-gradient-gold">{formatINR(totals.total)}</span>
+            </div>
           ) : (
+            <div />
+          )}
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={goPrev} disabled={idx === 0}>
+              <ArrowLeft className="mr-1 h-4 w-4" /> {t("common.back")}
+            </Button>
             <Button
               onClick={() => void handleSubmit()}
               disabled={isSubmitting}
@@ -553,9 +469,9 @@ export const EnquiryFormV2 = () => {
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               {isSubmitting ? t("enquiryV2.submitting") : t("enquiryV2.submit")}
             </Button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

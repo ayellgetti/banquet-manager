@@ -1,16 +1,21 @@
 import { Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { FollowUpCard } from "@/components/follow-up/FollowUpCard";
 import { FollowUpModal } from "@/components/follow-up/FollowUpModal";
+import { FollowUpViewModal } from "@/components/follow-up/FollowUpViewModal";
 import { FollowUpTable } from "@/components/follow-up/FollowUpTable";
 import { DataLoadingState } from "@/components/common/DataLoadingState";
 import { ListSearchEmpty } from "@/components/common/ListSearchEmpty";
 import { ListSearchInput } from "@/components/common/ListSearchInput";
 import { ListPagination } from "@/components/common/ListPagination";
+import { ListViewGrid } from "@/components/common/ListViewGrid";
+import { ViewModeToggle } from "@/components/common/ViewModeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getFollowUpStats, type FollowUpEnquiryRecord } from "@/data/banquetData";
 import { useFollowUpEnquiriesQuery } from "@/hooks/useBanquetData";
+import { useListViewMode } from "@/hooks/useListViewMode";
 import { useListPagination } from "@/hooks/useListPagination";
 import { useT } from "@/i18n";
 import { matchesListSearch } from "@/lib/listSearch";
@@ -21,8 +26,11 @@ const FollowUpPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: enquiries, isLoading, isError } = useFollowUpEnquiriesQuery();
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
   const [activeEnquiry, setActiveEnquiry] = useState<FollowUpEnquiryRecord | null>(null);
+  const [viewEnquiry, setViewEnquiry] = useState<FollowUpEnquiryRecord | null>(null);
   const [search, setSearch] = useState("");
+  const [view, setView] = useListViewMode("follow-up", "list");
 
   const paramId = searchParams.get("enquiryId");
 
@@ -42,8 +50,8 @@ const FollowUpPage = () => {
   }, [enquiries, search]);
 
   const pagination = useListPagination(filtered, {
-    pageSize: LIST_PAGE_SIZE.table,
-    resetKey: search,
+    pageSize: view === "grid" ? LIST_PAGE_SIZE.card : LIST_PAGE_SIZE.table,
+    resetKey: `${search}|${view}`,
   });
 
   const stats = useMemo(
@@ -71,6 +79,16 @@ const FollowUpPage = () => {
     setActiveEnquiry(enquiry);
     setModalOpen(true);
     setSearchParams({ enquiryId: enquiry.id }, { replace: true });
+  };
+
+  const openViewEnquiry = (enquiry: FollowUpEnquiryRecord) => {
+    setViewEnquiry(enquiry);
+    setViewOpen(true);
+  };
+
+  const handleViewOpenChange = (open: boolean) => {
+    setViewOpen(open);
+    if (!open) setViewEnquiry(null);
   };
 
   const handleModalChange = (open: boolean) => {
@@ -105,6 +123,7 @@ const FollowUpPage = () => {
             {t("followUp.section")}
           </p>
           <div className="flex shrink-0 flex-nowrap items-center gap-2">
+            <ViewModeToggle value={view} onChange={setView} />
             <ListSearchInput value={search} onChange={setSearch} placeholder={t("followUp.search")} />
             <Button
               type="button"
@@ -151,7 +170,24 @@ const FollowUpPage = () => {
             <ListSearchEmpty />
           ) : (
             <div className="space-y-4">
-              <FollowUpTable enquiries={pagination.items} onEdit={openEnquiry} />
+              {view === "grid" ? (
+                <ListViewGrid>
+                  {pagination.items.map((enquiry) => (
+                    <FollowUpCard
+                      key={enquiry.id}
+                      enquiry={enquiry}
+                      onView={openViewEnquiry}
+                      onEdit={openEnquiry}
+                    />
+                  ))}
+                </ListViewGrid>
+              ) : (
+                <FollowUpTable
+                  enquiries={pagination.items}
+                  onView={openViewEnquiry}
+                  onEdit={openEnquiry}
+                />
+              )}
               <ListPagination
                 page={pagination.page}
                 totalPages={pagination.totalPages}
@@ -162,6 +198,8 @@ const FollowUpPage = () => {
             </div>
           ))}
       </div>
+
+      <FollowUpViewModal open={viewOpen} onOpenChange={handleViewOpenChange} enquiry={viewEnquiry} />
 
       <FollowUpModal
         open={modalOpen}

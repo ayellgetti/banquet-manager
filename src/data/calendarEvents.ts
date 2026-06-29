@@ -29,5 +29,5 @@ import { getCalendarEvents, type CalendarEvent } from "./banquetData";
 export type EventKind = CalendarEvent["kind"];
 export type EventStatus = CalendarEvent["status"];
 
-/** Calendar events derived from booking & enquiry log entries in dummy JSON. */
-export const CALENDAR_EVENTS = getCalendarEvents();
+/** Empty fallback — calendar uses API `events` prop when provided. */
+export const CALENDAR_EVENTS: CalendarEvent[] = [];

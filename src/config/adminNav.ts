@@ -3,14 +3,16 @@ import {
   CalendarDays,
   ClipboardList,
   ClipboardPen,
+  NotebookPen,
   Contact,
   CreditCard,
+  FileText,
   LayoutGrid,
   ScrollText,
   Package,
-  Receipt,
   ShoppingBasket,
   Sparkles,
+  Settings,
   Store,
   UserRound,
   CalendarCheck,
@@ -93,6 +95,22 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     descKey: "module.payments.desc",
   },
   {
+    id: "generate-invoice",
+    path: "/generate-invoice",
+    icon: FileText,
+    titleKey: "module.generateInvoice.title",
+    subtitleKey: "module.generateInvoice.subtitle",
+    descKey: "module.generateInvoice.desc",
+  },
+  {
+    id: "visiting-card",
+    path: "/visiting-card",
+    icon: Contact,
+    titleKey: "module.visitingCard.title",
+    subtitleKey: "module.visitingCard.subtitle",
+    descKey: "module.visitingCard.desc",
+  },
+  {
     id: "extra",
     path: "/extra",
     icon: Sparkles,
@@ -120,28 +138,20 @@ export const EXTRA_NAV_ITEMS: AdminNavItem[] = [
     descKey: "module.enquiryV2.desc",
   },
   {
+    id: "enquiry-v3",
+    path: "/enquiry-v3",
+    icon: NotebookPen,
+    titleKey: "module.enquiryV3.title",
+    subtitleKey: "module.enquiryV3.subtitle",
+    descKey: "module.enquiryV3.desc",
+  },
+  {
     id: "menu",
     path: "/menu-selection",
     icon: UtensilsCrossed,
     titleKey: "module.menu.title",
     subtitleKey: "module.menu.subtitle",
     descKey: "module.menu.desc",
-  },
-  {
-    id: "bill",
-    path: "/bill",
-    icon: Receipt,
-    titleKey: "module.bill.title",
-    subtitleKey: "module.bill.subtitle",
-    descKey: "module.bill.desc",
-  },
-  {
-    id: "visiting-card",
-    path: "/visiting-card",
-    icon: Contact,
-    titleKey: "module.visitingCard.title",
-    subtitleKey: "module.visitingCard.subtitle",
-    descKey: "module.visitingCard.desc",
   },
   {
     id: "menu-package-card",
@@ -169,13 +179,40 @@ export const EXTRA_NAV_ITEMS: AdminNavItem[] = [
   },
 ];
 
-const ALL_NAV_ITEMS = [...ADMIN_NAV_ITEMS, ...EXTRA_NAV_ITEMS];
+const ACCOUNT_NAV_ITEMS: AdminNavItem[] = [
+  {
+    id: "profile",
+    path: "/profile",
+    icon: UserRound,
+    titleKey: "profile.title",
+    subtitleKey: "profile.subtitle",
+    descKey: "profile.desc",
+  },
+  {
+    id: "settings",
+    path: "/settings",
+    icon: Settings,
+    titleKey: "settings.title",
+    subtitleKey: "settings.subtitle",
+    descKey: "settings.desc",
+  },
+];
+
+const ALL_NAV_ITEMS = [...ADMIN_NAV_ITEMS, ...EXTRA_NAV_ITEMS, ...ACCOUNT_NAV_ITEMS];
+
+export function isGenerateInvoicePath(pathname: string): boolean {
+  return pathname === "/generate-invoice" || pathname === "/bill" || pathname.startsWith("/bill/");
+}
 
 export function isExtraNavPath(pathname: string): boolean {
   return pathname === "/extra" || EXTRA_NAV_ITEMS.some((item) => isAdminNavActive(pathname, item));
 }
 
 export function getAdminNavItem(pathname: string): AdminNavItem {
+  if (isGenerateInvoicePath(pathname)) {
+    return ADMIN_NAV_ITEMS.find((item) => item.id === "generate-invoice") ?? ADMIN_NAV_ITEMS[0];
+  }
+
   const exact = ALL_NAV_ITEMS.find((item) => item.path === pathname);
   if (exact) return exact;
 
