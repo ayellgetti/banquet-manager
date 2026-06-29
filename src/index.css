@@ -213,7 +213,10 @@ body.printing #invoice-print-area td {
 body.printing #visiting-card-print-area {
   border: 2px solid #b8934a !important;
   border-style: solid !important;
-  background-color: #faf8f5 !important;
+  background-color: #ffffff !important;
+  max-width: 100mm !important;
+  margin: 0 auto !important;
+  box-shadow: none !important;
 }
 body.printing #visiting-card-print-area [data-vcard-box] {
   border: 1px solid #d4b06a !important;
@@ -222,7 +225,10 @@ body.printing #visiting-card-print-area [data-vcard-box] {
 }
 body.printing #visiting-card-print-area img {
   display: block !important;
-  max-width: 300px !important;
+  max-width: 260px !important;
+}
+body.printing #visiting-card-print-area [data-banquet-qr-codes] img {
+  max-width: 72px !important;
 }
 
 body.printing #menu-package-card-print-area,

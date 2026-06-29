@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { MapPin, Share2, Printer } from "lucide-react";
+import { MapPin, Phone, Share2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BanquetHeader } from "@/components/visiting-card/BanquetHeader";
+import { BanquetQrCodes } from "@/components/visiting-card/BanquetQrCodes";
+import { GoldDivider } from "@/components/visiting-card/GoldDivider";
 import {
-  BORDER_SIMPLE,
+  BORDER_GOLD,
+  BOX_BORDER,
   BROWN,
   CARD_FONT,
-  CREAM,
   GOLD,
   GOLD_LIGHT,
 } from "@/components/visiting-card/cardTheme";
@@ -14,6 +15,7 @@ import {
   VISITING_CARD_ADDRESS,
   VISITING_CARD_BUSINESS_NAME,
   VISITING_CARD_CONTACTS,
+  VISITING_CARD_LOGO,
   VISITING_CARD_QR_CODES,
   visitingCardMapsUrl,
 } from "@/data/visitingCard";
@@ -85,24 +87,76 @@ export const DigitalVisitingCard = () => {
   };
 
   return (
-    <div className="mx-auto max-w-md space-y-4">
+    <div className="mx-auto max-w-lg space-y-5">
       <div
         id="visiting-card-print-area"
-        className="overflow-hidden rounded-sm"
+        className="overflow-hidden rounded-lg shadow-soft"
         style={{
-          border: BORDER_SIMPLE,
+          border: BORDER_GOLD,
           boxSizing: "border-box",
-          backgroundColor: CREAM,
+          backgroundColor: "#ffffff",
           fontFamily: CARD_FONT,
         }}
       >
-        <BanquetHeader embedded showContactActions />
+        <div className="px-6 pb-4 pt-8 text-center" style={{ backgroundColor: "#ffffff" }}>
+          <img
+            src={VISITING_CARD_LOGO}
+            alt={VISITING_CARD_BUSINESS_NAME}
+            className="mx-auto h-auto w-full max-w-[260px] object-contain"
+            crossOrigin="anonymous"
+          />
+        </div>
+
+        <div className="px-8 py-2" style={{ backgroundColor: "#ffffff" }}>
+          <GoldDivider />
+        </div>
 
         <div
-          className="border-t px-6 py-4 text-center"
+          className="border-t px-6 pb-5 pt-3"
           style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
         >
-          <p className="mx-auto max-w-xs text-[12px] italic leading-relaxed" style={{ color: BROWN }}>
+          <p
+            className="mb-4 text-center text-[10px] font-bold uppercase tracking-[0.22em]"
+            style={{ color: GOLD }}
+          >
+            {t("visitingCard.contactsLabel")}
+          </p>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            {VISITING_CARD_CONTACTS.map((contact) => (
+              <div
+                key={contact.phone}
+                className="rounded-lg px-4 py-3.5 text-center"
+                style={{ border: BOX_BORDER, backgroundColor: "#ffffff" }}
+                data-vcard-box
+              >
+                <p className="text-[14px] font-semibold sm:text-[15px]" style={{ color: BROWN }}>
+                  {contact.name}
+                </p>
+                <p
+                  className="mt-1.5 flex items-center justify-center gap-1.5 text-[14px] font-bold tabular-nums tracking-wide sm:text-[15px]"
+                  style={{ color: BROWN }}
+                >
+                  <Phone className="h-3.5 w-3.5 shrink-0" style={{ color: GOLD }} aria-hidden="true" />
+                  <span>{contact.phone}</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          className="border-t px-6 py-5"
+          style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
+        >
+          <BanquetQrCodes variant="panel" />
+        </div>
+
+        <div
+          className="border-t px-6 py-5 text-center"
+          style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
+        >
+          <GoldDivider />
+          <p className="mx-auto mt-3 max-w-xs text-[12px] italic leading-relaxed" style={{ color: BROWN }}>
             {t("visitingCard.footer")}
           </p>
           <p
@@ -111,6 +165,36 @@ export const DigitalVisitingCard = () => {
           >
             {VISITING_CARD_BUSINESS_NAME}
           </p>
+        </div>
+
+        <div
+          className="border-t px-6 py-4"
+          style={{ borderColor: GOLD_LIGHT, backgroundColor: "#ffffff" }}
+        >
+          <p
+            className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.22em]"
+            style={{ color: GOLD }}
+          >
+            {t("visitingCard.addressLabel")}
+          </p>
+          <a
+            href={visitingCardMapsUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mx-auto block max-w-sm text-center no-underline"
+          >
+            <MapPin
+              className="mx-auto mb-2 h-4 w-4 transition group-hover:scale-110"
+              style={{ color: GOLD }}
+              aria-hidden="true"
+            />
+            <p
+              className="text-[12px] leading-relaxed transition group-hover:underline sm:text-[13px]"
+              style={{ color: BROWN }}
+            >
+              {VISITING_CARD_ADDRESS}
+            </p>
+          </a>
         </div>
       </div>
 
