@@ -706,7 +706,7 @@ export const MenuCatalog = () => {
 
   return (
     <div className="mx-auto max-w-[1400px] space-y-6">
-      <div id="menu-catalog-print-area" className="mx-auto w-full max-w-[210mm] space-y-1.5">
+      <div id="menu-catalog-print-area" className="mx-auto w-full max-w-[210mm]">
         {pages.map((categories, index) => (
           <CatalogPage
             key={index}
