@@ -50,6 +50,7 @@ const App = () => (
               <Route element={<AuthAwareLayout />}>
                 <Route path="/enquiry-v3" element={<EnquiryPageV3 />} />
                 <Route path="/menu-package-card" element={<MenuPackageCardPage />} />
+                <Route path="/menu-packages" element={<MenuPackagesDisplayPage />} />
                 <Route path="/menu-catalog" element={<MenuCatalogPage />} />
                 <Route path="/visiting-card" element={<VisitingCardPage />} />
               </Route>
@@ -73,7 +74,6 @@ const App = () => (
                   <Route path="/enquiry" element={<EnquiryPage />} />
                   <Route path="/enquiry-v2" element={<EnquiryPageV2 />} />
                   <Route path="/menu-selection" element={<MenuSelectionPage />} />
-                  <Route path="/menu-packages" element={<MenuPackagesDisplayPage />} />
                   <Route path="/bill" element={<BillPage />} />
                   <Route path="/procurement" element={<ProcurementPage />} />
                   <Route path="*" element={<NotFound />} />
